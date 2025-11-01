@@ -1,6 +1,17 @@
 # World Bank Data Visualization
 ITU Database Management Systems course, term project assignment repository.
 
+## Configuration
+Create a .env file (you can copy .env.example):
+```
+DATABASE_URL=postgres://dbuser:insecure-password_NO-NOT-EXPOSE-THIS-DB-TO-PUBLIC@localhost:2345/blg317e
+HOST=127.0.0.1
+PORT=6767
+```
+
+If the `HOST` and `PORT` environment variable is not set, the application will
+bind to the local loopback address `127.0.0.1` on port `6767` by default.
+
 ## Development Database Setup
 You can start a local PostgreSQL instance using the provided Dockerfile inside
 the `db/` folder.
