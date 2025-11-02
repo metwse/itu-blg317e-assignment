@@ -8,9 +8,6 @@ class CountryRepoProtocol(Protocol):
                              lat: Optional[float] = None, lng: Optional[float] = None) -> str: ...
 
 
-VALID_CONTINENTS = {'Asia', 'Europe', 'North America', 'South America', 'Africa', 'Oceania'}
-
-
 class CountryService:
     def __init__(self, repo: CountryRepoProtocol):
         self.repo = repo
@@ -23,9 +20,4 @@ class CountryService:
 
     async def create_country(self, code: str, name: str, continent: Optional[str] = None,
                              lat: Optional[float] = None, lng: Optional[float] = None) -> str:
-        c, n = code.strip().upper(), name.strip()
-        if not c or not n:
-            raise ValueError("code and name are required")
-        if continent and continent not in VALID_CONTINENTS:
-            raise ValueError(f"continent must be one of {VALID_CONTINENTS}")
-        return await self.repo.insert_country(c, n, continent, lat, lng)
+        return await self.repo.insert_country(code.strip().upper(), name.strip(), continent, lat, lng)

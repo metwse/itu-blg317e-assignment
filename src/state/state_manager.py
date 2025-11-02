@@ -13,8 +13,9 @@ class StateManager:
             return self._countries.get(code.strip().upper())
 
     async def set_country(self, code: str, data: Dict) -> None:
+        code = code.strip().upper()
         async with self._lock:
-            self._countries[code.strip().upper()] = CountryState(code=code.strip().upper(), data=data)
+            self._countries[code] = CountryState(code=code, data=data)
 
     async def clear(self) -> None:
         async with self._lock:

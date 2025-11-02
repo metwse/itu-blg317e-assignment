@@ -1,11 +1,8 @@
-"""In-memory repository implementation for testing without database."""
 from typing import Any, Dict, List, Optional
 import asyncio
 
 
 class InMemoryRepo:
-    """In-memory repository that implements the same interface as CountryRepo."""
-
     def __init__(self):
         self._store: Dict[str, Dict[str, Any]] = {}
         self._lock = asyncio.Lock()
@@ -22,7 +19,5 @@ class InMemoryRepo:
                              lat: Optional[float] = None, lng: Optional[float] = None) -> str:
         code = code.strip().upper()[:3]
         async with self._lock:
-            if code in self._store:
-                raise ValueError(f"country with code {code} already exists")
             self._store[code] = {"code": code, "name": name, "continent": continent, "lat": lat, "lng": lng}
             return "INSERT 0 1"
