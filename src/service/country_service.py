@@ -1,11 +1,18 @@
-from typing import Any, Dict, List, Optional
-from ..repo.country_repo import CountryRepo
+from typing import Any, Dict, List, Optional, Protocol
+
+
+class CountryRepoProtocol(Protocol):
+    async def get_by_code(self, code: str) -> Optional[Dict[str, Any]]: ...
+    async def list_countries(self, limit: int = 100) -> List[Dict[str, Any]]: ...
+    async def insert_country(self, code: str, name: str, continent: Optional[str] = None,
+                             lat: Optional[float] = None, lng: Optional[float] = None) -> str: ...
+
 
 VALID_CONTINENTS = {'Asia', 'Europe', 'North America', 'South America', 'Africa', 'Oceania'}
 
 
 class CountryService:
-    def __init__(self, repo: CountryRepo):
+    def __init__(self, repo: CountryRepoProtocol):
         self.repo = repo
 
     async def get_country(self, code: str) -> Optional[Dict[str, Any]]:
