@@ -2,16 +2,11 @@ from flask import Flask, request, jsonify
 import time
 import asyncio
 
-from repo.mock_country_repo import MockCountryRepo
-from service.country_service import CountryService
+from .service.country_service import CountryService
 
 
-def create_app(repo=None):
-    """Create Flask app. Accepts an optional repo for dependency injection.
-
-    If no repo is provided, a `MockCountryRepo` is used so the app can run
-    locally without a database.
-    """
+def create_app(repo):
+    """Create Flask app. Requires a repo for dependency injection."""
     start = time.time()
 
     def status():
@@ -19,8 +14,7 @@ def create_app(repo=None):
 
     app = Flask(__name__)
 
-    # setup repo/service
-    repo = repo or MockCountryRepo()
+    # setup service with provided repo
     service = CountryService(repo)
 
     @app.route("/")
@@ -45,8 +39,11 @@ def create_app(repo=None):
         payload = request.get_json(force=True)
         code = payload.get("code")
         name = payload.get("name")
+        continent = payload.get("continent")
+        lat = payload.get("lat")
+        lng = payload.get("lng")
         try:
-            res = asyncio.run(service.create_country(code, name))
+            res = asyncio.run(service.create_country(code, name, continent, lat, lng))
         except ValueError as e:
             return jsonify({"error": str(e)}), 400
         return jsonify({"result": res}), 201
