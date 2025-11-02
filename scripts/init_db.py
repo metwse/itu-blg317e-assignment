@@ -23,10 +23,9 @@ async def init_database():
         print("Loading test data...")
         for country in TEST_COUNTRIES:
             try:
-                code_array = list(country["code"])
                 await conn.execute(
                     "INSERT INTO countries (code, name, continent, lat, lng) VALUES ($1, $2, $3, $4, $5)",
-                    code_array, country["name"], country.get("continent"),
+                    country["code"], country["name"], country.get("continent"),
                     country.get("lat"), country.get("lng")
                 )
                 print(f"  ✓ Added {country['name']}")
