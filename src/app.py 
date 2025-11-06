@@ -1,0 +1,245 @@
+import datetime as dt
+import secrets
+from functools import wraps
+from typing import Dict, Any
+
+from flask import Blueprint, request, jsonify, abort, current_app
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import UniqueConstraint, Index, Numeric
+
+econ_bp = Blueprint("economic_indicators", __name__, url_prefix="/api")
+
+def _get_db() -> SQLAlchemy:
+    ext = current_app.extensions.get("sqlalchemy")
+    if ext and hasattr(ext, "db"):
+        return ext.db
+    return SQLAlchemy(current_app)
+
+def _define_models(db: SQLAlchemy):
+    class Provider(db.Model):
+        __tablename__ = "providers"
+        id = db.Column(db.BigInteger, primary_key=True)
+        name = db.Column(db.String(120), nullable=False, unique=True)
+        api_key = db.Column(db.String(64), nullable=False, unique=True, index=True)
+        created_at = db.Column(db.DateTime, default=dt.datetime.utcnow)
+
+    class Permission(db.Model):
+        __tablename__ = "permissions"
+        id = db.Column(db.BigInteger, primary_key=True)
+        provider_id = db.Column(db.BigInteger, db.ForeignKey("providers.id"), nullable=False, index=True)
+        table_name = db.Column(db.String(64), nullable=False)
+        can_create = db.Column(db.Boolean, default=False, nullable=False)
+        can_update = db.Column(db.Boolean, default=False, nullable=False)
+        can_delete = db.Column(db.Boolean, default=False, nullable=False)
+        __table_args__ = (UniqueConstraint("provider_id", "table_name"),)
+
+    class EconomicIndicator(db.Model):
+        __tablename__ = "economic_indicators"
+        id = db.Column(db.BigInteger, primary_key=True)
+        provider_id = db.Column(db.BigInteger, db.ForeignKey("providers.id"))
+        country_code = db.Column(db.String(2), nullable=False)
+        year = db.Column(db.Integer, nullable=False)
+        industry = db.Column(db.Float)
+        gdp_per_capita = db.Column(Numeric(14, 2))
+        trade = db.Column(db.Float)
+        agri_forest_fishing = db.Column(db.Float)
+        __table_args__ = (
+            UniqueConstraint("provider_id", "country_code", "year"),
+            Index("ix_econ_cc_year", "country_code", "year"),
+        )
+
+    return Provider, Permission, EconomicIndicator
+
+def _current_provider(db, Provider):
+    key = request.headers.get("X-API-Key")
+    if not key:
+        return None
+    return db.session.query(Provider).filter_by(api_key=key).first()
+
+def _require_permission(db, Permission, table_name: str, action: str):
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            prov = _current_provider(db, current_app.models["Provider"])
+            if not prov:
+                abort(401)
+            perm = db.session.query(Permission).filter_by(
+                provider_id=prov.id,
+                table_name=table_name
+            ).first()
+            allowed = {
+                "read": True,
+                "create": bool(perm and perm.can_create),
+                "update": bool(perm and perm.can_update),
+                "delete": bool(perm and perm.can_delete),
+            }[action]
+            if not allowed:
+                abort(403)
+            request.provider = prov
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+def _econ_to_dict(row) -> Dict[str, Any]:
+    return {
+        "id": row.id,
+        "provider_id": row.provider_id,
+        "country_code": row.country_code,
+        "year": row.year,
+        "industry": row.industry,
+        "gdp_per_capita": float(row.gdp_per_capita) if row.gdp_per_capita else None,
+        "trade": row.trade,
+        "agri_forest_fishing": row.agri_forest_fishing,
+    }
+
+@econ_bp.get("/indicators/economic")
+def list_economic():
+    db = _get_db()
+    EconomicIndicator = current_app.models["EconomicIndicator"]
+    Provider = current_app.models["Provider"]
+
+    q = db.session.query(EconomicIndicator)
+    cc = request.args.get("country_code")
+    y_from = request.args.get("year_from", type=int)
+    y_to = request.args.get("year_to", type=int)
+    mine = request.args.get("mine", "false").lower() == "true"
+
+    if cc:
+        q = q.filter(EconomicIndicator.country_code == cc.upper())
+    if y_from is not None:
+        q = q.filter(EconomicIndicator.year >= y_from)
+    if y_to is not None:
+        q = q.filter(EconomicIndicator.year <= y_to)
+    if mine:
+        prov = _current_provider(db, Provider)
+        if not prov:
+            abort(401)
+        q = q.filter(EconomicIndicator.provider_id == prov.id)
+
+    rows = q.all()
+    return jsonify([_econ_to_dict(r) for r in rows])
+
+@econ_bp.post("/indicators/economic")
+def create_economic():
+    db = _get_db()
+    Permission = current_app.models["Permission"]
+    EconomicIndicator = current_app.models["EconomicIndicator"]
+
+    guard = _require_permission(db, Permission, "economic_indicators", "create")
+    @guard
+    def _inner():
+        data = request.get_json(force=True)
+        row = EconomicIndicator(
+            provider_id=request.provider.id,
+            country_code=data["country_code"].upper(),
+            year=data["year"],
+            industry=data.get("industry"),
+            gdp_per_capita=data.get("gdp_per_capita"),
+            trade=data.get("trade"),
+            agri_forest_fishing=data.get("agri_forest_fishing"),
+        )
+        db.session.add(row)
+        db.session.commit()
+        return jsonify(_econ_to_dict(row)), 201
+    return _inner()
+
+@econ_bp.put("/indicators/economic/<int:row_id>")
+def update_economic(row_id: int):
+    db = _get_db()
+    Permission = current_app.models["Permission"]
+    EconomicIndicator = current_app.models["EconomicIndicator"]
+
+    guard = _require_permission(db, Permission, "economic_indicators", "update")
+    @guard
+    def _inner():
+        row = db.session.get(EconomicIndicator, row_id)
+        if not row:
+            abort(404)
+        if row.provider_id != request.provider.id:
+            abort(403)
+
+        data = request.get_json(force=True)
+        row.country_code = data.get("country_code", row.country_code).upper()
+        row.year = data.get("year", row.year)
+        row.industry = data.get("industry", row.industry)
+        row.gdp_per_capita = data.get("gdp_per_capita", row.gdp_per_capita)
+        row.trade = data.get("trade", row.trade)
+        row.agri_forest_fishing = data.get("agri_forest_fishing", row.agri_forest_fishing)
+
+        db.session.commit()
+        return jsonify(_econ_to_dict(row))
+    return _inner()
+
+@econ_bp.delete("/indicators/economic/<int:row_id>")
+def delete_economic(row_id: int):
+    db = _get_db()
+    Permission = current_app.models["Permission"]
+    EconomicIndicator = current_app.models["EconomicIndicator"]
+
+    guard = _require_permission(db, Permission, "economic_indicators", "delete")
+    @guard
+    def _inner():
+        row = db.session.get(EconomicIndicator, row_id)
+        if not row:
+            abort(404)
+        if row.provider_id != request.provider.id:
+            abort(403)
+        db.session.delete(row)
+        db.session.commit()
+        return jsonify({"deleted": True, "id": row_id})
+    return _inner()
+
+@econ_bp.post("/providers")
+def create_provider():
+    db = _get_db()
+    Provider = current_app.models["Provider"]
+    data = request.get_json(force=True)
+    name = (data.get("name") or "").strip()
+    if not name:
+        abort(400)
+    if db.session.query(Provider).filter_by(name=name).first():
+        abort(409)
+    api_key = secrets.token_hex(24)
+    prov = Provider(name=name, api_key=api_key)
+    db.session.add(prov)
+    db.session.commit()
+    return jsonify({"id": prov.id, "name": prov.name, "api_key": prov.api_key})
+
+@econ_bp.post("/permissions")
+def grant_permission():
+    db = _get_db()
+    Permission = current_app.models["Permission"]
+    data = request.get_json(force=True)
+    provider_id = data.get("provider_id")
+    table_name = data.get("table_name", "economic_indicators")
+
+    perm = db.session.query(Permission).filter_by(provider_id=provider_id, table_name=table_name).first()
+    if not perm:
+        perm = Permission(
+            provider_id=provider_id,
+            table_name=table_name,
+            can_create=bool(data.get("can_create")),
+            can_update=bool(data.get("can_update")),
+            can_delete=bool(data.get("can_delete")),
+        )
+        db.session.add(perm)
+    else:
+        perm.can_create = bool(data.get("can_create", perm.can_create))
+        perm.can_update = bool(data.get("can_update", perm.can_update))
+        perm.can_delete = bool(data.get("can_delete", perm.can_delete))
+    db.session.commit()
+    return jsonify({"ok": True})
+
+def init_economic_indicators(app):
+    with app.app_context():
+        db = _get_db()
+        Provider, Permission, EconomicIndicator = _define_models(db)
+        if not hasattr(app, "models"):
+            app.models = {}
+        app.models.update({
+            "Provider": Provider,
+            "Permission": Permission,
+            "EconomicIndicator": EconomicIndicator,
+        })
+        db.create_all()
+        app.register_blueprint(econ_bp)
