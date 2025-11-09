@@ -12,7 +12,7 @@ CREATE TABLE providers (
 -- 2 "countries" table
 -- -------------------------------------------------------------
 CREATE TABLE countries (
-    code char[3] NOT NULL PRIMARY KEY,
+    code char(3) NOT NULL PRIMARY KEY,
     name text NOT NULL UNIQUE,
     continent continent,
     lat REAL,
@@ -23,6 +23,6 @@ CREATE TABLE countries (
 -- -------------------------------------------------------------
 CREATE TABLE permissions (
     provider_id bigint NOT NULL REFERENCES providers (id),
-    country_code char[3] NOT NULL REFERENCES countries (code),
+    country_code char(3) NOT NULL REFERENCES countries (code),
     year_range int4range NOT NULL
 );
