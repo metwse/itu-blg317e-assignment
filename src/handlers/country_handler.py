@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from src.entities import Country
 
 
 class CountryHandler:
@@ -7,24 +8,42 @@ class CountryHandler:
         self.loop = loop
 
     def list_countries(self):
+        try:
+            limit = int(request.args.get("limit", 100))
+            offset = int(request.args.get("offset", 0))
+        except ValueError:
+            return jsonify(
+                {"error": "limit and offset must be integers"}
+            ), 400
+
         countries = self.loop.run_until_complete(
-            self.service.list_countries(limit=100)
+            self.service.list_countries(limit=limit, offset=offset)
         )
         return jsonify(countries)
 
     def get_country(self, code: str):
         result = self.loop.run_until_complete(self.service.get_country(code))
-        return jsonify(result) \
-            if result else (jsonify({"error": "not found"}), 404)
+
+        if result:
+            return jsonify(result)
+        else:
+            return jsonify(
+                {"error": f"Country with code '{code}' not found"}
+            ), 404
 
     def create_country(self):
-        data = request.get_json(force=True)
+        data = request.get_json()
+
+        if not data:
+            return jsonify(
+                {"error": "Invalid or empty JSON body"}
+            ), 400
+
         try:
+            country = Country(**data)
+
             res = self.loop.run_until_complete(
-                self.service.create_country(data.get("code"), data.get("name"),
-                                            data.get("continent"),
-                                            data.get("lat"),
-                                            data.get("lng"))
+                self.service.create_country(country)
             )
 
             return jsonify({"result": res}), 201
