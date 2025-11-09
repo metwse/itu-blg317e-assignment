@@ -14,7 +14,7 @@ async def run_demo():
     # Use in-memory repository (no database required)
     repo = InMemoryRepo()
     svc = CountryService(repo)
-    
+
     # Load test data
     print("Loading test data...")
     for country in TEST_COUNTRIES:
@@ -36,7 +36,7 @@ async def run_demo():
         print("Added Turkey successfully")
     except Exception as e:
         print(f"Error adding Turkey: {e}")
-    
+
     # Show final count
     countries = await svc.list_countries()
     print(f"Total countries: {len(countries)}")

@@ -2,6 +2,7 @@ from typing import Any, Iterable
 import asyncpg
 
 
+# database access layer abstraction
 class BaseRepo:
     def __init__(self, pool: asyncpg.pool.Pool):
         self.pool = pool
