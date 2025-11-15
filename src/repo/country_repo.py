@@ -1,6 +1,8 @@
-from typing import List, Optional
-from src.entities import Country
 from .base_repo import BaseRepo
+
+from src.entities import Country
+
+from typing import List, Optional
 
 
 class CountryRepo(BaseRepo[Country]):

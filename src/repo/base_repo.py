@@ -1,7 +1,6 @@
 from typing import Any, Generic, List, Optional, Type, TypeVar, cast
 import asyncpg
 
-
 T = TypeVar("T", bound=object)
 
 

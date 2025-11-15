@@ -1,7 +1,8 @@
-from .repo.country_repo import CountryRepo
-from .app import create_app
-import asyncpg
+from src.repo.country_repo import CountryRepo
+from src.app import create_app
+
 import os
+import asyncpg
 import asyncio
 from dotenv import load_dotenv
 

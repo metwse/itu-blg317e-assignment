@@ -1,5 +1,6 @@
-from typing import List, Optional
 from src.entities import Country
+
+from typing import List, Optional
 
 
 class CountryService:

@@ -1,5 +1,6 @@
-from flask import Blueprint
 from src.handlers.country_handler import CountryHandler
+
+from flask import Blueprint
 
 
 def country_routes(country_handler: CountryHandler):
