@@ -1,37 +1,35 @@
-from flask import request, jsonify
+from src import AppError, AppErrorType
 from src.entities import Country
+
+from flask import request, jsonify
 
 
 class CountryHandler:
-    def __init__(self, service, loop):
+    def __init__(self, service):
         self.service = service
-        self.loop = loop
 
-    def list_countries(self):
+    async def list_countries(self):
         try:
             limit = int(request.args.get("limit", 100))
             offset = int(request.args.get("offset", 0))
         except ValueError:
-            return jsonify(
-                {"error": "limit and offset must be integers"}
-            ), 400
+            raise AppError(AppErrorType.VALIDATION_ERROR,
+                           "limit and offset must be integers")
 
-        countries = self.loop.run_until_complete(
-            self.service.list_countries(limit=limit, offset=offset)
-        )
+        countries = await self.service.list_countries(limit=limit,
+                                                      offset=offset)
+
         return jsonify(countries)
 
-    def get_country(self, code: str):
-        result = self.loop.run_until_complete(self.service.get_country(code))
+    async def get_country(self, code: str):
+        result = await self.service.get_country(code)
 
         if result:
             return jsonify(result)
         else:
-            return jsonify(
-                {"error": f"Country with code '{code}' not found"}
-            ), 404
+            raise AppError(AppErrorType.NOT_FOUND, "country not found")
 
-    def create_country(self):
+    async def create_country(self):
         data = request.get_json()
 
         if not data:
@@ -39,13 +37,8 @@ class CountryHandler:
                 {"error": "Invalid or empty JSON body"}
             ), 400
 
-        try:
-            country = Country(**data)
+        country = Country(**data)
 
-            res = self.loop.run_until_complete(
-                self.service.create_country(country)
-            )
+        res = await self.service.create_country(country)
 
-            return jsonify({"result": res}), 201
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 400
+        return jsonify({"result": res}), 201

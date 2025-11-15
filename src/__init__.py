@@ -1,4 +1,5 @@
-import structlog
+# re-export commonly used error utils
+from src.error import AppErrorType, AppError, log
 
 
-log = structlog.get_logger(__name__)
+__all__ = ['log', 'AppError', 'AppErrorType']

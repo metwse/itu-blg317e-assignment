@@ -1,37 +1,40 @@
-from src import log
-
+from pydantic_core import ValidationError
 from enum import Enum
 from typing import Any
-import json
 
+import json
+import structlog
 from werkzeug.wrappers.response import Response
 
+log = structlog.get_logger(__name__)
 
-class AppErorrType(Enum):
+
+class AppErrorType(Enum):
     NOT_FOUND = 0
     UNAUTHORIZED = 1
     DUPLICATE_ENTRY = 2
     INTERNAL_ERROR = 3
+    VALIDATION_ERROR = 4
 
     details: Any
 
     def code(self) -> int:
         match self:
-            case AppErorrType.NOT_FOUND:
+            case AppErrorType.NOT_FOUND:
                 return 404
-            case AppErorrType.UNAUTHORIZED:
+            case AppErrorType.UNAUTHORIZED:
                 return 401
-            case AppErorrType.DUPLICATE_ENTRY:
+            case AppErrorType.DUPLICATE_ENTRY | AppErrorType.VALIDATION_ERROR:
                 return 400
-            case AppErorrType.INTERNAL_ERROR:
+            case AppErrorType.INTERNAL_ERROR:
                 return 500
 
 
 class AppError(Exception):
     details: Any
-    error_type: AppErorrType
+    error_type: AppErrorType
 
-    def __init__(self, error_type: AppErorrType, details: Any = None):
+    def __init__(self, error_type: AppErrorType, details: Any = None):
         self.details = details
         self.error_type = error_type
 
@@ -52,7 +55,8 @@ def error_handler(e: AppError) -> Response:
     return Response(
         json.dumps({
             'error': e.name,
-            'details': e.details
+            'details': e.details,
+            'code': e.code,
         }),
         mimetype='application/json',
         status=e.code
@@ -60,8 +64,12 @@ def error_handler(e: AppError) -> Response:
 
 
 def unspecified_error_handler(e: Exception) -> Response:
-    return error_handler(AppError(AppErorrType.INTERNAL_ERROR, details=e))
+    return error_handler(AppError(AppErrorType.INTERNAL_ERROR, e))
 
 
 def not_found_error_handler(_) -> Response:
-    return error_handler(AppError(AppErorrType.NOT_FOUND, "route not found"))
+    return error_handler(AppError(AppErrorType.NOT_FOUND, "route not found"))
+
+
+def validation_error_handler(e: ValidationError) -> Response:
+    return error_handler(AppError(AppErrorType.VALIDATION_ERROR, e))
