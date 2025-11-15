@@ -12,9 +12,10 @@ log = structlog.get_logger(__name__)
 class AppErrorType(Enum):
     NOT_FOUND = 0
     UNAUTHORIZED = 1
-    DUPLICATE_ENTRY = 2
+    JSON_PARSE_ERROR = 2
     INTERNAL_ERROR = 3
     VALIDATION_ERROR = 4
+    ALREADY_EXITS = 5
 
     details: Any
 
@@ -24,7 +25,9 @@ class AppErrorType(Enum):
                 return 404
             case AppErrorType.UNAUTHORIZED:
                 return 401
-            case AppErrorType.DUPLICATE_ENTRY | AppErrorType.VALIDATION_ERROR:
+            case AppErrorType.JSON_PARSE_ERROR \
+                    | AppErrorType.VALIDATION_ERROR \
+                    | AppErrorType.ALREADY_EXITS:
                 return 400
             case AppErrorType.INTERNAL_ERROR:
                 return 500
@@ -72,4 +75,5 @@ def not_found_error_handler(_) -> Response:
 
 
 def validation_error_handler(e: ValidationError) -> Response:
-    return error_handler(AppError(AppErrorType.VALIDATION_ERROR, e))
+    return error_handler(AppError(AppErrorType.VALIDATION_ERROR,
+                                  details=str(e)))
