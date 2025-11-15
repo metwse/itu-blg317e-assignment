@@ -45,9 +45,12 @@ class CountryRepo(BaseRepo[Country]):
         set_clauses = []
         update_values = []
 
-        for i, (column, value) in enumerate(fields_to_update.items()):
-            set_clauses.append(f"{column} = ${i + 2}")
-            update_values.append(value)
+        i = 2
+        for column, value in fields_to_update.items():
+            if value is not None:
+                set_clauses.append(f"{column} = ${i}")
+                update_values.append(value)
+                i += 1
 
         if len(set_clauses) == 0:
             return None
