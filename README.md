@@ -1,28 +1,55 @@
 # World Bank Data Visualization
-ITU Database Management Systems course, term project assignment repository.
+The term project for the ITU Database Management Systems (BLG 317E) course.
+This application provides a web-based interface for visualizing data from the
+World Bank.
 
-## Configuration
-Create a .env file (you can copy .env.example):
-```
-DATABASE_URL=postgres://dbuser:insecure-password_NO-NOT-EXPOSE-THIS-DB-TO-PUBLIC@localhost:2345/blg317e
-HOST=127.0.0.1
-PORT=6767
-```
+## Quick Start
+This is the fastest way to get the entire project (application and database)
+running. This method uses the settings in the `docker-compose.yml` file.
 
-If the `HOST` and `PORT` environment variable is not set, the application will
-bind to the local loopback address `127.0.0.1` on port `6767` by default.
+Steps:
+1. Run the project using Docker Compose:
+   ```sh
+   docker compose up -d
+   ```
+2. That's it!
+    - The application will be accessible at `http://localhost:6767`.
+    - The PostgreSQL database will be exposed on port `1234` for debugging.
 
-## Development Database Setup
-You can start a local PostgreSQL instance using the provided Dockerfile inside
-the `db/` folder.
+## Manual Development Setup
+This method is for development if you want to run the database in Docker but
+run the application service (Python) locally on your host machine.
 
-### Build the Image
+### Configuration
+The application reads its configuration from environment variables, which can
+be loaded from a `.env` file.
+
+Copy the example file:
 ```sh
-cd db/
-docker build -t blg317e-dev-db
+cp .env.example .env
 ```
 
-### Run the Container
+You can keep the configuration provided in `.env.example` the same in this
+setup.
+
+### Build & Run the Database
+This will build a custom Docker image for the database (which includes the
+initial schema) and run it as a container.
+
+1. Navigate to the db directory and build the image:
+   ```sh
+   cd db/
+   docker build -t blg317e-dev-db
+   ```
+2. Run the database container:
+   ```sh
+   docker run -d \
+       --name blg317e-dev-db \
+       -p localhost:2345:5432 \
+       blg317e-dev-db
+   ```
+   Here, we specified `localhost` to not expose the database to public.
+
 This setup maps the container’s internal PostgreSQL port `5432` to port `2345`
 on your host machine.
 
@@ -30,24 +57,18 @@ You can change the host port (`2345`) if needed, just make sure to update the
 `DATABASE_URL` accordingly. The internal container port (`5432`) should remain
 unchanged.
 
-```sh
-docker run -d \
-  --name blg317e-dev-db \
-  -p 2345:5432 \
-  blg317e-dev-db
-```
-
-This starts PostgreSQL with the initial schema defined in SQL files in `db/`.
+### Run the Application
+You can run the back end service with `python3 -m src` command, after
+installing dependencies in `requirements.txt`.
 
 ### Cleanup
-These commands stop and remove both the development and test database
-containers. If you only want to remove one of them, simply pass its name as an
-argument.
+To stop and remove the manual development database container:
 
 ```sh
 docker stop blg317e-dev-db
-docker rm --force blg317e-dev-db
+docker rm blg317e-dev-db
 ```
 
 ## License
-This project licensed under the AGPL-3.0 license.
+This project licensed under the AGPL-3.0 license. See the `LICENSE` file for
+details.

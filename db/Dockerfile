@@ -1,3 +1,5 @@
+# This docker file is for running standalone database instances quickly.
+
 FROM postgres:16
 
 ENV POSTGRES_DB='blg317e'
