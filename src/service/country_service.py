@@ -1,11 +1,12 @@
+from src.repo.country_repo import CountryRepo
 from src.entities import Country
 
 from typing import List, Optional
 
 
 class CountryService:
-    def __init__(self, repo):
-        self.repo = repo
+    def __init__(self, pool):
+        self.repo = CountryRepo(pool)
 
     async def get_country(self, code: str) -> Optional[Country]:
         return await self.repo.get_by_code(code.strip().upper())

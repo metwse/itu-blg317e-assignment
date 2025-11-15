@@ -5,7 +5,6 @@ from src.routes import country_routes
 
 from src.service.country_service import CountryService
 from src.handlers.country_handler import CountryHandler
-from src.repo.country_repo import CountryRepo
 
 from pydantic_core import ValidationError
 from flask import Flask, jsonify
@@ -20,7 +19,7 @@ def create_app(pool):
     app.register_error_handler(ValidationError, validation_error_handler)
     app.register_error_handler(Exception, unspecified_error_handler)
 
-    country_service = CountryService(CountryRepo(pool))
+    country_service = CountryService(pool)
     country_handler = CountryHandler(country_service)
 
     start_time = time.time()

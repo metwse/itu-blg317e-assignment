@@ -25,6 +25,7 @@ class CountryHandler:
         result = await self.service.get_country(code)
 
         if result:
+            print(result)
             return jsonify(result)
         else:
             raise AppError(AppErrorType.NOT_FOUND, "country not found")

@@ -17,7 +17,7 @@ DEBUG = bool(os.environ.get('DEBUG'))
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL is None:
-    raise ValueError("DATABASE_URL environment variable must be set in order"
+    raise ValueError("DATABASE_URL environment variable must be set in order "
                      "to run the backend.")
 
 
@@ -32,7 +32,7 @@ async def main():
         app,
         host=HOST,
         port=PORT,
-        log_level="info",
+        log_level=LOG_LEVEL,
         reload=DEBUG
     )
 

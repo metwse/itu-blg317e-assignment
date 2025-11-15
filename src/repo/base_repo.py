@@ -16,7 +16,11 @@ class BaseRepo(Generic[T]):
 
     async def fetchrow(self, query: str, *args: Any) -> Optional[T]:
         async with self.pool.acquire() as conn:
-            return await conn.fetchrow(query, *args)
+            row = await conn.fetchrow(query, *args)
+            if row is not None:
+                return cast(T, dict(await conn.fetchrow(query, *args)))
+            else:
+                return None
 
     async def execute(self, query: str, *args: Any) -> str:
         async with self.pool.acquire() as conn:
