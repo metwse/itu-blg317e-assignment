@@ -9,7 +9,7 @@ class CountryService:
         self.repo = CountryRepo(pool)
 
     async def get_country(self, code: str) -> Optional[Country]:
-        return await self.repo.get_by_id(code.strip().upper())
+        return await self.repo.get_by_keys([code.strip().upper()])
 
     async def list_countries(self, limit, offset) \
             -> List[Country]:
@@ -19,7 +19,7 @@ class CountryService:
         return await self.repo.insert(country)
 
     async def update_country(self, code, update_dto) -> str | None:
-        return await self.repo.update(code, update_dto)
+        return await self.repo.update([code], update_dto)
 
     async def delete_country(self, code) -> str:
-        return await self.repo.delete(code)
+        return await self.repo.delete([code])

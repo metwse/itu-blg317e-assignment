@@ -40,8 +40,9 @@ class CountryHandler:
             res = await self.service.create_country(country)
         except Exception:
             raise AppError(AppErrorType.ALREADY_EXITS,
-                           f"country with code {data["code"]} has already "
-                           "exists or the code is invalid")
+                           f"country with code {data["code"]} or name "
+                           f"{data["name"]} has already existed or the code "
+                           "is invalid")
 
         return jsonify(res), 201
 

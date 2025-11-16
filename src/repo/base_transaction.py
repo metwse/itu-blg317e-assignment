@@ -5,7 +5,7 @@ T = TypeVar("T", bound=object)
 
 
 # database access layer abstraction
-class BaseTranslaction(Generic[T]):
+class BaseTransaction(Generic[T]):
     def __init__(self, pool: asyncpg.pool.Pool, _: Type[T]):
         self.pool = pool
 
@@ -18,7 +18,15 @@ class BaseTranslaction(Generic[T]):
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow(query, *args)
             if row is not None:
-                return cast(T, dict(await conn.fetchrow(query, *args)))
+                return cast(T, dict(row))
+            else:
+                return None
+
+    async def fetchrow_raw(self, query: str, *args: Any) -> Optional[dict]:
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(query, *args)
+            if row is not None:
+                return dict(row)
             else:
                 return None
 

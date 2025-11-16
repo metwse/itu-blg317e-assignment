@@ -1,37 +1,49 @@
-from pydantic import BaseModel
-from src.repo.base_translaction import BaseTranslaction
+from src.repo.base_transaction import BaseTransaction
 
+from pydantic import BaseModel
 from typing import Any, Generic, List, Optional, Tuple, Type, TypeVar
+
 import asyncpg
 
 
-T = TypeVar('T', bound=BaseModel)
-U = TypeVar('U', bound=BaseModel)
+T = TypeVar('T', bound=BaseModel)  # underlying entity
+U = TypeVar('U', bound=BaseModel)  # DTO for updatable fields of the entity
+C = TypeVar('C', bound=BaseModel)  # DTO for creating new entity
 
 
 # ORM mappings for database entities
-class BaseRepo(Generic[T, U], BaseTranslaction[T]):
+class BaseRepo(Generic[T, U, C],
+               BaseTransaction[T]):
     def __init__(self, pool: asyncpg.pool.Pool,
-                 table_name: str, id_column: str,
-                 Types: Tuple[Type[T], Type[U]]):
-        super().__init__(pool, Types[0])
+                 table_name: str, key_columns: List[str],
+                 model_types: Tuple[Type[T], Type[U], Type[C]]):
+        super().__init__(pool, model_types[0])
 
         self.table_name = table_name
-        self.id_column = id_column
         self.pool = pool
 
-        columns = Types[0].model_fields.keys()
-        update_values = [f"${i + 1}" for i in range(len(columns))]
+        columns = model_types[0].model_fields.keys()
 
         self.columns = ','.join(columns)
-        self.update_values = ','.join(update_values)
+        self.key_columns = ','.join(key_columns)
 
-    async def get_by_id(self, id: Any) -> Optional[T]:
+        self.key_column_count = len(key_columns)
+        self.key_where_clauses = ' AND '.join([
+            f"{key_columns[i]} = ${i + 1}"
+            for i in range(len(key_columns))
+        ])
+
+        self.insert_placeholders = ','.join([
+            f"${i + 1}"
+            for i in range(len(columns))
+        ])
+
+    async def get_by_keys(self, keys: List[Any]) -> Optional[T]:
         row = await self.fetchrow(
             f"""
-            SELECT * FROM {self.table_name}
-                WHERE {self.id_column} = $1
-            """, id
+            SELECT {self.columns} FROM {self.table_name}
+                WHERE {self.key_where_clauses}
+            """, *keys
         )
 
         return row
@@ -43,48 +55,51 @@ class BaseRepo(Generic[T, U], BaseTranslaction[T]):
             limit, offset
         )
 
-    async def insert(self, record: T) -> str:
+    async def insert(self, record: C) -> Optional[dict]:
         model_dump = record.model_dump()
 
-        return await self.execute(
+        return await self.fetchrow_raw(
             f"""
             INSERT INTO {self.table_name} ({self.columns})
-                VALUES ({self.update_values})
+                VALUES ({self.insert_placeholders})
+                RETURNING {self.key_columns}
             """,
             *list(model_dump.values())
         )
 
-    async def update(self, id: Any, update_dto: U) \
-            -> str | None:
+    async def update(self, keys: List[Any], update_dto: U) \
+            -> Optional[dict]:
         fields_to_update = update_dto.model_dump(exclude_unset=True)
 
         set_clauses = []
         update_values = []
 
-        i = 2
-        for column, value in fields_to_update.items():
-            if value is not None:
-                set_clauses.append(f"{column} = ${i}")
-                update_values.append(value)
-                i += 1
+        placeholder_start_index = self.key_column_count + 1
+        for i, (column, value) in \
+                enumerate(fields_to_update.items(),
+                          start=placeholder_start_index):
+            set_clauses.append(f"{column} = ${i}")
+            update_values.append(value)
 
         if len(set_clauses) == 0:
             return None
 
-        return await self.execute(
+        return await self.fetchrow_raw(
             f"""
             UPDATE {self.table_name}
             SET {','.join(set_clauses)}
-            WHERE {self.id_column} = $1
+            WHERE {self.key_where_clauses}
+            RETURNING {self.key_columns}
             """,
-            id, *update_values
+            *keys, *update_values
         )
 
-    async def delete(self, id: Any) -> str:
-        return await self.execute(
+    async def delete(self, keys: List[Any]) -> Optional[dict]:
+        return await self.fetchrow_raw(
             f"""
             DELETE FROM {self.table_name}
-            WHERE {self.id_column} = $1
+            WHERE {self.key_where_clauses}
+            RETURNING {self.key_columns}
             """,
-            id
+            *keys
         )
