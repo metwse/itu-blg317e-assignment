@@ -30,4 +30,5 @@ class CountryUpdateDto(BaseModel):
 
 
 class PermissionUpdateDto(BaseModel):
-    year_range: Optional[tuple[int, int]] = None
+    year_start: Optional[int] = None
+    year_end: Optional[int] = None

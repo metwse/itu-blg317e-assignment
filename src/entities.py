@@ -32,7 +32,8 @@ class Country(BaseModel):
 class Permission(BaseModel):
     provider_id: int
     country_code: str
-    year_range: tuple[int, int]
+    year_start: int
+    year_end: int
 
 
 class EconomicIndicator(BaseModel):

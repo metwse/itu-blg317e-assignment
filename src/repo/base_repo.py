@@ -22,7 +22,7 @@ class BaseRepo(Generic[T, U, C],
         self.table_name = table_name
         self.pool = pool
 
-        columns = model_types[0].model_fields.keys()
+        columns = model_types[2].model_fields.keys()
 
         self.columns = ','.join(columns)
         self.key_columns = ','.join(key_columns)
@@ -43,15 +43,15 @@ class BaseRepo(Generic[T, U, C],
     async def get_by_keys(self, keys: List[Any]) -> Optional[T]:
         row = await self.fetchrow(
             f"""
-            SELECT {self.columns} FROM {self.table_name}
+            SELECT * FROM {self.table_name}
                 WHERE {self.key_where_clauses}
-            """, *keys
+            """,
+            *keys
         )
 
         return row
 
-    async def list(self, limit, offset) \
-            -> List[T]:
+    async def list(self, limit, offset) -> List[T]:
         return await self.fetch(
             f"SELECT * FROM {self.table_name} LIMIT $1 OFFSET $2",
             limit, offset

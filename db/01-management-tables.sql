@@ -22,7 +22,10 @@ CREATE TABLE countries (
 -- 3 "permissions" table
 -- -------------------------------------------------------------
 CREATE TABLE permissions (
-    provider_id bigint NOT NULL REFERENCES providers (id),
+    provider_id bigint NOT NULL REFERENCES providers (id) ON DELETE CASCADE,
     country_code char(3) NOT NULL REFERENCES countries (code) ON DELETE CASCADE,
-    year_range int4range NOT NULL
+    year_start integer NOT NULL,
+    year_end integer NOT NULL,
+
+    PRIMARY KEY (provider_id, country_code, year_start, year_end)
 );

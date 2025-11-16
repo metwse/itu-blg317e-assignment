@@ -1,6 +1,6 @@
 from .base_handler import BaseHandler
 
-from src.service.country_service import CountryService
+from src.service import CountryService
 
 
 class CountryHandler(BaseHandler):

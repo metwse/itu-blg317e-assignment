@@ -28,13 +28,18 @@ class BaseHandler(Generic[T, U, C]):
             raise AppError(AppErrorType.VALIDATION_ERROR,
                            "limit and offset must be integers")
 
-        return jsonify(await self.service.list(limit, offset))
+        return jsonify(
+            [
+                i.model_dump()
+                for i in await self.service.list(limit, offset)
+            ]
+        )
 
     async def get(self, *keys):
         res = await self.service.get([*keys])
 
         if res is not None:
-            return jsonify(res)
+            return jsonify(res.model_dump())
         else:
             raise AppError(AppErrorType.NOT_FOUND, "entity not found")
 

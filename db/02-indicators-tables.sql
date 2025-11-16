@@ -1,7 +1,7 @@
 -- 1 "economic_indicators" table
 -- -------------------------------------------------------------
 CREATE TABLE economic_indicators (
-    provider_id bigint NOT NULL REFERENCES providers (id),
+    provider_id bigint NOT NULL REFERENCES providers (id) ON DELETE CASCADE,
     country_code char(3) NOT NULL REFERENCES countries (code) ON DELETE CASCADE,
     year integer NOT NULL,
     -- % of GDP
@@ -17,7 +17,7 @@ CREATE TABLE economic_indicators (
 -- 2 "health_indicators" table
 -- -------------------------------------------------------------
 CREATE TABLE health_indicators (
-    provider_id bigint NOT NULL REFERENCES providers (id),
+    provider_id bigint NOT NULL REFERENCES providers (id) ON DELETE CASCADE,
     country_code char(3) NOT NULL REFERENCES countries (code) ON DELETE CASCADE,
     year integer NOT NULL,
     -- per 1,000 people
@@ -37,7 +37,7 @@ CREATE TABLE health_indicators (
 -- 3 "environment_indicators" table
 -- -------------------------------------------------------------
 CREATE TABLE environment_indicators (
-    provider_id bigint NOT NULL REFERENCES providers (id),
+    provider_id bigint NOT NULL REFERENCES providers (id) ON DELETE CASCADE,
     country_code char(3) NOT NULL REFERENCES countries (code) ON DELETE CASCADE,
     year integer NOT NULL,
     -- kg of oil equivalent per capita

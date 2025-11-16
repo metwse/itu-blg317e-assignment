@@ -1,4 +1,4 @@
-from typing import Any, Generic, List, Optional, Type, TypeVar, cast
+from typing import Any, Generic, List, Optional, Type, TypeVar
 import asyncpg
 
 T = TypeVar("T", bound=object)
@@ -6,19 +6,20 @@ T = TypeVar("T", bound=object)
 
 # database access layer abstraction
 class BaseTransaction(Generic[T]):
-    def __init__(self, pool: asyncpg.pool.Pool, _: Type[T]):
+    def __init__(self, pool: asyncpg.pool.Pool, model: Type[T]):
         self.pool = pool
+        self.model = model
 
     async def fetch(self, query: str, *args: Any) -> List[T]:
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(query, *args)
-            return [cast(T, dict(r)) for r in rows]
+            return [self.model(**row) for row in rows]
 
     async def fetchrow(self, query: str, *args: Any) -> Optional[T]:
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow(query, *args)
             if row is not None:
-                return cast(T, dict(row))
+                return self.model(**row)
             else:
                 return None
 
