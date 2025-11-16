@@ -9,7 +9,7 @@ class CountryService:
         self.repo = CountryRepo(pool)
 
     async def get_country(self, code: str) -> Optional[Country]:
-        return await self.repo.get_by_code(code.strip().upper())
+        return await self.repo.get_by_id(code.strip().upper())
 
     async def list_countries(self, limit, offset) \
             -> List[Country]:
