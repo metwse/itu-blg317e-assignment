@@ -38,6 +38,8 @@ class BaseRepo(Generic[T, U, C],
             for i in range(len(columns))
         ])
 
+        self.model_types = model_types
+
     async def get_by_keys(self, keys: List[Any]) -> Optional[T]:
         row = await self.fetchrow(
             f"""

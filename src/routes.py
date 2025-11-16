@@ -7,23 +7,23 @@ def country_routes(country_handler: CountryHandler):
     countries = Blueprint("countries", __name__, url_prefix="/countries")
 
     countries.add_url_rule("/",
-                           view_func=country_handler.list_countries,
+                           view_func=country_handler.list,
                            methods=["GET"])
 
     countries.add_url_rule("/",
-                           view_func=country_handler.create_country,
+                           view_func=country_handler.create,
                            methods=["POST"])
 
-    countries.add_url_rule("/<code>",
-                           view_func=country_handler.get_country,
-                           methods=["GET"])
+    async def get(code):
+        return await country_handler.get(code)
+    countries.add_url_rule("/<code>", view_func=get, methods=["GET"])
 
-    countries.add_url_rule("/<code>",
-                           view_func=country_handler.update_country,
-                           methods=["PATCH"])
+    async def update(code):
+        return await country_handler.update(code)
+    countries.add_url_rule("/<code>", view_func=update, methods=["PATCH"])
 
-    countries.add_url_rule("/<code>",
-                           view_func=country_handler.delete_country,
-                           methods=["DELETE"])
+    async def delete(code):
+        return await country_handler.delete(code)
+    countries.add_url_rule("/<code>", view_func=delete, methods=["DELETE"])
 
     return countries

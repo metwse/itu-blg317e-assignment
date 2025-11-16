@@ -1,5 +1,5 @@
 from typing import Optional, Literal
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 Continent = Literal[
@@ -13,8 +13,6 @@ Continent = Literal[
 
 
 class Provider(BaseModel):
-    model_config = ConfigDict(extra='ignore')
-
     id: int
     email: str
     name: str
