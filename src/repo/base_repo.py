@@ -9,6 +9,7 @@ T = TypeVar('T', bound=BaseModel)
 U = TypeVar('U', bound=BaseModel)
 
 
+# ORM mappings for database entities
 class BaseRepo(Generic[T, U], BaseTranslaction[T]):
     def __init__(self, pool: asyncpg.pool.Pool,
                  table_name: str, id_column: str,
@@ -35,14 +36,14 @@ class BaseRepo(Generic[T, U], BaseTranslaction[T]):
 
         return row
 
-    async def list_countries(self, limit, offset) \
+    async def list(self, limit, offset) \
             -> List[T]:
         return await self.fetch(
             f"SELECT * FROM {self.table_name} LIMIT $1 OFFSET $2",
             limit, offset
         )
 
-    async def insert_countries(self, record: T) -> str:
+    async def insert(self, record: T) -> str:
         model_dump = record.model_dump()
 
         return await self.execute(
@@ -53,7 +54,7 @@ class BaseRepo(Generic[T, U], BaseTranslaction[T]):
             *list(model_dump.values())
         )
 
-    async def update_country(self, id: Any, update_dto: U) \
+    async def update(self, id: Any, update_dto: U) \
             -> str | None:
         fields_to_update = update_dto.model_dump(exclude_unset=True)
 
@@ -77,4 +78,13 @@ class BaseRepo(Generic[T, U], BaseTranslaction[T]):
             WHERE {self.id_column} = $1
             """,
             id, *update_values
+        )
+
+    async def delete(self, id: Any) -> str:
+        return await self.execute(
+            f"""
+            DELETE FROM {self.table_name}
+            WHERE {self.id_column} = $1
+            """,
+            id
         )

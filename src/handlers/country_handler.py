@@ -56,3 +56,6 @@ class CountryHandler:
             return jsonify(res)
         else:
             raise AppError(AppErrorType.VALIDATION_ERROR, "no field to update")
+
+    async def delete_country(self, code: str):
+        return jsonify(await self.service.delete_country(code))

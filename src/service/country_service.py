@@ -1,4 +1,4 @@
-from src.repo.country_repo import CountryRepo
+from src.repo import CountryRepo
 from src.entities import Country
 
 from typing import List, Optional
@@ -13,10 +13,13 @@ class CountryService:
 
     async def list_countries(self, limit, offset) \
             -> List[Country]:
-        return await self.repo.list_countries(limit, offset)
+        return await self.repo.list(limit, offset)
 
     async def create_country(self, country) -> str:
-        return await self.repo.insert_countries(country)
+        return await self.repo.insert(country)
 
     async def update_country(self, code, update_dto) -> str | None:
-        return await self.repo.update_country(code, update_dto)
+        return await self.repo.update(code, update_dto)
+
+    async def delete_country(self, code) -> str:
+        return await self.repo.delete(code)
