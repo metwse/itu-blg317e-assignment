@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ProviderUpdateDto(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     email: Optional[str] = None
     name: Optional[str] = None
     password_hash: Optional[str] = None
@@ -30,5 +32,7 @@ class CountryUpdateDto(BaseModel):
 
 
 class PermissionUpdateDto(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     year_start: Optional[int] = None
     year_end: Optional[int] = None
