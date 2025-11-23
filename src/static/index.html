@@ -65,49 +65,84 @@ label{color:#fff}
 <div class="card mb-3">
 <div class="card-body">
 <h5>Providers</h5>
-<button class="btn btn-primary btn-sm" onclick="a('/providers/')">List</button>
+<button class="btn btn-primary btn-sm" onclick="a('/providers/','GET')">List</button><br class="d-block d-lg-none">
 <input id="p1" class="form-control form-control-sm d-inline-block w-auto" placeholder="Name" style="width:100px">
 <input id="p2" class="form-control form-control-sm d-inline-block w-auto" placeholder="Email" style="width:120px">
 <input id="p3" class="form-control form-control-sm d-inline-block w-auto" placeholder="Password" style="width:100px">
 <label class="d-inline-block"><input type="checkbox" id="p4"> NoLogin</label>
-<label class="d-inline-block"><input type="checkbox" id="p5"> Admin</label>
-<button class="btn btn-success btn-sm" onclick="a('/providers/','POST',{name:$('p1').value,email:$('p2').value,password_hash:$('p3').value,nologin:$('p4').checked,is_admin:$('p5').checked})">Add</button>
+<label class="d-inline-block"><input type="checkbox" id="p5"> Admin</label><br class="d-block d-lg-none">
+<button class="btn btn-success btn-sm" onclick="a('/providers/','POST',{name:$('p1').value,email:$('p2').value,password_hash:$('p3').value,nologin:$('p4').checked,is_admin:$('p5').checked},'Provider')">Add</button><br>
+<input id="p0" class="form-control form-control-sm d-inline-block w-auto" placeholder="ID" style="width:70px">
+<button class="btn btn-warning btn-sm" onclick="a('/providers/'+$('p0').value,'PATCH',{name:$('p1').value})">Edit</button>
+<button class="btn btn-danger btn-sm" onclick="a('/providers/'+$('p0').value,'DELETE',null,'Provider')">Del</button>
 </div>
 </div>
 <div class="card mb-3">
 <div class="card-body">
 <h5>Countries</h5>
-<button class="btn btn-primary btn-sm" onclick="a('/countries/')">List</button>
+<button class="btn btn-primary btn-sm" onclick="a('/countries/','GET')">List</button>
+<button class="btn btn-secondary btn-sm" onclick="a('/countries/'+$('c1').value,'GET')">Get</button>
 <input id="c1" class="form-control form-control-sm d-inline-block w-auto" placeholder="Code" style="width:80px">
-<button class="btn btn-secondary btn-sm" onclick="a('/countries/'+$('c1').value)">Get</button>
 <input id="c2" class="form-control form-control-sm d-inline-block w-auto" placeholder="Name" style="width:120px">
 <select id="c3" class="form-select form-select-sm d-inline-block w-auto"><option value="">Continent</option><option>Asia</option><option>Europe</option><option>North America</option><option>South America</option><option>Africa</option><option>Oceania</option></select>
 <input id="c4" class="form-control form-control-sm d-inline-block w-auto" placeholder="Lat" style="width:80px">
 <input id="c5" class="form-control form-control-sm d-inline-block w-auto" placeholder="Lng" style="width:80px">
-<button class="btn btn-success btn-sm" onclick="a('/countries/','POST',{code:$('c1').value,name:$('c2').value,continent:$('c3').value||null,lat:$('c4').value?+$('c4').value:null,lng:$('c5').value?+$('c5').value:null})">Add</button>
+<button class="btn btn-success btn-sm" onclick="a('/countries/','POST',{code:$('c1').value,name:$('c2').value,continent:$('c3').value||null,lat:$('c4').value?+$('c4').value:null,lng:$('c5').value?+$('c5').value:null},'Country')">Add</button>
 <button class="btn btn-warning btn-sm" onclick="a('/countries/'+$('c1').value,'PATCH',{name:$('c2').value})">Edit</button>
-<button class="btn btn-danger btn-sm" onclick="a('/countries/'+$('c1').value,'DELETE')">Del</button>
+<button class="btn btn-danger btn-sm" onclick="a('/countries/'+$('c1').value,'DELETE',null,'Country')">Del</button>
 </div>
 </div>
 <div class="card mb-3">
 <div class="card-body">
 <h5>Permissions</h5>
-<button class="btn btn-primary btn-sm" onclick="a('/permissions/')">List</button>
+<button class="btn btn-primary btn-sm" onclick="a('/permissions/','GET')">List</button>
+<button class="btn btn-secondary btn-sm" onclick="a('/permissions/'+$('x1').value+'/'+$('x2').value,'GET')">Get</button>
 <input id="x1" class="form-control form-control-sm d-inline-block w-auto" placeholder="Provider ID" style="width:90px">
 <input id="x2" class="form-control form-control-sm d-inline-block w-auto" placeholder="Country Code" style="width:100px">
-<button class="btn btn-secondary btn-sm" onclick="a('/permissions/'+$('x1').value+'/'+$('x2').value)">Get</button>
 <input id="x3" class="form-control form-control-sm d-inline-block w-auto" placeholder="Year Start" style="width:90px">
 <input id="x4" class="form-control form-control-sm d-inline-block w-auto" placeholder="Year End" style="width:90px">
-<button class="btn btn-success btn-sm" onclick="a('/permissions/','POST',{provider_id:+$('x1').value,country_code:$('x2').value,year_start:+$('x3').value,year_end:+$('x4').value})">Add</button>
-<button class="btn btn-danger btn-sm" onclick="a('/permissions/'+$('x1').value+'/'+$('x2').value,'DELETE')">Del</button>
+<button class="btn btn-success btn-sm" onclick="a('/permissions/','POST',{provider_id:+$('x1').value,country_code:$('x2').value,year_start:+$('x3').value,year_end:+$('x4').value},'Permission')">Add</button>
+<button class="btn btn-danger btn-sm" onclick="a('/permissions/'+$('x1').value+'/'+$('x2').value,'DELETE',null,'Permission')">Del</button>
 </div>
 </div>
 </div>
-<script>$=i=>document.getElementById(i);async function a(e,m='GET',b){try{const h={'Content-Type':'application/json'};const t=$('token').value;if(t)h['token']=t;const r=await fetch('/internal'+e,{method:m,headers:h,body:b?JSON.stringify(b):null});$('o').innerHTML='<pre class="border p-3 mt-3">'+JSON.stringify(await r.json(),null,2)+'</pre>'}catch(e){$('o').innerHTML='<pre class="border p-3 mt-3">'+e.message+'</pre>'}}</script>
+<script>
+$=i=>document.getElementById(i);
+function toTable(d){
+  if(!d||typeof d!=='object')return'<pre class="border p-3 mt-3">'+JSON.stringify(d,null,2)+'</pre>';
+  const arr=Array.isArray(d)?d:[d];
+  if(!arr.length)return'<pre class="border p-3 mt-3">No results</pre>';
+  const keys=Object.keys(arr[0]);
+  let t='<table class="table table-dark table-striped table-bordered mt-3"><thead><tr>';
+  keys.forEach(k=>t+=`<th>${k}</th>`);
+  t+='</tr></thead><tbody>';
+  arr.forEach(row=>{
+    t+='<tr>';
+    keys.forEach(k=>t+=`<td>${row[k]}</td>`);
+    t+='</tr>';
+  });
+  t+='</tbody></table>';
+  return t;
+}
+async function a(e,m='GET',b,type){
+  try{
+    const h={'Content-Type':'application/json'};
+    const t=$('token').value;
+    if(t)h['token']=t;
+    const r=await fetch('/internal'+e,{method:m,headers:h,body:b?JSON.stringify(b):null});
+    const data=await r.json();
+    if(m==='GET'&&Array.isArray(data)){
+      $('o').innerHTML=toTable(data);
+    }else{
+      $('o').innerHTML='<pre class="border p-3 mt-3">'+JSON.stringify(data,null,2)+'</pre>';
+    }
+  }catch(e){
+    $('o').innerHTML='<pre class="border p-3 mt-3">'+e.message+'</pre>';
+  }
+}
+</script>
 </body>
 </html>
-
-
     <script src="app.js"></script>
 </body>
 </html>
