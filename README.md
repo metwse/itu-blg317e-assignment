@@ -3,6 +3,11 @@ The term project for the ITU Database Management Systems (BLG 317E) course.
 This application provides a web-based interface for visualizing data from the
 World Bank.
 
+## Direct Database Access API
+The direct data management routes are protected and grouped under the
+`/internal` prefix. Routes in this group are not enabled by default, you can
+enable them by setting `INTERNAL_ACCESS_TOKEN` environment variable.
+
 ## Quick Start
 This is the fastest way to get the entire project (application and database)
 running. This method uses the settings in the `docker-compose.yml` file.

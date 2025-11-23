@@ -2,7 +2,22 @@ from src.handlers.provider_handler import ProviderHandler
 from src.handlers.country_handler import CountryHandler
 from src.handlers.permission_handler import PermissionHandler
 
+from src.middleware import internal_access_authorize
+
 from flask import Blueprint
+
+
+def internal_routes(internal_access_token: str,
+                    provider_handler, country_handler, permission_handler):
+    internal = Blueprint("internal", __name__, url_prefix="/internal")
+
+    internal.register_blueprint(provider_routes(provider_handler))
+    internal.register_blueprint(country_routes(country_handler))
+    internal.register_blueprint(permission_routes(permission_handler))
+
+    internal.before_request(internal_access_authorize(internal_access_token))
+
+    return internal
 
 
 def provider_routes(provider_handler: ProviderHandler):

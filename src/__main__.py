@@ -15,6 +15,7 @@ PORT = int(os.environ.get('PORT', 6767))
 LOG_LEVEL = os.environ.get('LOG_LEVEL', "info")
 DEBUG = bool(os.environ.get('DEBUG'))
 DATABASE_URL = os.environ.get('DATABASE_URL')
+INTERNAL_ACCESS_TOKEN = os.environ.get('INTERNAL_ACCESS_TOKEN')
 
 if DATABASE_URL is None:
     raise ValueError("DATABASE_URL environment variable must be set in order "
@@ -24,7 +25,7 @@ if DATABASE_URL is None:
 async def main():
     pool = await asyncpg.create_pool(DATABASE_URL)
 
-    flask_app = create_app(pool)
+    flask_app = create_app(pool, internal_access_token=INTERNAL_ACCESS_TOKEN)
 
     app = WsgiToAsgi(flask_app)
 

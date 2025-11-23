@@ -1,7 +1,8 @@
+from src import log
 from src.error import AppError, \
     error_handler, validation_error_handler, \
     not_found_error_handler, unspecified_error_handler
-from src.routes import provider_routes, country_routes, permission_routes
+from src.routes import internal_routes
 
 from src.service import ProviderService, CountryService, PermissionService
 from src.handlers.provider_handler import ProviderHandler
@@ -13,7 +14,7 @@ from flask import Flask, jsonify
 import time
 
 
-def create_app(pool):
+def create_app(pool, internal_access_token: str | None = None):
     app = Flask(__name__)
 
     app.register_error_handler(AppError, error_handler)
@@ -34,8 +35,13 @@ def create_app(pool):
         })
     app.add_url_rule("/", view_func=status_handler)
 
-    app.register_blueprint(provider_routes(provider_handler))
-    app.register_blueprint(country_routes(country_handler))
-    app.register_blueprint(permission_routes(permission_handler))
+    if internal_access_token is not None:
+        log.info("registered internal access routes")
+        app.register_blueprint(internal_routes(internal_access_token,
+                                               provider_handler,
+                                               country_handler,
+                                               permission_handler))
+    else:
+        log.info("no internal access token provided, skipped internal routes")
 
     return app
