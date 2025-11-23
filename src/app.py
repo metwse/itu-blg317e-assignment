@@ -10,12 +10,14 @@ from src.handlers.country_handler import CountryHandler
 from src.handlers.permission_handler import PermissionHandler
 
 from pydantic_core import ValidationError
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
+from flask_cors import CORS
 import time
 
 
 def create_app(pool, internal_access_token: str | None = None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='static', static_url_path='')
+    CORS(app)
 
     app.register_error_handler(AppError, error_handler)
     app.register_error_handler(404, not_found_error_handler)
@@ -28,12 +30,16 @@ def create_app(pool, internal_access_token: str | None = None):
 
     start_time = time.time()
 
+    @app.route('/')
+    def index():
+        return send_from_directory(app.static_folder, 'index.html')
+
+    @app.route('/status')
     def status_handler():
         return jsonify({
             'message': "OK",
             'uptime': int(time.time() - start_time)
         })
-    app.add_url_rule("/", view_func=status_handler)
 
     if internal_access_token is not None:
         log.info("registered internal access routes")

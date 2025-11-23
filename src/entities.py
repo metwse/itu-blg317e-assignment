@@ -24,9 +24,9 @@ class Provider(BaseModel):
 class Country(BaseModel):
     code: str
     name: str
-    continent: Optional[Continent]
-    lat: Optional[float]
-    lng: Optional[float]
+    continent: Optional[Continent] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
 
 class Permission(BaseModel):
