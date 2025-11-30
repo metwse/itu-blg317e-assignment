@@ -27,7 +27,7 @@ def internal_routes(internal_access_token: str,
         indicator_routes("economic_indicators",
                          economic_indicator_handler))
     internal.register_blueprint(
-        indicator_routes("enviroment_indicators",
+        indicator_routes("environment_indicators",
                          environment_indicator_handler))
 
     internal.before_request(internal_access_authorize(internal_access_token))

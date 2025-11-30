@@ -17,19 +17,19 @@
     <code>/internal</code> rotues allows high degree of transparency in data
     manipulation. Those routes are protected with internal access token.
   </p>
-  <input class="token" placeholder="internal access token"/>
+  <input id="token" placeholder="internal access token"/>
   <script src="js/admin.js"></script>
   <main>
     <x-table x-table="providers">
-      <input name="id" type="number" x-key x-noupdate x-nocreate />
+      <input name="id" type="number" x-key x-nocreate />
       <input name="name" />
       <input name="email" />
-      <input name="password" type="password" />
+      <input name="password_hash" type="password" />
       <input name="is_admin" type="checkbox" />
       <input name="nologin" type="checkbox" />
     </x-table>
     <x-table x-table="countries">
-      <input name="code" x-key x-noupdate />
+      <input name="code" x-key />
       <input name="name" />
       <select name="continent" x-opt>
         <option value="">Continent</option>
@@ -43,7 +43,7 @@
       <input name="lat" type="number" x-opt />
       <input name="lng" type="number" x-opt />
     </x-table>
-    <x-table x-table="providers">
+    <x-table x-table="permissions">
       <input name="provider_id" type="number" x-key />
       <input name="country_code" x-key />
       <input name="year_start" type="number" />

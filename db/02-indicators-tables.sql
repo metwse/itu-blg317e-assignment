@@ -7,7 +7,7 @@ CREATE TABLE economic_indicators (
     -- % of GDP
     industry real,
     -- US$
-    gdp_per_capita money,
+    gdp_per_capita real,
     -- % of GDP
     trade real,
     -- % of GDP
@@ -51,5 +51,5 @@ CREATE TABLE environment_indicators (
     -- 2014-2016 = 100
     crop_production_index real,
     -- constant 2021 PPP $ per kg of oil equivalent
-    gdp_per_unit_of_energy_use money
+    gdp_per_unit_of_energy_use real
 );

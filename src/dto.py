@@ -42,7 +42,7 @@ class EconomicIndicatorUpdateDto(BaseModel):
     model_config = ConfigDict(extra='ignore')
 
     industry: Optional[float] = None
-    gdp_per_capita: Optional[str] = None
+    gdp_per_capita: Optional[float] = None
     trade: Optional[float] = None
     agriculture_forestry_and_fishing: Optional[float] = None
 
@@ -66,4 +66,4 @@ class EnvironmentIndicatorUpdateDto(BaseModel):
     alternative_and_nuclear_energy: Optional[float] = None
     permanent_cropland: Optional[float] = None
     crop_production_index: Optional[float] = None
-    gdp_per_unit_of_energy_use: Optional[str] = None
+    gdp_per_unit_of_energy_use: Optional[float] = None

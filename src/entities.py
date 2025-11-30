@@ -53,7 +53,7 @@ class EconomicIndicator(BaseModel):
     country_code: str
     year: int
     industry: Optional[float]
-    gdp_per_capita: Optional[str]
+    gdp_per_capita: Optional[float]
     trade: Optional[float]
     agriculture_forestry_and_fishing: Optional[float]
 
@@ -67,4 +67,4 @@ class EnvironmentIndicator(BaseModel):
     alternative_and_nuclear_energy: Optional[float]
     permanent_cropland: Optional[float]
     crop_production_index: Optional[float]
-    gdp_per_unit_of_energy_use: Optional[str]
+    gdp_per_unit_of_energy_use: Optional[float]
