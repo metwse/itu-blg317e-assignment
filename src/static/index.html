@@ -21,6 +21,7 @@ label{color:#fff}
 @keyframes rise{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-100vh);opacity:0}}
 .container{position:relative;z-index:1}
 .cube-wrap{perspective:800px;margin:20px auto;width:120px;height:120px;filter:drop-shadow(0 20px 30px rgba(0,0,0,.7));position:relative;z-index:1}
+.cube-wrap:hover{animation:gelatine .5s 1}
 .cube{width:120px;height:120px;position:relative;transform-style:preserve-3d;animation:spin 8s linear infinite}
 .cube div{position:absolute;width:120px;height:120px;border:1px solid #0088ff;background:rgba(0,120,220,.5);display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:40px}
 .cube .front,.cube .right{background:rgba(0,140,240,.6);box-shadow:inset 3px 3px 15px rgba(255,255,255,.3)}
@@ -34,6 +35,7 @@ label{color:#fff}
 .cube .top{transform:rotateX(90deg) translateZ(60px)}
 .cube .bottom{transform:rotateX(-90deg) translateZ(60px)}
 @keyframes spin{to{transform:rotateX(360deg) rotateY(360deg)}}
+@keyframes gelatine{from,to{transform:scale(1,1)}25%{transform:scale(.9,1.1)}50%{transform:scale(1.1,.9)}75%{transform:scale(.95,1.05)}}
 </style>
 </head>
 <body>
@@ -108,21 +110,35 @@ label{color:#fff}
 </div>
 <script>
 $=i=>document.getElementById(i);
-function toTable(d){
+let lastEndpoint='';
+function toTable(d,endpoint){
   if(!d||typeof d!=='object')return'<pre class="border p-3 mt-3">'+JSON.stringify(d,null,2)+'</pre>';
   const arr=Array.isArray(d)?d:[d];
   if(!arr.length)return'<pre class="border p-3 mt-3">No results</pre>';
   const keys=Object.keys(arr[0]);
   let t='<table class="table table-dark table-striped table-bordered mt-3"><thead><tr>';
   keys.forEach(k=>t+=`<th>${k}</th>`);
-  t+='</tr></thead><tbody>';
+  t+='<th>Actions</th></tr></thead><tbody>';
   arr.forEach(row=>{
     t+='<tr>';
     keys.forEach(k=>t+=`<td>${row[k]}</td>`);
+    const id=row.id||row.code||(row.provider_id&&row.country_code?row.provider_id+'/'+row.country_code:'');
+    t+=`<td><button class="btn btn-danger btn-sm" onclick="del('${endpoint}${id}','${endpoint}')">🗑️</button></td>`;
     t+='</tr>';
   });
   t+='</tbody></table>';
   return t;
+}
+async function del(path,endpoint){
+  try{
+    const h={'Content-Type':'application/json'};
+    const t=$('token').value;
+    if(t)h['token']=t;
+    await fetch('/internal'+path,{method:'DELETE',headers:h});
+    a(endpoint,'GET');
+  }catch(e){
+    $('o').innerHTML='<pre class="border p-3 mt-3">'+e.message+'</pre>';
+  }
 }
 async function a(e,m='GET',b,type){
   try{
@@ -132,7 +148,8 @@ async function a(e,m='GET',b,type){
     const r=await fetch('/internal'+e,{method:m,headers:h,body:b?JSON.stringify(b):null});
     const data=await r.json();
     if(m==='GET'&&Array.isArray(data)){
-      $('o').innerHTML=toTable(data);
+      lastEndpoint=e;
+      $('o').innerHTML=toTable(data,e);
     }else{
       $('o').innerHTML='<pre class="border p-3 mt-3">'+JSON.stringify(data,null,2)+'</pre>';
     }
