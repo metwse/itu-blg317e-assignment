@@ -44,13 +44,13 @@ initial schema) and run it as a container.
 1. Navigate to the db directory and build the image:
    ```sh
    cd db/
-   docker build -t blg317e-dev-db
+   docker build -t blg317e-dev-db .
    ```
 2. Run the database container:
    ```sh
    docker run -d \
        --name blg317e-dev-db \
-       -p localhost:2345:5432 \
+       -p 127.0.0.1:2345:5432 \
        blg317e-dev-db
    ```
    Here, we specified `localhost` to not expose the database to public.
