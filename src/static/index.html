@@ -9,6 +9,11 @@ body{background:#1a1a1a;color:#fff;perspective:1000px;position:relative;overflow
 .card{background:#2a2a2a;border-color:#444}
 h3,h5{color:#fff}
 label{color:#fff}
+.btn-trash{background:none!important;border:none!important;padding:0!important;font-size:1.2rem;cursor:pointer}
+.editable-cell{position:relative;cursor:pointer}
+.editable-cell:hover .edit-icon{opacity:1}
+.edit-icon{opacity:0;margin-left:5px;font-size:0.8rem;transition:opacity .2s}
+.edit-input{background:#1a1a1a;color:#fff;border:1px solid #0088ff;padding:2px 5px;width:100%}
 .bubbles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
 .bubble{position:absolute;background:rgba(0,120,220,.2);border-radius:50%;animation:rise 15s infinite ease-in}
 .bubble:nth-child(1){left:10%;width:40px;height:40px;bottom:0%;animation-delay:0s}
@@ -35,7 +40,7 @@ label{color:#fff}
 .cube .top{transform:rotateX(90deg) translateZ(60px)}
 .cube .bottom{transform:rotateX(-90deg) translateZ(60px)}
 @keyframes spin{to{transform:rotateX(360deg) rotateY(360deg)}}
-@keyframes gelatine{from,to{transform:scale(1,1)}25%{transform:scale(.9,1.1)}50%{transform:scale(1.1,.9)}75%{transform:scale(.95,1.05)}}
+@keyframes gelatine{from,to{transform:scale(1,1)}50%{transform:scale(.7,1.3)}100%{transform:scale(1.3,.7)}150%{transform:scale(.85,1.15)}}
 </style>
 </head>
 <body>
@@ -119,15 +124,60 @@ function toTable(d,endpoint){
   let t='<table class="table table-dark table-striped table-bordered mt-3"><thead><tr>';
   keys.forEach(k=>t+=`<th>${k}</th>`);
   t+='<th>Actions</th></tr></thead><tbody>';
-  arr.forEach(row=>{
+  arr.forEach((row,idx)=>{
     t+='<tr>';
-    keys.forEach(k=>t+=`<td>${row[k]}</td>`);
+    keys.forEach(k=>{
+      const val=row[k];
+      const isKey=k==='id'||k==='code'||(k==='provider_id'||k==='country_code');
+      const displayVal=val===null?`<span style="color:#888">null</span>`:val;
+      if(isKey){
+        t+=`<td>${displayVal}</td>`;
+      }else{
+        t+=`<td class="editable-cell" onclick="edit(this,'${endpoint}',${JSON.stringify(row).replace(/"/g,'&quot;')},'${k}')"><span class="cell-val">${displayVal}</span><span class="edit-icon">✏️</span></td>`;
+      }
+    });
     const id=row.id||row.code||(row.provider_id&&row.country_code?row.provider_id+'/'+row.country_code:'');
-    t+=`<td><button class="btn btn-danger btn-sm" onclick="del('${endpoint}${id}','${endpoint}')">🗑️</button></td>`;
+    t+=`<td><button class="btn-trash" onclick="del('${endpoint}${id}','${endpoint}')">🗑️</button></td>`;
     t+='</tr>';
   });
   t+='</tbody></table>';
   return t;
+}
+function edit(cell,endpoint,row,field){
+  const span=cell.querySelector('.cell-val');
+  const val=span.textContent;
+  let input;
+  if(field==='continent'){
+    input=document.createElement('select');
+    input.className='edit-input';
+    input.innerHTML='<option value="">Select</option><option>Asia</option><option>Europe</option><option>North America</option><option>South America</option><option>Africa</option><option>Oceania</option>';
+    input.value=val;
+  }else{
+    input=document.createElement('input');
+    input.className='edit-input';
+    input.value=val;
+  }
+  cell.replaceChild(input,span);
+  input.focus();
+  input.onblur=async()=>{
+    const newVal=input.value;
+    if(newVal!==val){
+      const id=row.id||row.code||(row.provider_id&&row.country_code?row.provider_id+'/'+row.country_code:'');
+      const body={[field]:field==='lat'||field==='lng'?+newVal:newVal};
+      try{
+        const h={'Content-Type':'application/json'};
+        const t=$('token').value;
+        if(t)h['token']=t;
+        await fetch('/internal'+endpoint+id,{method:'PATCH',headers:h,body:JSON.stringify(body)});
+        a(endpoint,'GET');
+      }catch(e){
+        alert('Update failed: '+e.message);
+      }
+    }else{
+      a(endpoint,'GET');
+    }
+  };
+  input.onkeydown=e=>{if(e.key==='Enter')input.blur()};
 }
 async function del(path,endpoint){
   try{
