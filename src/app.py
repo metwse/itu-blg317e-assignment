@@ -16,18 +16,30 @@ from src.handlers.indicator_handlers import EconomicIndicatorHandler, \
 
 from pydantic_core import ValidationError
 from flask import Flask, jsonify, send_from_directory
-from flask_cors import CORS
 import time
 
 
 def create_app(pool, internal_access_token: str | None = None):
-    app = Flask(__name__, static_folder='static', static_url_path='')
-    CORS(app)
+    static_folder: str = "static"
+    app = Flask(__name__, static_folder=static_folder, static_url_path='')
 
     app.register_error_handler(AppError, error_handler)
     app.register_error_handler(404, not_found_error_handler)
     app.register_error_handler(ValidationError, validation_error_handler)
     app.register_error_handler(Exception, unspecified_error_handler)
+
+    start_time = time.time()
+
+    def index():
+        return send_from_directory(static_folder, "index.html")
+    app.add_url_rule("/", view_func=index)
+
+    def status_handler():
+        return jsonify({
+            'message': "OK",
+            'uptime': int(time.time() - start_time)
+        })
+    app.add_url_rule("/status", view_func=status_handler)
 
     provider_handler = ProviderHandler(ProviderService(pool))
     country_handler = CountryHandler(CountryService(pool))
@@ -38,19 +50,6 @@ def create_app(pool, internal_access_token: str | None = None):
         EconomicIndicatorHandler(EconomicIndicatorService(pool))
     environment_indicator_handler = \
         EnvironmentIndicatorHandler(EnvironmentIndicatorService(pool))
-
-    start_time = time.time()
-
-    @app.route('/')
-    def index():
-        return send_from_directory(app.static_folder, 'index.html')
-
-    @app.route('/status')
-    def status_handler():
-        return jsonify({
-            'message': "OK",
-            'uptime': int(time.time() - start_time)
-        })
 
     if internal_access_token is not None:
         log.info("registered internal access routes")
