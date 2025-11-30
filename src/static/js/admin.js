@@ -138,7 +138,10 @@ class XTable extends HTMLElement {
         fields[k] = +(fields[k] || 0);
 
       if (v.type == 'checkbox')
-        fields[k] = fields[k] == 'on';
+        fields[k] = v.checked;
+
+      if (v.hasAttribute('x-opt') && v.value == '')
+          fields[k] = null;
     }
 
     this._result.innerText = '...';
