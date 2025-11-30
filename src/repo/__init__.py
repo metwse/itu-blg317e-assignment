@@ -1,8 +1,10 @@
 from .base_repo import BaseRepo
 
 from src.dto import CountryUpdateDto, PermissionUpdateDto, \
-    ProviderCreateDto, ProviderUpdateDto
-from src.entities import Country, Permission, Provider
+    ProviderCreateDto, ProviderUpdateDto, EconomicIndicatorUpdateDto, \
+    HealthIndicatorUpdateDto, EnvironmentIndicatorUpdateDto
+from src.entities import Country, Permission, Provider, \
+    EconomicIndicator, HealthIndicator, EnvironmentIndicator
 
 
 class ProviderRepo(BaseRepo[Provider, ProviderUpdateDto, ProviderCreateDto]):
@@ -23,4 +25,39 @@ class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto, Permission]):
                          (Permission, PermissionUpdateDto, Permission))
 
 
-__all__ = ['CountryRepo', 'ProviderRepo', 'PermissionRepo']
+class HealthIndicatorRepo(BaseRepo[HealthIndicator,
+                          HealthIndicatorUpdateDto,
+                          HealthIndicator]):
+    def __init__(self, pool):
+        super().__init__(pool, 'health_indicators',
+                         ['provider_id', 'country_code', 'year'],
+                         (HealthIndicator,
+                          HealthIndicatorUpdateDto,
+                          HealthIndicator))
+
+
+class EconomicIndicatorRepo(BaseRepo[EconomicIndicator,
+                            EconomicIndicatorUpdateDto,
+                            EconomicIndicator]):
+    def __init__(self, pool):
+        super().__init__(pool, 'economic_indicators',
+                         ['provider_id', 'country_code', 'year'],
+                         (EconomicIndicator,
+                          EconomicIndicatorUpdateDto,
+                          EconomicIndicator))
+
+
+class EnvironmentIndicatorRepo(BaseRepo[EnvironmentIndicator,
+                               EnvironmentIndicatorUpdateDto,
+                               EnvironmentIndicator]):
+    def __init__(self, pool):
+        super().__init__(pool, 'environment_indicators',
+                         ['provider_id', 'country_code', 'year'],
+                         (EnvironmentIndicator,
+                          EnvironmentIndicatorUpdateDto,
+                          EnvironmentIndicator))
+
+
+__all__ = ['CountryRepo', 'ProviderRepo', 'PermissionRepo',
+           'EconomicIndicatorRepo', 'HealthIndicatorRepo',
+           'EnvironmentIndicatorRepo']

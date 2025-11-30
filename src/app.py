@@ -5,9 +5,14 @@ from src.error import AppError, \
 from src.routes import internal_routes
 
 from src.service import ProviderService, CountryService, PermissionService
+from src.service.indicator_services import EconomicIndicatorService, \
+    EnvironmentIndicatorService, HealthIndicatorService
+
 from src.handlers.provider_handler import ProviderHandler
 from src.handlers.country_handler import CountryHandler
 from src.handlers.permission_handler import PermissionHandler
+from src.handlers.indicator_handlers import EconomicIndicatorHandler, \
+    EnvironmentIndicatorHandler, HealthIndicatorHandler
 
 from pydantic_core import ValidationError
 from flask import Flask, jsonify, send_from_directory
@@ -27,6 +32,12 @@ def create_app(pool, internal_access_token: str | None = None):
     provider_handler = ProviderHandler(ProviderService(pool))
     country_handler = CountryHandler(CountryService(pool))
     permission_handler = PermissionHandler(PermissionService(pool))
+    health_indicator_handler = \
+        HealthIndicatorHandler(HealthIndicatorService(pool))
+    economic_indicator_handler = \
+        EconomicIndicatorHandler(EconomicIndicatorService(pool))
+    environment_indicator_handler = \
+        EnvironmentIndicatorHandler(EnvironmentIndicatorService(pool))
 
     start_time = time.time()
 
@@ -46,7 +57,10 @@ def create_app(pool, internal_access_token: str | None = None):
         app.register_blueprint(internal_routes(internal_access_token,
                                                provider_handler,
                                                country_handler,
-                                               permission_handler))
+                                               permission_handler,
+                                               health_indicator_handler,
+                                               economic_indicator_handler,
+                                               environment_indicator_handler))
     else:
         log.info("no internal access token provided, skipped internal routes")
 

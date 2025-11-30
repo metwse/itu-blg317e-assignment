@@ -1,3 +1,4 @@
+from src.handlers.base_handler import BaseHandler
 from src.handlers.provider_handler import ProviderHandler
 from src.handlers.country_handler import CountryHandler
 from src.handlers.permission_handler import PermissionHandler
@@ -8,12 +9,26 @@ from flask import Blueprint
 
 
 def internal_routes(internal_access_token: str,
-                    provider_handler, country_handler, permission_handler):
+                    provider_handler,
+                    country_handler,
+                    permission_handler,
+                    health_indicator_handler,
+                    economic_indicator_handler,
+                    environment_indicator_handler):
     internal = Blueprint("internal", __name__, url_prefix="/internal")
 
     internal.register_blueprint(provider_routes(provider_handler))
     internal.register_blueprint(country_routes(country_handler))
     internal.register_blueprint(permission_routes(permission_handler))
+    internal.register_blueprint(
+        indicator_routes("health_indicators",
+                         health_indicator_handler))
+    internal.register_blueprint(
+        indicator_routes("economic_indicators",
+                         economic_indicator_handler))
+    internal.register_blueprint(
+        indicator_routes("enviroment_indicators",
+                         environment_indicator_handler))
 
     internal.before_request(internal_access_authorize(internal_access_token))
 
@@ -99,3 +114,32 @@ def permission_routes(permission_handler: PermissionHandler):
                              view_func=delete, methods=["DELETE"])
 
     return permissions
+
+
+def indicator_routes(name: str, indicator: BaseHandler):
+    indicators = Blueprint(name, __name__, url_prefix=f"/{name}")
+
+    indicators.add_url_rule("/", view_func=indicator.list, methods=["GET"])
+
+    indicators.add_url_rule("/", view_func=indicator.create, methods=["POST"])
+
+    async def get(provider_id, country_code, year):
+        return await indicator.get(int(provider_id), country_code,
+                                   int(year))
+    indicators.add_url_rule("/<provider_id>/<country_code>/<year>",
+                            view_func=get, methods=["GET"])
+
+    async def update(provider_id, country_code, year):
+        return await indicator.update(int(provider_id), country_code,
+                                      int(year))
+    indicators.add_url_rule("/<provider_id>/<country_code>/<year>",
+                            view_func=update, methods=["PATCH"])
+
+    async def delete(provider_id, country_code, year):
+        return await indicator.delete(int(provider_id), country_code,
+                                      int(year))
+
+    indicators.add_url_rule("/<provider_id>/<country_code>/<year>",
+                            view_func=delete, methods=["DELETE"])
+
+    return indicators

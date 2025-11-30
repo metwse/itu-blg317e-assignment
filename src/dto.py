@@ -36,3 +36,34 @@ class PermissionUpdateDto(BaseModel):
 
     year_start: Optional[int] = None
     year_end: Optional[int] = None
+
+
+class EconomicIndicatorUpdateDto(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
+    industry: Optional[float] = None
+    gdp_per_capita: Optional[str] = None
+    trade: Optional[float] = None
+    agriculture_forestry_and_fishing: Optional[float] = None
+
+
+class HealthIndicatorUpdateDto(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
+    community_health_workers: Optional[int] = None
+    prevalence_of_undernourishment: Optional[float] = None
+    prevalence_of_severe_food_insecurity: Optional[float] = None
+    basic_handwashing_facilities: Optional[float] = None
+    safely_managed_drinking_water_services: Optional[float] = None
+    diabetes_prevalence: Optional[float] = None
+
+
+class EnvironmentIndicatorUpdateDto(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
+    energy_use: Optional[float] = None
+    access_to_electricity: Optional[float] = None
+    alternative_and_nuclear_energy: Optional[float] = None
+    permanent_cropland: Optional[float] = None
+    crop_production_index: Optional[float] = None
+    gdp_per_unit_of_energy_use: Optional[str] = None
