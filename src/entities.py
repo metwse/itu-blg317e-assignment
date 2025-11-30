@@ -36,16 +36,6 @@ class Permission(BaseModel):
     year_end: int
 
 
-class EconomicIndicator(BaseModel):
-    provider_id: int
-    country_code: str
-    year: int
-    industry: Optional[float]
-    gdp_per_capita: Optional[str]
-    trade: Optional[float]
-    agriculture_forestry_and_fishing: Optional[float]
-
-
 class HealthIndicator(BaseModel):
     provider_id: int
     country_code: str
@@ -56,6 +46,16 @@ class HealthIndicator(BaseModel):
     basic_handwashing_facilities: Optional[float]
     safely_managed_drinking_water_services: Optional[float]
     diabetes_prevalence: Optional[float]
+
+
+class EconomicIndicator(BaseModel):
+    provider_id: int
+    country_code: str
+    year: int
+    industry: Optional[float]
+    gdp_per_capita: Optional[str]
+    trade: Optional[float]
+    agriculture_forestry_and_fishing: Optional[float]
 
 
 class EnvironmentIndicator(BaseModel):

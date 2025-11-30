@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Low-Level Database Manager</title>
+  <link rel="stylesheet" href="css/admin.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" />
+</head>
+<body>
+  <h1>Super Admin</h1>
+  <p>
+    This page is for directly accessing to underlying database.
+    <code>/internal</code> rotues allows high degree of transparency in data
+    manipulation. Those routes are protected with internal access token.
+  </p>
+  <input class="token" placeholder="internal access token"/>
+  <script src="js/admin.js"></script>
+  <main>
+    <x-table x-table="providers">
+      <input name="id" type="number" x-key x-noupdate x-nocreate />
+      <input name="name" />
+      <input name="email" />
+      <input name="password" type="password" />
+      <input name="is_admin" type="checkbox" />
+      <input name="nologin" type="checkbox" />
+    </x-table>
+    <x-table x-table="countries">
+      <input name="code" x-key x-noupdate />
+      <input name="name" />
+      <select name="continent" x-opt>
+        <option value="">Continent</option>
+        <option>Asia</option>
+        <option>Europe</option>
+        <option>North America</option>
+        <option>South America</option>
+        <option>Africa</option>
+        <option>Oceania</option>
+      </select>
+      <input name="lat" type="number" x-opt />
+      <input name="lng" type="number" x-opt />
+    </x-table>
+    <x-table x-table="providers">
+      <input name="provider_id" type="number" x-key />
+      <input name="country_code" x-key />
+      <input name="year_start" type="number" />
+      <input name="year_end" type="number" />
+    </x-table>
+    <x-table x-table="health_indicators">
+      <input name="provider_id" type="number" x-key />
+      <input name="country_code" x-key />
+      <input name="year" type="number" x-key />
+      <input name="community_health_workers" type="number" />
+      <input name="prevalence_of_undernourishment" type="number" />
+      <input name="prevalence_of_severe_food_insecurity" type="number" />
+      <input name="basic_handwashing_facilities" type="number" />
+      <input name="safely_managed_drinking_water_services" type="number" />
+      <input name="diabetes_prevalence" type="number" />
+    </x-table>
+    <x-table x-table="economic_indicators">
+      <input name="provider_id" type="number" x-key />
+      <input name="country_code" x-key />
+      <input name="year" type="number" x-key />
+      <input name="industry" type="number" />
+      <input name="gdp_per_capita" type="number" />
+      <input name="trade" type="number" />
+      <input name="agriculture_forestry_and_fishing" type="number" />
+    </x-table>
+    <x-table x-table="environment_indicators">
+      <input name="provider_id" type="number" x-key />
+      <input name="country_code" x-key />
+      <input name="year" type="number" x-key />
+      <input name="energy_use" type="number" />
+      <input name="access_to_electricity" type="number" />
+      <input name="alternative_and_nuclear_energy" type="number" />
+      <input name="permanent_cropland" type="number" />
+      <input name="crop_production_index" type="number" />
+      <input name="gdp_per_unit_of_energy_use" type="number" />
+    </x-table>
+  </main>
+</body>
+</html>

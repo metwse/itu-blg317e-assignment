@@ -77,3 +77,8 @@ docker rm blg317e-dev-db
 ## License
 This project licensed under the AGPL-3.0 license. See the `LICENSE` file for
 details.
+
+## Why is There a `package.json`?
+Some editors require an `eslint.config.js` to properly lint JavaScript. The
+project itself does not depend on `npm`, you do not need `node` in order to run
+this project.
