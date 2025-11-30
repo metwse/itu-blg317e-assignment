@@ -1,215 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>DB Manager</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-body{background:#1a1a1a;color:#fff;perspective:1000px;position:relative;overflow-x:hidden;min-height:100vh}
-.btn,.form-control,.card{border-radius:0!important}
-.card{background:#2a2a2a;border-color:#444}
-h3,h5{color:#fff}
-label{color:#fff}
-.btn-trash{background:none!important;border:none!important;padding:0!important;font-size:1.2rem;cursor:pointer}
-.editable-cell{position:relative;cursor:pointer}
-.editable-cell:hover .edit-icon{opacity:1}
-.edit-icon{opacity:0;margin-left:5px;font-size:0.8rem;transition:opacity .2s}
-.edit-input{background:#1a1a1a;color:#fff;border:1px solid #0088ff;padding:2px 5px;width:100%}
-.bubbles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
-.bubble{position:absolute;background:rgba(0,120,220,.2);border-radius:50%;animation:rise 15s infinite ease-in}
-.bubble:nth-child(1){left:10%;width:40px;height:40px;bottom:0%;animation-delay:0s}
-.bubble:nth-child(2){left:20%;width:20px;height:20px;bottom:10%;animation-delay:2s}
-.bubble:nth-child(3){left:35%;width:50px;height:50px;bottom:20%;animation-delay:4s}
-.bubble:nth-child(4){left:50%;width:30px;height:30px;bottom:30%;animation-delay:0s}
-.bubble:nth-child(5){left:65%;width:35px;height:35px;bottom:40%;animation-delay:3s}
-.bubble:nth-child(6){left:80%;width:45px;height:45px;bottom:50%;animation-delay:1s}
-.bubble:nth-child(7){left:90%;width:25px;height:25px;bottom:60%;animation-delay:5s}
-@keyframes rise{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-100vh);opacity:0}}
-.container{position:relative;z-index:1}
-.cube-wrap{perspective:800px;margin:20px auto;width:120px;height:120px;filter:drop-shadow(0 20px 30px rgba(0,0,0,.7));position:relative;z-index:1}
-.cube-wrap:hover{animation:gelatine .5s 1}
-.cube{width:120px;height:120px;position:relative;transform-style:preserve-3d;animation:spin 8s linear infinite}
-.cube div{position:absolute;width:120px;height:120px;border:1px solid #0088ff;background:rgba(0,120,220,.5);display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:40px}
-.cube .front,.cube .right{background:rgba(0,140,240,.6);box-shadow:inset 3px 3px 15px rgba(255,255,255,.3)}
-.cube .back,.cube .left{background:rgba(0,100,200,.4);box-shadow:inset -3px -3px 15px rgba(0,0,0,.4)}
-.cube .top{background:rgba(0,160,255,.7);box-shadow:inset 0 3px 15px rgba(255,255,255,.4)}
-.cube .bottom{background:rgba(0,80,180,.3);box-shadow:inset 0 -3px 15px rgba(0,0,0,.5)}
-.cube .front{transform:translateZ(60px)}
-.cube .back{transform:rotateY(180deg) translateZ(60px)}
-.cube .right{transform:rotateY(90deg) translateZ(60px)}
-.cube .left{transform:rotateY(-90deg) translateZ(60px)}
-.cube .top{transform:rotateX(90deg) translateZ(60px)}
-.cube .bottom{transform:rotateX(-90deg) translateZ(60px)}
-@keyframes spin{to{transform:rotateX(360deg) rotateY(360deg)}}
-@keyframes gelatine{from,to{transform:scale(1,1)}50%{transform:scale(.7,1.3)}100%{transform:scale(1.3,.7)}150%{transform:scale(.85,1.15)}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Manager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="bubbles">
-<div class="bubble"></div>
-<div class="bubble"></div>
-<div class="bubble"></div>
-<div class="bubble"></div>
-<div class="bubble"></div>
-<div class="bubble"></div>
-<div class="bubble"></div>
-</div>
-<div class="cube-wrap">
-<div class="cube">
-<div class="front">DB</div>
-<div class="back">DB</div>
-<div class="right">DB</div>
-<div class="left">DB</div>
-<div class="top">DB</div>
-<div class="bottom">DB</div>
-</div>
-</div>
-<div class="container mt-4">
-<h3>DB Manager</h3>
-<div class="mb-3">
-<input id="token" class="form-control form-control-sm" placeholder="Access Token">
-</div>
-<div id="o"></div>
-<div class="card mb-3">
-<div class="card-body">
-<h5>Providers</h5>
-<button class="btn btn-primary btn-sm" onclick="a('/providers/','GET')">List</button><br class="d-block d-lg-none">
-<input id="p1" class="form-control form-control-sm d-inline-block w-auto" placeholder="Name" style="width:100px">
-<input id="p2" class="form-control form-control-sm d-inline-block w-auto" placeholder="Email" style="width:120px">
-<input id="p3" class="form-control form-control-sm d-inline-block w-auto" placeholder="Password" style="width:100px">
-<label class="d-inline-block"><input type="checkbox" id="p4"> NoLogin</label>
-<label class="d-inline-block"><input type="checkbox" id="p5"> Admin</label><br class="d-block d-lg-none">
-<button class="btn btn-success btn-sm" onclick="a('/providers/','POST',{name:$('p1').value,email:$('p2').value,password_hash:$('p3').value,nologin:$('p4').checked,is_admin:$('p5').checked},'Provider')">Add</button><br>
-<input id="p0" class="form-control form-control-sm d-inline-block w-auto" placeholder="ID" style="width:70px">
-<button class="btn btn-warning btn-sm" onclick="a('/providers/'+$('p0').value,'PATCH',{name:$('p1').value})">Edit</button>
-<button class="btn btn-danger btn-sm" onclick="a('/providers/'+$('p0').value,'DELETE',null,'Provider')">Del</button>
-</div>
-</div>
-<div class="card mb-3">
-<div class="card-body">
-<h5>Countries</h5>
-<button class="btn btn-primary btn-sm" onclick="a('/countries/','GET')">List</button>
-<button class="btn btn-secondary btn-sm" onclick="a('/countries/'+$('c1').value,'GET')">Get</button>
-<input id="c1" class="form-control form-control-sm d-inline-block w-auto" placeholder="Code" style="width:80px">
-<input id="c2" class="form-control form-control-sm d-inline-block w-auto" placeholder="Name" style="width:120px">
-<select id="c3" class="form-select form-select-sm d-inline-block w-auto"><option value="">Continent</option><option>Asia</option><option>Europe</option><option>North America</option><option>South America</option><option>Africa</option><option>Oceania</option></select>
-<input id="c4" class="form-control form-control-sm d-inline-block w-auto" placeholder="Lat" style="width:80px">
-<input id="c5" class="form-control form-control-sm d-inline-block w-auto" placeholder="Lng" style="width:80px">
-<button class="btn btn-success btn-sm" onclick="a('/countries/','POST',{code:$('c1').value,name:$('c2').value,continent:$('c3').value||null,lat:$('c4').value?+$('c4').value:null,lng:$('c5').value?+$('c5').value:null},'Country')">Add</button>
-<button class="btn btn-warning btn-sm" onclick="a('/countries/'+$('c1').value,'PATCH',{name:$('c2').value})">Edit</button>
-<button class="btn btn-danger btn-sm" onclick="a('/countries/'+$('c1').value,'DELETE',null,'Country')">Del</button>
-</div>
-</div>
-<div class="card mb-3">
-<div class="card-body">
-<h5>Permissions</h5>
-<button class="btn btn-primary btn-sm" onclick="a('/permissions/','GET')">List</button>
-<button class="btn btn-secondary btn-sm" onclick="a('/permissions/'+$('x1').value+'/'+$('x2').value,'GET')">Get</button>
-<input id="x1" class="form-control form-control-sm d-inline-block w-auto" placeholder="Provider ID" style="width:90px">
-<input id="x2" class="form-control form-control-sm d-inline-block w-auto" placeholder="Country Code" style="width:100px">
-<input id="x3" class="form-control form-control-sm d-inline-block w-auto" placeholder="Year Start" style="width:90px">
-<input id="x4" class="form-control form-control-sm d-inline-block w-auto" placeholder="Year End" style="width:90px">
-<button class="btn btn-success btn-sm" onclick="a('/permissions/','POST',{provider_id:+$('x1').value,country_code:$('x2').value,year_start:+$('x3').value,year_end:+$('x4').value},'Permission')">Add</button>
-<button class="btn btn-danger btn-sm" onclick="a('/permissions/'+$('x1').value+'/'+$('x2').value,'DELETE',null,'Permission')">Del</button>
-</div>
-</div>
-</div>
-<script>
-$=i=>document.getElementById(i);
-let lastEndpoint='';
-function toTable(d,endpoint){
-  if(!d||typeof d!=='object')return'<pre class="border p-3 mt-3">'+JSON.stringify(d,null,2)+'</pre>';
-  const arr=Array.isArray(d)?d:[d];
-  if(!arr.length)return'<pre class="border p-3 mt-3">No results</pre>';
-  const keys=Object.keys(arr[0]);
-  let t='<table class="table table-dark table-striped table-bordered mt-3"><thead><tr>';
-  keys.forEach(k=>t+=`<th>${k}</th>`);
-  t+='<th>Actions</th></tr></thead><tbody>';
-  arr.forEach((row,idx)=>{
-    t+='<tr>';
-    keys.forEach(k=>{
-      const val=row[k];
-      const isKey=k==='id'||k==='code'||(k==='provider_id'||k==='country_code');
-      const displayVal=val===null?`<span style="color:#888">null</span>`:val;
-      if(isKey){
-        t+=`<td>${displayVal}</td>`;
-      }else{
-        t+=`<td class="editable-cell" onclick="edit(this,'${endpoint}',${JSON.stringify(row).replace(/"/g,'&quot;')},'${k}')"><span class="cell-val">${displayVal}</span><span class="edit-icon">✏️</span></td>`;
-      }
-    });
-    const id=row.id||row.code||(row.provider_id&&row.country_code?row.provider_id+'/'+row.country_code:'');
-    t+=`<td><button class="btn-trash" onclick="del('${endpoint}${id}','${endpoint}')">🗑️</button></td>`;
-    t+='</tr>';
-  });
-  t+='</tbody></table>';
-  return t;
-}
-function edit(cell,endpoint,row,field){
-  const span=cell.querySelector('.cell-val');
-  const val=span.textContent;
-  let input;
-  if(field==='continent'){
-    input=document.createElement('select');
-    input.className='edit-input';
-    input.innerHTML='<option value="">Select</option><option>Asia</option><option>Europe</option><option>North America</option><option>South America</option><option>Africa</option><option>Oceania</option>';
-    input.value=val;
-  }else{
-    input=document.createElement('input');
-    input.className='edit-input';
-    input.value=val;
-  }
-  cell.replaceChild(input,span);
-  input.focus();
-  input.onblur=async()=>{
-    const newVal=input.value;
-    if(newVal!==val){
-      const id=row.id||row.code||(row.provider_id&&row.country_code?row.provider_id+'/'+row.country_code:'');
-      const body={[field]:field==='lat'||field==='lng'?+newVal:newVal};
-      try{
-        const h={'Content-Type':'application/json'};
-        const t=$('token').value;
-        if(t)h['token']=t;
-        await fetch('/internal'+endpoint+id,{method:'PATCH',headers:h,body:JSON.stringify(body)});
-        a(endpoint,'GET');
-      }catch(e){
-        alert('Update failed: '+e.message);
-      }
-    }else{
-      a(endpoint,'GET');
-    }
-  };
-  input.onkeydown=e=>{if(e.key==='Enter')input.blur()};
-}
-async function del(path,endpoint){
-  try{
-    const h={'Content-Type':'application/json'};
-    const t=$('token').value;
-    if(t)h['token']=t;
-    await fetch('/internal'+path,{method:'DELETE',headers:h});
-    a(endpoint,'GET');
-  }catch(e){
-    $('o').innerHTML='<pre class="border p-3 mt-3">'+e.message+'</pre>';
-  }
-}
-async function a(e,m='GET',b,type){
-  try{
-    const h={'Content-Type':'application/json'};
-    const t=$('token').value;
-    if(t)h['token']=t;
-    const r=await fetch('/internal'+e,{method:m,headers:h,body:b?JSON.stringify(b):null});
-    const data=await r.json();
-    if(m==='GET'&&Array.isArray(data)){
-      lastEndpoint=e;
-      $('o').innerHTML=toTable(data,e);
-    }else{
-      $('o').innerHTML='<pre class="border p-3 mt-3">'+JSON.stringify(data,null,2)+'</pre>';
-    }
-  }catch(e){
-    $('o').innerHTML='<pre class="border p-3 mt-3">'+e.message+'</pre>';
-  }
-}
-</script>
-</body>
-</html>
-    <script src="app.js"></script>
+  <div class="bubbles" aria-hidden="true">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <div class="cube-wrap" aria-hidden="true">
+    <div class="cube">
+      <div class="front">DB</div>
+      <div class="back">DB</div>
+      <div class="right">DB</div>
+      <div class="left">DB</div>
+      <div class="top">DB</div>
+      <div class="bottom">DB</div>
+    </div>
+  </div>
+
+  <main class="container mt-4">
+    <header class="mb-4">
+      <h1 class="h3">Database Manager</h1>
+      <div class="mb-3">
+        <label for="token" class="visually-hidden">Access Token</label>
+        <input id="token" type="text" class="form-control form-control-sm" placeholder="Access Token" autocomplete="off">
+      </div>
+    </header>
+
+    <div id="o" role="region" aria-live="polite"></div>
+    <section class="card mb-3">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Providers</h2>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <button type="button" class="btn btn-primary btn-sm" onclick="api('/providers/','GET')">List</button>
+          <input id="p1" type="text" class="form-control form-control-sm" placeholder="Name" style="width:100px" aria-label="Provider name">
+          <input id="p2" type="email" class="form-control form-control-sm" placeholder="Email" style="width:120px" aria-label="Provider email">
+          <input id="p3" type="password" class="form-control form-control-sm" placeholder="Password" style="width:100px" aria-label="Provider password">
+          <div class="form-check">
+            <input type="checkbox" id="p4" class="form-check-input">
+            <label class="form-check-label" for="p4">NoLogin</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="p5" class="form-check-input">
+            <label class="form-check-label" for="p5">Admin</label>
+          </div>
+          <button type="button" class="btn btn-success btn-sm" onclick="api('/providers/','POST',{name:$('p1').value,email:$('p2').value,password_hash:$('p3').value,nologin:$('p4').checked,is_admin:$('p5').checked})">Add</button>
+          <input id="p0" type="number" class="form-control form-control-sm" placeholder="ID" style="width:70px" aria-label="Provider ID">
+          <button type="button" class="btn btn-warning btn-sm" onclick="api('/providers/'+$('p0').value,'PATCH',{name:$('p1').value})">Edit</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="api('/providers/'+$('p0').value,'DELETE')">Delete</button>
+        </div>
+      </div>
+    </section>
+    <section class="card mb-3">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Countries</h2>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <button type="button" class="btn btn-primary btn-sm" onclick="api('/countries/','GET')">List</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="api('/countries/'+$('c1').value,'GET')">Get</button>
+          <input id="c1" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Country code">
+          <input id="c2" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Country name">
+          <select id="c3" class="form-select form-select-sm" style="width:auto" aria-label="Continent">
+            <option value="">Continent</option>
+            <option>Asia</option>
+            <option>Europe</option>
+            <option>North America</option>
+            <option>South America</option>
+            <option>Africa</option>
+            <option>Oceania</option>
+          </select>
+          <input id="c4" type="number" class="form-control form-control-sm" placeholder="Lat" style="width:80px" step="any" aria-label="Latitude">
+          <input id="c5" type="number" class="form-control form-control-sm" placeholder="Lng" style="width:80px" step="any" aria-label="Longitude">
+          <button type="button" class="btn btn-success btn-sm" onclick="api('/countries/','POST',{code:$('c1').value,name:$('c2').value,continent:$('c3').value||null,lat:$('c4').value?+$('c4').value:null,lng:$('c5').value?+$('c5').value:null})">Add</button>
+          <button type="button" class="btn btn-warning btn-sm" onclick="api('/countries/'+$('c1').value,'PATCH',{name:$('c2').value})">Edit</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="api('/countries/'+$('c1').value,'DELETE')">Delete</button>
+        </div>
+      </div>
+    </section>
+    <section class="card mb-3">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Permissions</h2>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <button type="button" class="btn btn-primary btn-sm" onclick="api('/permissions/','GET')">List</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="api('/permissions/'+$('x1').value+'/'+$('x2').value,'GET')">Get</button>
+          <input id="x1" type="number" class="form-control form-control-sm" placeholder="Provider ID" style="width:90px" aria-label="Provider ID">
+          <input id="x2" type="text" class="form-control form-control-sm" placeholder="Country Code" style="width:100px" aria-label="Country code">
+          <input id="x3" type="number" class="form-control form-control-sm" placeholder="Year Start" style="width:90px" aria-label="Year start">
+          <input id="x4" type="number" class="form-control form-control-sm" placeholder="Year End" style="width:90px" aria-label="Year end">
+          <button type="button" class="btn btn-success btn-sm" onclick="api('/permissions/','POST',{provider_id:+$('x1').value,country_code:$('x2').value,year_start:+$('x3').value,year_end:+$('x4').value})">Add</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="api('/permissions/'+$('x1').value+'/'+$('x2').value,'DELETE')">Delete</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
