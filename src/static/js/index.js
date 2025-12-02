@@ -3,6 +3,13 @@ const CONTINENTS=['Asia','Europe','North America','South America','Africa','Ocea
 const KEY_FIELDS=['id','code','provider_id','country_code'];
 const NUM_FIELDS=['lat','lng'];
 
+// Load saved token on page load
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('token');
+  if(saved)$('token').value=saved;
+  $('token').addEventListener('input',()=>localStorage.setItem('token',$('token').value));
+});
+
 function getHeaders(){
   const h={'Content-Type':'application/json'};
   const t=$('token').value;
@@ -39,24 +46,62 @@ function toTable(d,endpoint){
         t+=`<td>${displayVal}</td>`;
       }else{
         const rowJson=JSON.stringify(row).replace(/"/g,'&quot;');
-        t+=`<td class="editable-cell" onclick="edit(this,'${endpoint}',${rowJson},'${k}')"><span class="cell-val">${displayVal}</span><span class="edit-icon">✏️</span></td>`;
+        const style=k==='continent'?' style="max-width:110px"':'';
+        t+=`<td class="editable-cell"${style} onclick="edit(this,'${endpoint}',${rowJson},'${k}')"><span class="cell-val">${displayVal}</span><span class="edit-icon">✏️</span></td>`;
       }
     });
     const id=getId(row);
     t+=`<td><button class="btn-trash" onclick="del('${endpoint}${id}','${endpoint}')">🗑️</button></td>`;
     t+='</tr>';
   });
+  if(endpoint==='/countries/'){
+    t+=`<tr class="add-row" id="add-country-row"><td colspan="${keys.length+1}" style="text-align:center;cursor:pointer;" onclick="showAddCountryForm()"><span style="color:#0088ff;font-weight:bold;font-size:20px;">+</span> Add New Country</td></tr>`;
+    t+=`<tr class="add-country-form" id="add-country-form" style="display:none;">`;
+    keys.forEach(k=>{
+      if(k==='code'){
+        t+=`<td><input type="text" class="form-control form-control-sm" id="new-code" placeholder="Code" maxlength="3";"></td>`;
+      }else if(k==='name'){
+        t+=`<td><input type="text" class="form-control form-control-sm" id="new-name" placeholder="Name"></td>`;
+      }else if(k==='continent'){
+        t+=`<td><select class="form-select form-select-sm" id="new-continent"><option value="">Choose...</option>${CONTINENTS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></td>`;
+      }else if(k==='lat'){
+        t+=`<td><input type="number" class="form-control form-control-sm" id="new-lat" placeholder="Lat" step="0.000001"></td>`;
+      }else if(k==='lng'){
+        t+=`<td><input type="number" class="form-control form-control-sm" id="new-lng" placeholder="Lng" step="0.000001"></td>`;
+      }
+    });
+    t+=`<td><button class="btn btn-sm btn-success" onclick="submitNewCountry()">✓</button> <button class="btn btn-sm btn-secondary" onclick="cancelAddCountry()">✗</button></td>`;
+    t+=`</tr>`;
+  }
   t+='</tbody></table>';
   return t;
 }
 
 function createInput(field,val){
   if(field==='continent'){
-    const sel=document.createElement('select');
-    sel.className='edit-input';
-    sel.innerHTML='<option value="">Select</option>'+CONTINENTS.map(c=>`<option>${c}</option>`).join('');
-    sel.value=val;
-    return sel;
+    const wrapper=document.createElement('div');
+    wrapper.className='continent-dropdown-wrapper';
+    wrapper.style.position='relative';
+    const sel=document.createElement('div');
+    sel.className='edit-input continent-display';
+    sel.textContent=val||'Choose...';
+    sel.style.cursor='pointer';
+    const menu=document.createElement('div');
+    menu.className='continent-menu';
+    menu.innerHTML=CONTINENTS.map(c=>`<div class="continent-option" data-value="${c}">${c}</div>`).join('');
+    menu.style.display='block';
+    wrapper.appendChild(sel);
+    wrapper.appendChild(menu);
+    wrapper._getValue=()=>sel.dataset.value||val;
+    wrapper._setValue=(v)=>{sel.textContent=v;sel.dataset.value=v};
+    menu.querySelectorAll('.continent-option').forEach(opt=>{
+      opt.onclick=()=>{
+        sel.textContent=opt.dataset.value;
+        sel.dataset.value=opt.dataset.value;
+        wrapper.dispatchEvent(new Event('change'));
+      };
+    });
+    return wrapper;
   }
   const inp=document.createElement('input');
   inp.className='edit-input';
@@ -69,9 +114,9 @@ function edit(cell,endpoint,row,field){
   const val=span.textContent;
   const input=createInput(field,val);
   cell.replaceChild(input,span);
-  input.focus();
-  input.onblur=async()=>{
-    const newVal=input.value;
+  
+  const handleSave=async()=>{
+    const newVal=input._getValue?input._getValue():input.value;
     if(newVal!==val){
       const id=getId(row);
       const body={[field]:NUM_FIELDS.includes(field)?+newVal:newVal};
@@ -85,7 +130,24 @@ function edit(cell,endpoint,row,field){
       api(endpoint,'GET');
     }
   };
-  input.onkeydown=e=>{if(e.key==='Enter')input.blur()};
+  
+  if(field==='continent'){
+    input.onchange=handleSave;
+    const closeOnClickOutside=(e)=>{
+      if(!input.contains(e.target)){
+        document.removeEventListener('click',closeOnClickOutside);
+        api(endpoint,'GET');
+      }
+    };
+    setTimeout(()=>{
+      cell.querySelector('.continent-menu').scrollIntoView({block:'nearest'});
+      document.addEventListener('click',closeOnClickOutside);
+    },50);
+  }else{
+    input.focus();
+    input.onblur=handleSave;
+    input.onkeydown=e=>{if(e.key==='Enter')input.blur()};
+  }
 }
 
 async function del(path,endpoint){
@@ -94,6 +156,37 @@ async function del(path,endpoint){
     api(endpoint,'GET');
   }catch(e){
     $('o').innerHTML=`<pre class="border p-3 mt-3">${e.message}</pre>`;
+  }
+}
+
+function showAddCountryForm(){
+  document.getElementById('add-country-row').style.display='none';
+  document.getElementById('add-country-form').style.display='';
+  setTimeout(()=>document.getElementById('new-code').focus(),50);
+}
+
+function cancelAddCountry(){
+  document.getElementById('add-country-row').style.display='';
+  document.getElementById('add-country-form').style.display='none';
+}
+
+async function submitNewCountry(){
+  const code=$('new-code').value.trim();
+  const name=$('new-name').value.trim();
+  const continent=$('new-continent').value||null;
+  const lat=$('new-lat').value?parseFloat($('new-lat').value):null;
+  const lng=$('new-lng').value?parseFloat($('new-lng').value):null;
+  
+  if(!code||code.length!==3)return alert('Country code must be 3 letters');
+  if(!name)return alert('Country name is required');
+  
+  const body={code,name,continent,lat,lng};
+  
+  try{
+    await fetch('/internal/countries/',{method:'POST',headers:getHeaders(),body:JSON.stringify(body)});
+    api('/countries/','GET');
+  }catch(e){
+    alert(`Failed to add country: ${e.message}`);
   }
 }
 
@@ -110,4 +203,7 @@ async function api(e,m='GET',b){
 window.api=api;
 window.del=del;
 window.edit=edit;
+window.showAddCountryForm=showAddCountryForm;
+window.cancelAddCountry=cancelAddCountry;
+window.submitNewCountry=submitNewCountry;
 window.$=$;
