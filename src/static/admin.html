@@ -28,30 +28,29 @@
       <input name="is_admin" type="checkbox" />
       <input name="nologin" type="checkbox" />
     </x-table>
-    <x-table x-table="countries">
+    <x-table x-table="economies">
       <input name="code" x-key />
       <input name="name" />
-      <select name="continent" x-opt>
-        <option value="">Continent</option>
-        <option>Asia</option>
-        <option>Europe</option>
+      <select name="region" x-opt>
+        <option value="">Region</option>
+        <option>Europe &amp; Central Asia</option>
+        <option>Middle East &amp; North Africa</option>
+        <option>South Asia</option>
+        <option>Latin America &amp; Caribbean</option>
+        <option>Sub-Saharan Africa</option>
+        <option>East Asia &amp; Pacific</option>
         <option>North America</option>
-        <option>South America</option>
-        <option>Africa</option>
-        <option>Oceania</option>
       </select>
-      <input name="lat" type="number" x-opt />
-      <input name="lng" type="number" x-opt />
     </x-table>
     <x-table x-table="permissions">
       <input name="provider_id" type="number" x-key />
-      <input name="country_code" x-key />
+      <input name="economy_code" x-key />
       <input name="year_start" type="number" />
       <input name="year_end" type="number" />
     </x-table>
     <x-table x-table="health_indicators">
       <input name="provider_id" type="number" x-key />
-      <input name="country_code" x-key />
+      <input name="economy_code" x-key />
       <input name="year" type="number" x-key />
       <input name="community_health_workers" type="number" />
       <input name="prevalence_of_undernourishment" type="number" />
@@ -62,7 +61,7 @@
     </x-table>
     <x-table x-table="economic_indicators">
       <input name="provider_id" type="number" x-key />
-      <input name="country_code" x-key />
+      <input name="economy_code" x-key />
       <input name="year" type="number" x-key />
       <input name="industry" type="number" />
       <input name="gdp_per_capita" type="number" />
@@ -71,7 +70,7 @@
     </x-table>
     <x-table x-table="environment_indicators">
       <input name="provider_id" type="number" x-key />
-      <input name="country_code" x-key />
+      <input name="economy_code" x-key />
       <input name="year" type="number" x-key />
       <input name="energy_use" type="number" />
       <input name="access_to_electricity" type="number" />
