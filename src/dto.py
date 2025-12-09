@@ -1,4 +1,4 @@
-from src.entities import Continent
+from src.entities import Region
 
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
@@ -22,13 +22,11 @@ class ProviderCreateDto(BaseModel):
     is_admin: bool
 
 
-class CountryUpdateDto(BaseModel):
+class EconomyUpdateDto(BaseModel):
     model_config = ConfigDict(extra='ignore')
 
     name: Optional[str] = None
-    continent: Optional[Continent] = None
-    lat: Optional[float] = None
-    lng: Optional[float] = None
+    region: Optional[Region] = None
 
 
 class PermissionUpdateDto(BaseModel):

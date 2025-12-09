@@ -1,9 +1,9 @@
 from .base_repo import BaseRepo
 
-from src.dto import CountryUpdateDto, PermissionUpdateDto, \
+from src.dto import EconomyUpdateDto, PermissionUpdateDto, \
     ProviderCreateDto, ProviderUpdateDto, EconomicIndicatorUpdateDto, \
     HealthIndicatorUpdateDto, EnvironmentIndicatorUpdateDto
-from src.entities import Country, Permission, Provider, \
+from src.entities import Economy, Permission, Provider, \
     EconomicIndicator, HealthIndicator, EnvironmentIndicator
 
 
@@ -13,15 +13,15 @@ class ProviderRepo(BaseRepo[Provider, ProviderUpdateDto, ProviderCreateDto]):
                          (Provider, ProviderUpdateDto, ProviderCreateDto))
 
 
-class CountryRepo(BaseRepo[Country, CountryUpdateDto, Country]):
+class EconomyRepo(BaseRepo[Economy, EconomyUpdateDto, Economy]):
     def __init__(self, pool):
-        super().__init__(pool, 'countries', ['code'],
-                         (Country, CountryUpdateDto, Country))
+        super().__init__(pool, 'economies', ['code'],
+                         (Economy, EconomyUpdateDto, Economy))
 
 
 class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto, Permission]):
     def __init__(self, pool):
-        super().__init__(pool, 'permissions', ['provider_id', 'country_code'],
+        super().__init__(pool, 'permissions', ['provider_id', 'economy_code'],
                          (Permission, PermissionUpdateDto, Permission))
 
 
@@ -30,7 +30,7 @@ class HealthIndicatorRepo(BaseRepo[HealthIndicator,
                           HealthIndicator]):
     def __init__(self, pool):
         super().__init__(pool, 'health_indicators',
-                         ['provider_id', 'country_code', 'year'],
+                         ['provider_id', 'economy_code', 'year'],
                          (HealthIndicator,
                           HealthIndicatorUpdateDto,
                           HealthIndicator))
@@ -41,7 +41,7 @@ class EconomicIndicatorRepo(BaseRepo[EconomicIndicator,
                             EconomicIndicator]):
     def __init__(self, pool):
         super().__init__(pool, 'economic_indicators',
-                         ['provider_id', 'country_code', 'year'],
+                         ['provider_id', 'economy_code', 'year'],
                          (EconomicIndicator,
                           EconomicIndicatorUpdateDto,
                           EconomicIndicator))
@@ -52,12 +52,12 @@ class EnvironmentIndicatorRepo(BaseRepo[EnvironmentIndicator,
                                EnvironmentIndicator]):
     def __init__(self, pool):
         super().__init__(pool, 'environment_indicators',
-                         ['provider_id', 'country_code', 'year'],
+                         ['provider_id', 'economy_code', 'year'],
                          (EnvironmentIndicator,
                           EnvironmentIndicatorUpdateDto,
                           EnvironmentIndicator))
 
 
-__all__ = ['CountryRepo', 'ProviderRepo', 'PermissionRepo',
+__all__ = ['EconomyRepo', 'ProviderRepo', 'PermissionRepo',
            'EconomicIndicatorRepo', 'HealthIndicatorRepo',
            'EnvironmentIndicatorRepo']

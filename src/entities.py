@@ -2,13 +2,14 @@ from typing import Optional, Literal
 from pydantic import BaseModel
 
 
-Continent = Literal[
-    "Asia",
-    "Europe",
-    "North America",
-    "South America",
-    "Africa",
-    "Oceania",
+Region = Literal[
+    "Europe & Central Asia",
+    "Middle East & North Africa",
+    "South Asia",
+    "Latin America & Caribbean",
+    "Sub-Saharan Africa",
+    "East Asia & Pacific",
+    "North America"
 ]
 
 
@@ -21,24 +22,22 @@ class Provider(BaseModel):
     is_admin: bool
 
 
-class Country(BaseModel):
+class Economy(BaseModel):
     code: str
     name: str
-    continent: Optional[Continent] = None
-    lat: Optional[float] = None
-    lng: Optional[float] = None
+    region: Optional[Region] = None
 
 
 class Permission(BaseModel):
     provider_id: int
-    country_code: str
+    economy_code: str
     year_start: int
     year_end: int
 
 
 class HealthIndicator(BaseModel):
     provider_id: int
-    country_code: str
+    economy_code: str
     year: int
     community_health_workers: Optional[int]
     prevalence_of_undernourishment: Optional[float]
@@ -50,7 +49,7 @@ class HealthIndicator(BaseModel):
 
 class EconomicIndicator(BaseModel):
     provider_id: int
-    country_code: str
+    economy_code: str
     year: int
     industry: Optional[float]
     gdp_per_capita: Optional[float]
@@ -60,7 +59,7 @@ class EconomicIndicator(BaseModel):
 
 class EnvironmentIndicator(BaseModel):
     provider_id: int
-    country_code: str
+    economy_code: str
     year: int
     energy_use: Optional[float]
     access_to_electricity: Optional[float]

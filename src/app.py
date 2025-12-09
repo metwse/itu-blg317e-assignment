@@ -4,12 +4,12 @@ from src.error import AppError, \
     not_found_error_handler, unspecified_error_handler
 from src.routes import internal_routes
 
-from src.service import ProviderService, CountryService, PermissionService
+from src.service import ProviderService, EconomyService, PermissionService
 from src.service.indicator_services import EconomicIndicatorService, \
     EnvironmentIndicatorService, HealthIndicatorService
 
 from src.handlers.provider_handler import ProviderHandler
-from src.handlers.country_handler import CountryHandler
+from src.handlers.economy_handler import EconomyHandler
 from src.handlers.permission_handler import PermissionHandler
 from src.handlers.indicator_handlers import EconomicIndicatorHandler, \
     EnvironmentIndicatorHandler, HealthIndicatorHandler
@@ -42,7 +42,7 @@ def create_app(pool, internal_access_token: str | None = None):
     app.add_url_rule("/status", view_func=status_handler)
 
     provider_handler = ProviderHandler(ProviderService(pool))
-    country_handler = CountryHandler(CountryService(pool))
+    economy_handler = EconomyHandler(EconomyService(pool))
     permission_handler = PermissionHandler(PermissionService(pool))
     health_indicator_handler = \
         HealthIndicatorHandler(HealthIndicatorService(pool))
@@ -55,7 +55,7 @@ def create_app(pool, internal_access_token: str | None = None):
         log.info("registered internal access routes")
         app.register_blueprint(internal_routes(internal_access_token,
                                                provider_handler,
-                                               country_handler,
+                                               economy_handler,
                                                permission_handler,
                                                health_indicator_handler,
                                                economic_indicator_handler,
