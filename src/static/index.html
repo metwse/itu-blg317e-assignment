@@ -146,9 +146,9 @@
           <div class="tab-pane fade" id="countries-get">
             <section class="card">
               <div class="card-body">
-                <h3 class="h6 mb-3">Get Country</h3>
+                <h3 class="h6 mb-3">Get Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <input id="c1g" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Country code">
+                  <input id="c1g" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
                   <button type="button" class="btn btn-secondary btn-sm" onclick="api('/countries/'+$('c1g').value,'GET')">Get</button>
                 </div>
               </div>
@@ -157,10 +157,10 @@
           <div class="tab-pane fade" id="countries-add">
             <section class="card">
               <div class="card-body">
-                <h3 class="h6 mb-3">Add Country</h3>
+                <h3 class="h6 mb-3">Add Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <input id="c1" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Country code">
-                  <input id="c2" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Country name">
+                  <input id="c1" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
+                  <input id="c2" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Economy name">
                   <select id="c3" class="form-select form-select-sm" style="width:130px;padding-left:5px;padding-right:5px" aria-label="Continent">
                     <option value="">Continent</option>
                     <option>Asia</option>
@@ -180,10 +180,10 @@
           <div class="tab-pane fade" id="countries-edit">
             <section class="card">
               <div class="card-body">
-                <h3 class="h6 mb-3">Edit Country</h3>
+                <h3 class="h6 mb-3">Edit Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <input id="c1e" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Country code">
-                  <input id="c2e" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Country name">
+                  <input id="c1e" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
+                  <input id="c2e" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Economy name">
                   <select id="c3e" class="form-select form-select-sm" style="width:auto" aria-label="Continent">
                     <option value="">Continent</option>
                     <option>Asia</option>
@@ -203,9 +203,9 @@
           <div class="tab-pane fade" id="countries-delete">
             <section class="card">
               <div class="card-body">
-                <h3 class="h6 mb-3">Delete Country</h3>
+                <h3 class="h6 mb-3">Delete Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <input id="c1d" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Country code">
+                  <input id="c1d" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
                   <button type="button" class="btn btn-danger btn-sm" onclick="api('/countries/'+$('c1d').value,'DELETE')">Delete</button>
                 </div>
               </div>
@@ -235,7 +235,7 @@
                 <h3 class="h6 mb-3">Get Permission</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="x1g" type="number" class="form-control form-control-sm" placeholder="Provider ID" style="width:90px" aria-label="Provider ID">
-                  <input id="x2g" type="text" class="form-control form-control-sm" placeholder="Country Code" style="width:100px" aria-label="Country code">
+                  <input id="x2g" type="text" class="form-control form-control-sm" placeholder="Economy Code" style="width:100px" aria-label="Economy code">
                   <button type="button" class="btn btn-secondary btn-sm" onclick="api('/permissions/'+$('x1g').value+'/'+$('x2g').value,'GET')">Get</button>
                 </div>
               </div>
@@ -247,10 +247,10 @@
                 <h3 class="h6 mb-3">Add Permission</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="x1" type="number" class="form-control form-control-sm" placeholder="Provider ID" style="width:90px" aria-label="Provider ID">
-                  <input id="x2" type="text" class="form-control form-control-sm" placeholder="Country Code" style="width:100px" aria-label="Country code">
+                  <input id="x2" type="text" class="form-control form-control-sm" placeholder="Economy Code" style="width:100px" aria-label="Economy code">
                   <input id="x3" type="number" class="form-control form-control-sm" placeholder="Year Start" style="width:90px" aria-label="Year start">
                   <input id="x4" type="number" class="form-control form-control-sm" placeholder="Year End" style="width:90px" aria-label="Year end">
-                  <button type="button" class="btn btn-success btn-sm" onclick="api('/permissions/','POST',{provider_id:+$('x1').value,country_code:$('x2').value,year_start:+$('x3').value,year_end:+$('x4').value})">Add</button>
+                  <button type="button" class="btn btn-success btn-sm" onclick="api('/permissions/','POST',{provider_id:+$('x1').value,economy_code:$('x2').value,year_start:+$('x3').value,year_end:+$('x4').value})">Add</button>
                 </div>
               </div>
             </section>
@@ -261,7 +261,7 @@
                 <h3 class="h6 mb-3">Delete Permission</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="x1d" type="number" class="form-control form-control-sm" placeholder="Provider ID" style="width:90px" aria-label="Provider ID">
-                  <input id="x2d" type="text" class="form-control form-control-sm" placeholder="Country Code" style="width:100px" aria-label="Country code">
+                  <input id="x2d" type="text" class="form-control form-control-sm" placeholder="Economy Code" style="width:100px" aria-label="Economy code">
                   <button type="button" class="btn btn-danger btn-sm" onclick="api('/permissions/'+$('x1d').value+'/'+$('x2d').value,'DELETE')">Delete</button>
                 </div>
               </div>

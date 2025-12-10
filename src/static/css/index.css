@@ -112,15 +112,15 @@ label {
   background: rgba(0, 136, 255, 0.1) !important;
 }
 
-.add-country-form input,
-.add-country-form select {
+.add-economy-form input,
+.add-economy-form select {
   background: #1a1a1a;
   border-color: #0088ff;
   color: #fff;
 }
 
-.add-country-form input:focus,
-.add-country-form select:focus {
+.add-economy-form input:focus,
+.add-economy-form select:focus {
   background: #1a1a1a;
   border-color: #0088ff;
   color: #fff;

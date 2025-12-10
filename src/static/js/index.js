@@ -1,6 +1,6 @@
 const $=i=>document.getElementById(i);
 const CONTINENTS=['Asia','Europe','North America','South America','Africa','Oceania'];
-const KEY_FIELDS=['id','code','provider_id','country_code'];
+const KEY_FIELDS=['id','code','provider_id','economy_code'];
 const NUM_FIELDS=['lat','lng'];
 
 // Load saved token on page load
@@ -18,7 +18,7 @@ function getHeaders(){
 }
 
 function getId(row){
-  return row.id||row.code||(row.provider_id&&row.country_code?`${row.provider_id}/${row.country_code}`:'');
+  return row.id||row.code||(row.provider_id&&row.economy_code?`${row.provider_id}/${row.economy_code}`:'');
 }
 
 function isKeyField(k){
@@ -55,8 +55,8 @@ function toTable(d,endpoint){
     t+='</tr>';
   });
   if(endpoint==='/countries/'){
-    t+=`<tr class="add-row" id="add-country-row"><td colspan="${keys.length+1}" style="text-align:center;cursor:pointer;" onclick="showAddCountryForm()"><span style="color:#0088ff;font-weight:bold;font-size:20px;">+</span> Add New Country</td></tr>`;
-    t+=`<tr class="add-country-form" id="add-country-form" style="display:none;">`;
+    t+=`<tr class="add-row" id="add-economy-row"><td colspan="${keys.length+1}" style="text-align:center;cursor:pointer;" onclick="showAddEconomyForm()"><span style="color:#0088ff;font-weight:bold;font-size:20px;">+</span> Add New Economy</td></tr>`;
+    t+=`<tr class="add-economy-form" id="add-economy-form" style="display:none;">`;
     keys.forEach(k=>{
       if(k==='code'){
         t+=`<td><input type="text" class="form-control form-control-sm" id="new-code" placeholder="Code" maxlength="3";"></td>`;
@@ -70,7 +70,7 @@ function toTable(d,endpoint){
         t+=`<td><input type="number" class="form-control form-control-sm" id="new-lng" placeholder="Lng" step="0.000001"></td>`;
       }
     });
-    t+=`<td><button class="btn btn-sm btn-success" onclick="submitNewCountry()">✓</button> <button class="btn btn-sm btn-secondary" onclick="cancelAddCountry()">✗</button></td>`;
+    t+=`<td><button class="btn btn-sm btn-success" onclick="submitNewEconomy()">✓</button> <button class="btn btn-sm btn-secondary" onclick="cancelAddEconomy()">✗</button></td>`;
     t+=`</tr>`;
   }
   t+='</tbody></table>';
@@ -159,26 +159,26 @@ async function del(path,endpoint){
   }
 }
 
-function showAddCountryForm(){
-  document.getElementById('add-country-row').style.display='none';
-  document.getElementById('add-country-form').style.display='';
+function showAddEconomyForm(){
+  document.getElementById('add-economy-row').style.display='none';
+  document.getElementById('add-economy-form').style.display='';
   setTimeout(()=>document.getElementById('new-code').focus(),50);
 }
 
-function cancelAddCountry(){
-  document.getElementById('add-country-row').style.display='';
-  document.getElementById('add-country-form').style.display='none';
+function cancelAddEconomy(){
+  document.getElementById('add-economy-row').style.display='';
+  document.getElementById('add-economy-form').style.display='none';
 }
 
-async function submitNewCountry(){
+async function submitNewEconomy(){
   const code=$('new-code').value.trim();
   const name=$('new-name').value.trim();
   const continent=$('new-continent').value||null;
   const lat=$('new-lat').value?parseFloat($('new-lat').value):null;
   const lng=$('new-lng').value?parseFloat($('new-lng').value):null;
   
-  if(!code||code.length!==3)return alert('Country code must be 3 letters');
-  if(!name)return alert('Country name is required');
+  if(!code||code.length!==3)return alert('Economy code must be 3 letters');
+  if(!name)return alert('Economy name is required');
   
   const body={code,name,continent,lat,lng};
   
@@ -186,7 +186,7 @@ async function submitNewCountry(){
     await fetch('/internal/countries/',{method:'POST',headers:getHeaders(),body:JSON.stringify(body)});
     api('/countries/','GET');
   }catch(e){
-    alert(`Failed to add country: ${e.message}`);
+    alert(`Failed to add economy: ${e.message}`);
   }
 }
 
@@ -203,7 +203,7 @@ async function api(e,m='GET',b){
 window.api=api;
 window.del=del;
 window.edit=edit;
-window.showAddCountryForm=showAddCountryForm;
-window.cancelAddCountry=cancelAddCountry;
-window.submitNewCountry=submitNewCountry;
+window.showAddEconomyForm=showAddEconomyForm;
+window.cancelAddEconomy=cancelAddEconomy;
+window.submitNewEconomy=submitNewEconomy;
 window.$=$;
