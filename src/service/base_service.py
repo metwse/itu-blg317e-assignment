@@ -11,7 +11,24 @@ C = TypeVar('C', bound=BaseModel)
 
 
 class BaseService(Generic[T, U, C]):
+    """The base class for the Service Layer, acting as a bridge between the
+    Handlers (Controllers) and the Repositories (Data Access Layer).
+
+    Attributes:
+        repo (BaseRepo): The injected repository instance for database
+                         operations.
+        model_types (tuple): References to the generic types (Entity,
+                             UpdateDTO, CreateDTO) used for runtime type
+                             checking or instantiation.
+    """
+
     def __init__(self, repo: BaseRepo[T, U, C]):
+        """Initializes the service with a specific repository.
+
+        Args:
+            repo: An instance of a repository that matches the generic types T,
+                  U, and C.
+        """
         self.repo = repo
         self.model_types = repo.model_types
 

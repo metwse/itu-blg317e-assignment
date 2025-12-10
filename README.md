@@ -21,6 +21,34 @@ Steps:
     - The application will be accessible at `http://localhost:6767`.
     - The PostgreSQL database will be exposed on port `1234` for debugging.
 
+## Architecture & Design Pattern
+This project implements a layered architecture with a heavy reliance on Python
+generics TypeVar to minimize code duplication.
+
+### The "Generic Trio" Pattern
+The entire internal backend resolves around three generic types:
+1. `T (Entity):` The database entity (e.g., `Provider`).
+2. `U (UpdateDTO):` Data transfer object for updates (e.g.,
+   `ProviderUpdateDto`).
+3. `C (CreateDTO):` Data transfer object for creation (e.g.,
+   `ProviderCreateDto`).
+
+### Layers
+1. **Handlers (Presentation Layer):** \
+   Inherits from `BaseHandler[T, U, C]`. Automatically handles HTTP parsing,
+   validation, and standard responses (200 OK, 201 Created, 404 Not Found).
+2. **Services (Business Layer):** \
+   Inherits from `BaseService[T, U, C]`. Acts as the bridge between handlers
+   and repositories.
+3. **Repositories (Data Access Layer):** \
+   Inherits from `BaseRepo[T, U, C]`. \
+   **Dynamic SQL Generation:** Instead of writing SQL for every table, the
+   `BaseRepo` inspects the Pydantic models at runtime to generate `INSERT`,
+   `UPDATE`, and `SELECT` statements automatically.
+4. **State (Dependency Injection):**
+   The `State` class acts as a container, initializing all services with the
+   database pool and injecting dependencies where needed.
+
 ## Manual Development Setup
 This method is for development if you want to run the database in Docker but
 run the application service (Python) locally on your host machine.
