@@ -15,6 +15,10 @@ def internal_routes(internal_access_token: str,
                     health_indicator_handler,
                     economic_indicator_handler,
                     environment_indicator_handler):
+    """Aggregates all internal sub-routes and applies authentication
+    middleware.
+    """
+
     internal = Blueprint("internal", __name__, url_prefix="/internal")
 
     internal.register_blueprint(provider_routes(provider_handler))
@@ -36,6 +40,8 @@ def internal_routes(internal_access_token: str,
 
 
 def provider_routes(provider_handler: ProviderHandler):
+    """Creates CRUD routes for Providers."""
+
     providers = Blueprint("providers", __name__, url_prefix="/providers")
 
     providers.add_url_rule("/",
@@ -62,6 +68,8 @@ def provider_routes(provider_handler: ProviderHandler):
 
 
 def economy_routes(economy_handler: EconomyHandler):
+    """Creates CRUD routes for Economyies."""
+
     economies = Blueprint("economies", __name__, url_prefix="/economies")
 
     economies.add_url_rule("/",
@@ -88,6 +96,8 @@ def economy_routes(economy_handler: EconomyHandler):
 
 
 def permission_routes(permission_handler: PermissionHandler):
+    """Creates CRUD routes for Permissions."""
+
     permissions = Blueprint("permissions", __name__, url_prefix="/permissions")
 
     permissions.add_url_rule("/",
@@ -117,6 +127,8 @@ def permission_routes(permission_handler: PermissionHandler):
 
 
 def indicator_routes(name: str, indicator: BaseHandler):
+    """Creates CRUD routes for Indicators."""
+
     indicators = Blueprint(name, __name__, url_prefix=f"/{name}")
 
     indicators.add_url_rule("/", view_func=indicator.list, methods=["GET"])

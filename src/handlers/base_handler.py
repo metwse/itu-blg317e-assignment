@@ -14,7 +14,35 @@ C = TypeVar('C', bound=BaseModel)
 
 
 class BaseHandler(Generic[T, U, C]):
+    """Base controller class for handling HTTP requests.
+
+    This class serves as the interface between the HTTP layer (Flask) and the
+    Business Logic layer (Service). It standardizes the handling of CRUD
+    operations by:
+    - Parsing and validating incoming JSON requests against Pydantic DTOs.
+    - Formatting outgoing responses as JSON.
+    - Mapping application errors to appropriate HTTP status codes.
+
+    Attributes:
+        service (BaseService): The service instance handling business logic.
+        update_dto_class (Type[U]): The Pydantic model class used for
+                                    validating update requests.
+        create_dto_class (Type[C]): The Pydantic model class used for
+                                    validating creation requests.
+    """
+
     def __init__(self, service: BaseService[T, U, C]):
+        """Initializes the handler with a specific service instance.
+
+        It extracts the DTO classes (UpdateDTO and CreateDTO) from the
+        service's model definitions to be used later for runtime JSON
+        validation in `create` and `update` methods.
+
+        Args:
+            service: An instance of BaseService configured for a specific
+                     entity type.
+        """
+
         self.service = service
 
         self.update_dto_class = service.model_types[1]

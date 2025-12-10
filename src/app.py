@@ -3,10 +3,8 @@ from src.error import AppError, \
     error_handler, validation_error_handler, \
     not_found_error_handler, unspecified_error_handler
 from src.routes import internal_routes
+from src.state import State
 
-from src.service import ProviderService, EconomyService, PermissionService
-from src.service.indicator_services import EconomicIndicatorService, \
-    EnvironmentIndicatorService, HealthIndicatorService
 
 from src.handlers.provider_handler import ProviderHandler
 from src.handlers.economy_handler import EconomyHandler
@@ -19,7 +17,7 @@ from flask import Flask, jsonify, send_from_directory
 import time
 
 
-def create_app(pool, internal_access_token: str | None = None):
+def create_app(state: State):
     static_folder: str = "static"
     app = Flask(__name__, static_folder=static_folder, static_url_path='')
 
@@ -41,19 +39,19 @@ def create_app(pool, internal_access_token: str | None = None):
         })
     app.add_url_rule("/status", view_func=status_handler)
 
-    provider_handler = ProviderHandler(ProviderService(pool))
-    economy_handler = EconomyHandler(EconomyService(pool))
-    permission_handler = PermissionHandler(PermissionService(pool))
+    provider_handler = ProviderHandler(state.provider_service)
+    economy_handler = EconomyHandler(state.economy_service)
+    permission_handler = PermissionHandler(state.permission_service)
     health_indicator_handler = \
-        HealthIndicatorHandler(HealthIndicatorService(pool))
+        HealthIndicatorHandler(state.health_indicator_service)
     economic_indicator_handler = \
-        EconomicIndicatorHandler(EconomicIndicatorService(pool))
+        EconomicIndicatorHandler(state.economic_indicator_service)
     environment_indicator_handler = \
-        EnvironmentIndicatorHandler(EnvironmentIndicatorService(pool))
+        EnvironmentIndicatorHandler(state.environment_indicator_service)
 
-    if internal_access_token is not None:
+    if state.internal_access_token is not None:
         log.info("registered internal access routes")
-        app.register_blueprint(internal_routes(internal_access_token,
+        app.register_blueprint(internal_routes(state.internal_access_token,
                                                provider_handler,
                                                economy_handler,
                                                permission_handler,

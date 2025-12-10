@@ -18,9 +18,15 @@ body {
   border-radius: 0 !important;
 }
 
+.form-select {
+  padding-left: 5px;
+  padding-right: 25px;
+}
+
 .card {
   background: #2a2a2a;
   border-color: #444;
+  color: #fff;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -35,10 +41,52 @@ label {
   margin-bottom: 0;
 }
 
+/* Tabs */
+.nav-tabs {
+  border-bottom-color: #444;
+}
+
+.nav-tabs .nav-link {
+  background: none;
+  border: 1px solid transparent;
+  color: #aaa;
+  border-radius: 0 !important;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: #444;
+  color: #fff;
+}
+
+.nav-tabs .nav-link.active {
+  background: #2a2a2a;
+  border-color: #444 #444 #2a2a2a;
+  color: #fff;
+}
+
+/* Pills (Submenus) */
+.nav-pills .nav-link {
+  background: none;
+  color: #aaa;
+  border-radius: 0 !important;
+  border: 1px solid transparent;
+}
+
+.nav-pills .nav-link:hover {
+  background: rgba(0, 136, 255, 0.1);
+  color: #fff;
+}
+
+.nav-pills .nav-link.active {
+  background: #0088ff;
+  color: #fff;
+}
+
 /* Container */
 .container {
   position: relative;
   z-index: 1;
+  color: #fff;
 }
 
 /* Table Styles */
@@ -53,6 +101,30 @@ label {
 
 .btn-trash:hover {
   opacity: 0.7;
+}
+
+.add-row td {
+  background: #1f1f1f !important;
+  transition: background-color 0.2s;
+}
+
+.add-row:hover td {
+  background: rgba(0, 136, 255, 0.1) !important;
+}
+
+.add-economy-form input,
+.add-economy-form select {
+  background: #1a1a1a;
+  border-color: #0088ff;
+  color: #fff;
+}
+
+.add-economy-form input:focus,
+.add-economy-form select:focus {
+  background: #1a1a1a;
+  border-color: #0088ff;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 136, 255, 0.25);
 }
 
 .editable-cell {
@@ -88,6 +160,54 @@ label {
 .edit-input:focus {
   border-color: #00aaff;
   box-shadow: 0 0 0 0.2rem rgba(0, 136, 255, 0.25);
+}
+
+select.edit-input {
+  padding: 2px 20px 2px 5px;
+  width: auto !important;
+  max-width: 110px !important;
+  font-size: inherit;
+  line-height: normal;
+  box-sizing: border-box;
+}
+
+.continent-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 110px;
+}
+
+.continent-display {
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #0088ff;
+  padding: 2px 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.continent-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #2a2a2a;
+  border: 1px solid #0088ff;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.continent-option {
+  padding: 5px;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.2s;
+}
+
+.continent-option:hover {
+  background: #0088ff;
 }
 
 /* Bubble Animation */

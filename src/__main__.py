@@ -1,4 +1,5 @@
 from src.app import create_app
+from src.state import bootstrap_state
 
 import os
 import asyncpg
@@ -25,7 +26,9 @@ if DATABASE_URL is None:
 async def main():
     pool = await asyncpg.create_pool(DATABASE_URL)
 
-    flask_app = create_app(pool, internal_access_token=INTERNAL_ACCESS_TOKEN)
+    state = bootstrap_state(pool, internal_access_token=INTERNAL_ACCESS_TOKEN)
+
+    flask_app = create_app(state)
 
     app = WsgiToAsgi(flask_app)
 
