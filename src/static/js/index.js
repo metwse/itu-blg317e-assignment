@@ -1,5 +1,5 @@
 const $=i=>document.getElementById(i);
-const CONTINENTS=['Asia','Europe','North America','South America','Africa','Oceania'];
+const REGIONS=['Europe & Central Asia','Middle East & North Africa','South Asia','Latin America & Caribbean','Sub-Saharan Africa','East Asia & Pacific','North America'];
 const KEY_FIELDS=['id','code','provider_id','economy_code'];
 const NUM_FIELDS=['lat','lng'];
 
@@ -46,7 +46,7 @@ function toTable(d,endpoint){
         t+=`<td>${displayVal}</td>`;
       }else{
         const rowJson=JSON.stringify(row).replace(/"/g,'&quot;');
-        const style=k==='continent'?' style="max-width:110px"':'';
+        const style=k==='region'?' style="max-width:200px"':'';
         t+=`<td class="editable-cell"${style} onclick="edit(this,'${endpoint}',${rowJson},'${k}')"><span class="cell-val">${displayVal}</span><span class="edit-icon">✏️</span></td>`;
       }
     });
@@ -54,23 +54,21 @@ function toTable(d,endpoint){
     t+=`<td><button class="btn-trash" onclick="del('${endpoint}${id}','${endpoint}')">🗑️</button></td>`;
     t+='</tr>';
   });
-  if(endpoint==='/countries/'){
+  if(endpoint==='/economies/'){
     t+=`<tr class="add-row" id="add-economy-row"><td colspan="${keys.length+1}" style="text-align:center;cursor:pointer;" onclick="showAddEconomyForm()"><span style="color:#0088ff;font-weight:bold;font-size:20px;">+</span> Add New Economy</td></tr>`;
     t+=`<tr class="add-economy-form" id="add-economy-form" style="display:none;">`;
     keys.forEach(k=>{
       if(k==='code'){
-        t+=`<td><input type="text" class="form-control form-control-sm" id="new-code" placeholder="Code" maxlength="3";"></td>`;
+        t+=`<td><input type="text" class="form-control form-control-sm" id="new-code" placeholder="Code" maxlength="3" style="text-transform:uppercase;"></td>`;
       }else if(k==='name'){
         t+=`<td><input type="text" class="form-control form-control-sm" id="new-name" placeholder="Name"></td>`;
-      }else if(k==='continent'){
-        t+=`<td><select class="form-select form-select-sm" id="new-continent"><option value="">Choose...</option>${CONTINENTS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></td>`;
-      }else if(k==='lat'){
-        t+=`<td><input type="number" class="form-control form-control-sm" id="new-lat" placeholder="Lat" step="0.000001"></td>`;
-      }else if(k==='lng'){
-        t+=`<td><input type="number" class="form-control form-control-sm" id="new-lng" placeholder="Lng" step="0.000001"></td>`;
+      }else if(k==='region'){
+        t+=`<td><select class="form-select form-select-sm" id="new-region"><option value="">Choose...</option>${REGIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></td>`;
+      }else{
+        t+=`<td></td>`;
       }
     });
-    t+=`<td><button class="btn btn-sm btn-success" onclick="submitNewEconomy()">✓</button> <button class="btn btn-sm btn-secondary" onclick="cancelAddEconomy()">✗</button></td>`;
+    t+=`<td><button class="btn btn-sm btn-success" onclick="submitNewCountry()">✓</button> <button class="btn btn-sm btn-secondary" onclick="cancelAddEconomy()">✗</button></td>`;
     t+=`</tr>`;
   }
   t+='</tbody></table>';
@@ -78,7 +76,7 @@ function toTable(d,endpoint){
 }
 
 function createInput(field,val){
-  if(field==='continent'){
+  if(field==='region'){
     const wrapper=document.createElement('div');
     wrapper.className='continent-dropdown-wrapper';
     wrapper.style.position='relative';
@@ -88,7 +86,7 @@ function createInput(field,val){
     sel.style.cursor='pointer';
     const menu=document.createElement('div');
     menu.className='continent-menu';
-    menu.innerHTML=CONTINENTS.map(c=>`<div class="continent-option" data-value="${c}">${c}</div>`).join('');
+    menu.innerHTML=REGIONS.map(c=>`<div class="continent-option" data-value="${c}">${c}</div>`).join('');
     menu.style.display='block';
     wrapper.appendChild(sel);
     wrapper.appendChild(menu);
@@ -131,7 +129,7 @@ function edit(cell,endpoint,row,field){
     }
   };
   
-  if(field==='continent'){
+  if(field==='region'){
     input.onchange=handleSave;
     const closeOnClickOutside=(e)=>{
       if(!input.contains(e.target)){
@@ -170,21 +168,19 @@ function cancelAddEconomy(){
   document.getElementById('add-economy-form').style.display='none';
 }
 
-async function submitNewEconomy(){
+async function submitNewCountry(){
   const code=$('new-code').value.trim();
   const name=$('new-name').value.trim();
-  const continent=$('new-continent').value||null;
-  const lat=$('new-lat').value?parseFloat($('new-lat').value):null;
-  const lng=$('new-lng').value?parseFloat($('new-lng').value):null;
+  const region=$('new-region').value||null;
   
   if(!code||code.length!==3)return alert('Economy code must be 3 letters');
   if(!name)return alert('Economy name is required');
   
-  const body={code,name,continent,lat,lng};
+  const body={code,name,region};
   
   try{
-    await fetch('/internal/countries/',{method:'POST',headers:getHeaders(),body:JSON.stringify(body)});
-    api('/countries/','GET');
+    await fetch('/internal/economies/',{method:'POST',headers:getHeaders(),body:JSON.stringify(body)});
+    api('/economies/','GET');
   }catch(e){
     alert(`Failed to add economy: ${e.message}`);
   }
@@ -205,5 +201,5 @@ window.del=del;
 window.edit=edit;
 window.showAddEconomyForm=showAddEconomyForm;
 window.cancelAddEconomy=cancelAddEconomy;
-window.submitNewEconomy=submitNewEconomy;
+window.submitNewCountry=submitNewCountry;
 window.$=$;
