@@ -139,7 +139,7 @@
           <div class="tab-pane fade show active" id="countries-list">
             <section class="card">
               <div class="card-body">
-                <button type="button" class="btn btn-primary btn-sm" onclick="api('/countries/','GET')">Load Countries</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="api('/economies/','GET')">Load Economies</button>
               </div>
             </section>
           </div>
@@ -149,7 +149,7 @@
                 <h3 class="h6 mb-3">Get Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="c1g" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="api('/countries/'+$('c1g').value,'GET')">Get</button>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="api('/economies/'+$('c1g').value,'GET')">Get</button>
                 </div>
               </div>
             </section>
@@ -160,19 +160,18 @@
                 <h3 class="h6 mb-3">Add Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="c1" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
-                  <input id="c2" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Economy name">
-                  <select id="c3" class="form-select form-select-sm" style="width:130px;padding-left:5px;padding-right:5px" aria-label="Continent">
-                    <option value="">Continent</option>
-                    <option>Asia</option>
-                    <option>Europe</option>
+                  <input id="c2" type="text" class="form-control form-control-sm" placeholder="Name" style="width:200px" aria-label="Economy name">
+                  <select id="c3" class="form-select form-select-sm" style="width:220px;padding-left:5px;padding-right:5px" aria-label="Region">
+                    <option value="">Region</option>
+                    <option>Europe & Central Asia</option>
+                    <option>Middle East & North Africa</option>
+                    <option>South Asia</option>
+                    <option>Latin America & Caribbean</option>
+                    <option>Sub-Saharan Africa</option>
+                    <option>East Asia & Pacific</option>
                     <option>North America</option>
-                    <option>South America</option>
-                    <option>Africa</option>
-                    <option>Oceania</option>
                   </select>
-                  <input id="c4" type="number" class="form-control form-control-sm" placeholder="Lat" style="width:80px" step="any" aria-label="Latitude">
-                  <input id="c5" type="number" class="form-control form-control-sm" placeholder="Lng" style="width:80px" step="any" aria-label="Longitude">
-                  <button type="button" class="btn btn-success btn-sm" onclick="api('/countries/','POST',{code:$('c1').value,name:$('c2').value,continent:$('c3').value||null,lat:$('c4').value?+$('c4').value:null,lng:$('c5').value?+$('c5').value:null})">Add</button>
+                  <button type="button" class="btn btn-success btn-sm" onclick="api('/economies/','POST',{code:$('c1').value,name:$('c2').value,region:$('c3').value||null})">Add</button>
                 </div>
               </div>
             </section>
@@ -183,19 +182,18 @@
                 <h3 class="h6 mb-3">Edit Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="c1e" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
-                  <input id="c2e" type="text" class="form-control form-control-sm" placeholder="Name" style="width:120px" aria-label="Economy name">
-                  <select id="c3e" class="form-select form-select-sm" style="width:auto" aria-label="Continent">
-                    <option value="">Continent</option>
-                    <option>Asia</option>
-                    <option>Europe</option>
+                  <input id="c2e" type="text" class="form-control form-control-sm" placeholder="Name" style="width:200px" aria-label="Economy name">
+                  <select id="c3e" class="form-select form-select-sm" style="width:220px;padding-left:5px;padding-right:5px" aria-label="Region">
+                    <option value="">Region</option>
+                    <option>Europe & Central Asia</option>
+                    <option>Middle East & North Africa</option>
+                    <option>South Asia</option>
+                    <option>Latin America & Caribbean</option>
+                    <option>Sub-Saharan Africa</option>
+                    <option>East Asia & Pacific</option>
                     <option>North America</option>
-                    <option>South America</option>
-                    <option>Africa</option>
-                    <option>Oceania</option>
                   </select>
-                  <input id="c4e" type="number" class="form-control form-control-sm" placeholder="Lat" style="width:80px" step="any" aria-label="Latitude">
-                  <input id="c5e" type="number" class="form-control form-control-sm" placeholder="Lng" style="width:80px" step="any" aria-label="Longitude">
-                  <button type="button" class="btn btn-warning btn-sm" onclick="api('/countries/'+$('c1e').value,'PATCH',{name:$('c2e').value,continent:$('c3e').value||null,lat:$('c4e').value?+$('c4e').value:null,lng:$('c5e').value?+$('c5e').value:null})">Edit</button>
+                  <button type="button" class="btn btn-warning btn-sm" onclick="api('/economies/'+$('c1e').value,'PATCH',{name:$('c2e').value,region:$('c3e').value||null})">Edit</button>
                 </div>
               </div>
             </section>
@@ -206,7 +204,7 @@
                 <h3 class="h6 mb-3">Delete Economy</h3>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <input id="c1d" type="text" class="form-control form-control-sm" placeholder="Code" style="width:80px" aria-label="Economy code">
-                  <button type="button" class="btn btn-danger btn-sm" onclick="api('/countries/'+$('c1d').value,'DELETE')">Delete</button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="api('/economies/'+$('c1d').value,'DELETE')">Delete</button>
                 </div>
               </div>
             </section>

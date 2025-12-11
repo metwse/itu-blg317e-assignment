@@ -1,3 +1,5 @@
+"""Flask app creation and bootsrap."""
+
 from src import log
 from src.error import AppError, \
     error_handler, validation_error_handler, \

@@ -1,3 +1,25 @@
+"""Data Transfer Objects (DTOs).
+
+This module defines the Pydantic models used strictly for data create and
+update operations. These models decouple the internal database schema from the
+external API interface.
+
+Usage in Architecture:
+    These models correspond to Generic Types `U` and `C` in
+    `BaseRepo[T, U, C]`.
+
+    1. **CreateDto (C):**
+       - Used for POST requests.
+       - Contains all fields required to create a new record.
+       - Excludes auto-generated fields (like SERIAL).
+
+    2. **UpdateDto (U):**
+       - Used for PATCH requests.
+       - All fields are `Optional` to allow partial updates.
+       - Uses `model_config = ConfigDict(extra='ignore')` to safely ignore
+         extraneous fields sent by clients without raising validation errors.
+"""
+
 from src.entities import Region
 
 from typing import Optional
