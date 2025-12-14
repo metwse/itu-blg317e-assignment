@@ -17,13 +17,13 @@ from pydantic import BaseModel
 
 
 Region = Literal[
-    "Europe & Central Asia",
-    "Middle East & North Africa",
-    "South Asia",
-    "Latin America & Caribbean",
-    "Sub-Saharan Africa",
     "East Asia & Pacific",
-    "North America"
+    "Europe & Central Asia",
+    "Latin America & Caribbean",
+    "Middle East, North Africa, Afghanistan & Pakistan",
+    "North America",
+    "South Asia",
+    "Sub-Saharan Africa"
 ]
 
 
