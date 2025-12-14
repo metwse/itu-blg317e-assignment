@@ -1,5 +1,5 @@
-from src.service.economy_service import EconomyService
 from src.entities import Economy, Region
+from src.state import State
 from src import log
 
 from typing import cast
@@ -7,12 +7,11 @@ from openpyxl import load_workbook
 import httpx
 import io
 
+
 URL = "https://ddh-openapi.worldbank.org/resources/DR0095333/download"
 
 
-async def load(service: EconomyService):
-    log.info("fetching economies...")
-
+async def load(state: State):
     async with httpx.AsyncClient() as client:
         response = await client.get(URL, follow_redirects=True)
         response.raise_for_status()
@@ -22,7 +21,7 @@ async def load(service: EconomyService):
     sheet = wb.active
 
     if sheet is None:
-        return
+        raise ValueError('Could not fetch sheet')
 
     rows = sheet.iter_rows(values_only=True)
 
@@ -44,11 +43,12 @@ async def load(service: EconomyService):
         name = row[name_idx]
         region = row[region_idx]
 
-        try:
-            if code is not None and name is not None:
-                await service.create(
+        if code is not None and name is not None:
+            try:
+                await state.economy_service.create(
                     Economy(code=cast(str, code),
                             name=cast(str, name),
-                            region=cast(Region | None, region)))
-        except Exception:
-            log.error("could not insert country: ", code)
+                            region=cast(Region | None, region)).model_dump())
+            except Exception:
+                log.error("Could not insert economy, it may already exists",
+                          code=str(code))
