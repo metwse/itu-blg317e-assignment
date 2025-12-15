@@ -90,6 +90,16 @@ label {
 }
 
 /* Table Styles */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  min-width: 100%;
+  white-space: nowrap;
+}
+
 .btn-trash {
   background: none !important;
   border: none !important;
@@ -155,6 +165,8 @@ label {
   padding: 2px 5px;
   width: 100%;
   outline: none;
+  position: relative;
+  z-index: 10;
 }
 
 .edit-input:focus {

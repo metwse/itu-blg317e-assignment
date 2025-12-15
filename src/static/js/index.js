@@ -50,7 +50,7 @@ const toTable=(d,endpoint)=>{
       <td><button class="btn btn-sm btn-success" onclick="submitNewCountry()">✓</button> <button class="btn btn-sm btn-secondary" onclick="cancelAddEconomy()">✗</button></td>
     </tr>`:'';
   
-  return`<table class="table table-dark table-striped table-bordered mt-3"><thead><tr>${headers}</tr></thead><tbody>${rows}${addRow}</tbody></table>`;
+  return`<div class="table-responsive"><table class="table table-dark table-striped table-bordered mt-3"><thead><tr>${headers}</tr></thead><tbody>${rows}${addRow}</tbody></table></div>`;
 };
 
 const createRegionDropdown=(val,onSave)=>{

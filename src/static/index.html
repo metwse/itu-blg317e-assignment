@@ -48,6 +48,15 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab" aria-controls="permissions" aria-selected="false">Permissions</button>
           </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="health-tab" data-bs-toggle="tab" data-bs-target="#health" type="button" role="tab" aria-controls="health" aria-selected="false">Health Indicators</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="economic-tab" data-bs-toggle="tab" data-bs-target="#economic" type="button" role="tab" aria-controls="economic" aria-selected="false">Economic Indicators</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="environment-tab" data-bs-toggle="tab" data-bs-target="#environment" type="button" role="tab" aria-controls="environment" aria-selected="false">Environment Indicators</button>
+          </li>
         </ul>
       </nav>
     </header>
@@ -262,6 +271,51 @@
                   <input id="x2d" type="text" class="form-control form-control-sm" placeholder="Economy Code" style="width:100px" aria-label="Economy code">
                   <button type="button" class="btn btn-danger btn-sm" onclick="api('/permissions/'+$('x1d').value+'/'+$('x2d').value,'DELETE')">Delete</button>
                 </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="health" role="tabpanel" aria-labelledby="health-tab">
+        <nav class="nav nav-pills mb-3">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#health-list">List</button>
+        </nav>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="health-list">
+            <section class="card">
+              <div class="card-body">
+                <button type="button" class="btn btn-primary btn-sm" onclick="api('/health_indicators/','GET')">Load Health Indicators</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="economic" role="tabpanel" aria-labelledby="economic-tab">
+        <nav class="nav nav-pills mb-3">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#economic-list">List</button>
+        </nav>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="economic-list">
+            <section class="card">
+              <div class="card-body">
+                <button type="button" class="btn btn-primary btn-sm" onclick="api('/economic_indicators/','GET')">Load Economic Indicators</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
+        <nav class="nav nav-pills mb-3">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#environment-list">List</button>
+        </nav>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="environment-list">
+            <section class="card">
+              <div class="card-body">
+                <button type="button" class="btn btn-primary btn-sm" onclick="api('/environment_indicators/','GET')">Load Environment Indicators</button>
               </div>
             </section>
           </div>

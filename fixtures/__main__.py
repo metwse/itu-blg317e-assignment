@@ -1,4 +1,4 @@
-from fixtures import l01_economy, l02_misc
+from fixtures import l01_economy, l02_misc, l03_worldbank
 
 from src.state import from_env
 from src import log
@@ -12,6 +12,7 @@ STATUS_FILE = ".load_status"
 PIPELINE = [
     ("economies", l01_economy.load),
     ("misc", l02_misc.load),
+    ("worldbank", l03_worldbank.load),
 ]
 
 
