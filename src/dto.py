@@ -70,7 +70,7 @@ class EconomicIndicatorUpdateDto(BaseModel):
 class HealthIndicatorUpdateDto(BaseModel):
     model_config = ConfigDict(extra='ignore')
 
-    community_health_workers: Optional[int] = None
+    community_health_workers: Optional[float] = None
     prevalence_of_undernourishment: Optional[float] = None
     prevalence_of_severe_food_insecurity: Optional[float] = None
     basic_handwashing_facilities: Optional[float] = None

@@ -53,7 +53,7 @@ class HealthIndicator(BaseModel):
     provider_id: int
     economy_code: str
     year: int
-    community_health_workers: Optional[int]
+    community_health_workers: Optional[float]
     prevalence_of_undernourishment: Optional[float]
     prevalence_of_severe_food_insecurity: Optional[float]
     basic_handwashing_facilities: Optional[float]

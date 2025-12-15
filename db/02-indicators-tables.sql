@@ -21,7 +21,7 @@ CREATE TABLE health_indicators (
     economy_code char(3) NOT NULL REFERENCES economies (code) ON DELETE CASCADE,
     year integer NOT NULL,
     -- per 1,000 people
-    community_health_workers integer,
+    community_health_workers real,
     -- % of population
     prevalence_of_undernourishment real,
     -- % of population
