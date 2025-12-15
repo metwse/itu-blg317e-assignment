@@ -21,6 +21,17 @@ Steps:
     - The application will be accessible at `http://localhost:6767`.
     - The PostgreSQL database will be exposed on port `1234` for debugging.
 
+## Loading Fixtures
+You can fetch WorldBank data and load into database using `fixtures` module.
+`fixtures` keep track of loaded tables with `.load_status` file, and loading
+continues from last completed step if it has been interrupted. Also, database
+configuration of fixtures also read from `.env` and environment variables.
+
+You can load initial data using:
+```
+python3 -m fixtures
+```
+
 ## Architecture & Design Pattern
 This project implements a layered architecture with a heavy reliance on Python
 generics TypeVar to minimize code duplication.
@@ -92,7 +103,8 @@ unchanged.
 
 ### Run the Application
 You can run the back end service with `python3 -m src` command, after
-installing dependencies in `requirements.txt`.
+installing dependencies in `requirements.txt` with
+`pip install -r requirements.txt`.
 
 ### Cleanup
 To stop and remove the manual development database container:
