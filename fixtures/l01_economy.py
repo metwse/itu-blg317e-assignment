@@ -1,6 +1,6 @@
 """Load economies table (names, codes, regions)."""
 
-from fixtures.worldbank_api import REGION_MAPPING, fetch_all
+from fixtures.worldbank_api import REGION_MAPPING, fetch
 
 from src.entities import Economy, Region
 from src.state import State
@@ -9,7 +9,7 @@ from typing import cast
 
 
 async def load(state: State):
-    economies = await fetch_all("country")
+    economies = await fetch("country", all=True)
 
     for economy in economies:
         region = REGION_MAPPING[economy['region']['id']] \
