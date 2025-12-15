@@ -1,4 +1,4 @@
-from fixtures import l01_economy
+from fixtures import l01_economy, l02_misc
 
 from src.state import from_env
 from src import log
@@ -8,6 +8,12 @@ import asyncio
 import os
 
 STATUS_FILE = ".load_status"
+
+PIPELINE = [
+    ("economies", l01_economy.load),
+    ("misc", l02_misc.load),
+]
+
 
 load_dotenv()
 
@@ -24,11 +30,6 @@ def save_step_status(step_name):
         f.write(step_name)
 
 
-pipeline = [
-    ("economies", l01_economy.load)
-]
-
-
 async def main():
     state = await from_env()
 
@@ -36,13 +37,24 @@ async def main():
     start_index = 0
 
     if last_step:
-        for i, (name, _) in enumerate(pipeline):
+        for i, (name, _) in enumerate(PIPELINE):
+            log.info(f"Skipping '{name}' as it has already been completed")
             if name == last_step:
                 start_index = i + 1
-                log.info(f"Skipping '{name}' as it has already been completed")
                 break
+    else:
+        clean = input("No previous data found. Do you want to truncate all "
+                      "tables for clean loading? (Y/n): ")
 
-    for name, func in pipeline[start_index:]:
+        if clean == 'Y':
+            for field in state.__dataclass_fields__:
+                if field.endswith("service"):
+                    print(f"Truncating {field}...")
+                    await getattr(state, field).truncate_cascade()
+        else:
+            print("Skip truncate")
+
+    for name, func in PIPELINE[start_index:]:
         log.info(f"Running '{name}'")
         try:
             await func(state)
@@ -52,7 +64,7 @@ async def main():
         except Exception as e:
             log.error(f"An error occured during '{name}'", e=str(e))
 
-    if start_index >= len(pipeline):
+    if start_index >= len(PIPELINE):
         log.info("All fixtures has already been loaded")
 
 

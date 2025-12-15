@@ -180,3 +180,14 @@ class BaseRepo(Generic[T, U, C],
             """,
             *keys
         )
+
+    async def truncate_cascade(self) -> str:
+        """Reset table, cascading foreign keys."""
+
+        return await self.execute(
+            f"""
+            TRUNCATE TABLE {self.table_name}
+                RESTART IDENTITY
+                CASCADE
+            """
+        )

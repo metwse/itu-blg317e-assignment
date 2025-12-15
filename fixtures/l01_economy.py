@@ -1,6 +1,7 @@
+"""Load economies table (names, codes, regions)."""
+
 from src.entities import Economy, Region
 from src.state import State
-from src import log
 
 from typing import cast
 from openpyxl import load_workbook
@@ -44,11 +45,7 @@ async def load(state: State):
         region = row[region_idx]
 
         if code is not None and name is not None:
-            try:
-                await state.economy_service.create(
-                    Economy(code=cast(str, code),
-                            name=cast(str, name),
-                            region=cast(Region | None, region)).model_dump())
-            except Exception:
-                log.error("Could not insert economy, it may already exists",
-                          code=str(code))
+            await state.economy_service.create(
+                Economy(code=cast(str, code),
+                        name=cast(str, name),
+                        region=cast(Region | None, region)))

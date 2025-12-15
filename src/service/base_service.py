@@ -46,3 +46,6 @@ class BaseService(Generic[T, U, C]):
 
     async def delete(self, keys: List[Any]) -> Optional[dict]:
         return await self.repo.delete(keys)
+
+    async def truncate_cascade(self) -> str:
+        return await self.repo.truncate_cascade()
