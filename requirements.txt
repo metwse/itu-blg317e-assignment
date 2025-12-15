@@ -5,3 +5,7 @@ pydantic==2.12
 structlog==25.5
 uvicorn==0.38
 asgiref==3.10
+
+# dependencies for fixtures
+httpx==0.28
+openpyxl==3.1

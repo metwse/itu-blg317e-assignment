@@ -1,3 +1,5 @@
+"""Application layer error handling."""
+
 from pydantic_core import ValidationError
 from enum import Enum
 from typing import Any
@@ -10,6 +12,8 @@ log = structlog.get_logger(__name__)
 
 
 class AppErrorType(Enum):
+    """Maps application logical errors to HTTP status codes."""
+
     NOT_FOUND = 0
     UNAUTHORIZED = 1
     JSON_PARSE_ERROR = 2
@@ -20,6 +24,8 @@ class AppErrorType(Enum):
     details: Any
 
     def code(self) -> int:
+        """Returns the HTTP status code corresponding to the error type."""
+
         match self:
             case AppErrorType.NOT_FOUND:
                 return 404
@@ -34,6 +40,8 @@ class AppErrorType(Enum):
 
 
 class AppError(Exception):
+    """Unified exception class for raising application-specific errors."""
+
     details: Any
     error_type: AppErrorType
 
@@ -51,6 +59,10 @@ class AppError(Exception):
 
 
 def error_handler(e: AppError) -> Response:
+    """Formats an AppError into a JSON Response, redacting internal error
+    details.
+    """
+
     if (e.name == 'INTERNAL_ERROR'):
         log.error("blocked a sent of internal error", details=e.details)
         e.details = "details redacted to not leak sensitive information"
@@ -67,13 +79,21 @@ def error_handler(e: AppError) -> Response:
 
 
 def unspecified_error_handler(e: Exception) -> Response:
+    """Fallback handler that treats unhandled exceptions as Internal Errors
+    (500).
+    """
+
     return error_handler(AppError(AppErrorType.INTERNAL_ERROR, e))
 
 
 def not_found_error_handler(_) -> Response:
+    """Standard handler for 404 Not Found errors."""
+
     return error_handler(AppError(AppErrorType.NOT_FOUND, "route not found"))
 
 
 def validation_error_handler(e: ValidationError) -> Response:
+    """Converts Pydantic validation errors into 400 Bad Request responses."""
+
     return error_handler(AppError(AppErrorType.VALIDATION_ERROR,
                                   details=str(e)))

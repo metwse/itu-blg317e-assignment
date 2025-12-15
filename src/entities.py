@@ -1,15 +1,29 @@
+"""Domain Entities (Database Models).
+
+This module defines the core data structures that map directly to the
+PostgreSQL database tables. These Pydantic models represent the "Truth" of the
+data as it exists in storage.
+
+Usage in Architecture:
+    These models correspond to the Generic Type `T` in `BaseRepo[T, U, C]`.
+    They are primarily used for:
+    1. Parsing rows returned by `asyncpg` (SELECT queries).
+    2. Type hinting the return values of Service and Repository 'get' methods.
+    3. Serializing the final JSON response sent to the client.
+"""
+
 from typing import Optional, Literal
 from pydantic import BaseModel
 
 
 Region = Literal[
-    "Europe & Central Asia",
-    "Middle East & North Africa",
-    "South Asia",
-    "Latin America & Caribbean",
-    "Sub-Saharan Africa",
     "East Asia & Pacific",
-    "North America"
+    "Europe & Central Asia",
+    "Latin America & Caribbean",
+    "Middle East, North Africa, Afghanistan & Pakistan",
+    "North America",
+    "South Asia",
+    "Sub-Saharan Africa"
 ]
 
 
