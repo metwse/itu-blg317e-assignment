@@ -4,3 +4,4 @@ venv
 package-lock.json
 node_modules
 .load_status
+.proxy_list

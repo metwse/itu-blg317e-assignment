@@ -85,7 +85,7 @@ async def fetch(endpoint: str,
                                                 'page': page,
                                                 **default_params
                                             },
-                                            timeout=8,
+                                            timeout=20,
                                             follow_redirects=True)
                 response.raise_for_status()
                 [page_info, data] = response.json()
