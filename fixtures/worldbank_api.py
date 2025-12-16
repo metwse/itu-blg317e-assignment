@@ -1,6 +1,7 @@
 from src import log
 
 import httpx
+import random
 from typing import Dict, List, Optional
 
 BASE_URL = "https://api.worldbank.org/v2"
@@ -41,6 +42,12 @@ REGION_MAPPING = {
     'SSF': "Sub-Saharan Africa",
 }
 
+try:
+    with open(".proxy_list") as f:
+        proxies = list(map(lambda proxy: proxy.strip(), f.readlines()))
+except Exception:
+    proxies = None
+
 
 async def fetch(endpoint: str,
                 all=True,
@@ -48,7 +55,7 @@ async def fetch(endpoint: str,
     """Fetch all items in pagitated """
 
     url = f"{BASE_URL}/{endpoint}"
-    log.info(f"Fetching {url}...")
+    log.info("Fetching", url=url)
 
     default_params = {
         'format': "json",
@@ -61,23 +68,34 @@ async def fetch(endpoint: str,
     page = 1
     res = []
 
-    client = httpx.AsyncClient()
     while True:
-        for i in range(5):
+        for i in range(24):
+            if proxies:
+                proxy = random.choice(proxies)
+                if random.random() < 1/(len(proxies) + 1):
+                    proxy = None
+            else:
+                proxy = None
+
             try:
+                client = httpx.AsyncClient(proxy=proxy)
+
                 response = await client.get(url,
                                             params={
                                                 'page': page,
                                                 **default_params
                                             },
-                                            timeout=30.0,
+                                            timeout=8,
                                             follow_redirects=True)
                 response.raise_for_status()
                 [page_info, data] = response.json()
-                break
 
-            except httpx.ReadTimeout:
-                log.error(f"Request timed out. Trying again {i + 1}/5 {url}")
+                break
+            except httpx.HTTPError as err:
+                log.error(f"HTTP error. Trying again {i + 1}/24.",
+                          url=url,
+                          proxy=proxy,
+                          err=err)
         else:
             raise TimeoutError
 

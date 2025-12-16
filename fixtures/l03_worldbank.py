@@ -45,17 +45,13 @@ async def load(state: State, last_step, set_last_step):
     i = 0 if last_step is None else economies.index(last_step) + 1
 
     for economy in economies[i:]:
-        log.info(f"Fetching health indicators for {economy}...")
-        health_indicators = \
-            await fetch_indicators(HEALTH_INDICATORS, economy)
-
-        log.info(f"Fetching economic indicators for {economy}...")
-        economic_indicators = \
-            await fetch_indicators(ECONOMIC_INDICATORS, economy)
-
-        log.info(f"Fetching environment indicators for {economy}...")
-        environment_indicator = \
-            await fetch_indicators(ENVIRONMENT_INDICATORS, economy)
+        log.info(f"Fetching all indicators for {economy}...")
+        health_indicators, economic_indicators, environment_indicator = \
+            await asyncio.gather(
+                fetch_indicators(HEALTH_INDICATORS, economy),
+                fetch_indicators(ECONOMIC_INDICATORS, economy),
+                fetch_indicators(ENVIRONMENT_INDICATORS, economy)
+            )
 
         log.info(f"Inserting indicators for {economy} to database...")
         await asyncio.gather(
