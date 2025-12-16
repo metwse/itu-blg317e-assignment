@@ -34,6 +34,32 @@ def save_step_status(step_name, step_part: Optional[str]):
         f.write(step_name if step_part is None else f"{step_name}.{step_part}")
 
 
+async def run_migration(name, func, last_step, state):
+    log.info(f"Running '{name}'")
+
+    async def run():
+        if last_step:
+            last_step_name, last_step_part = last_step
+        else:
+            last_step_name = last_step_part = None
+
+        await func(state,
+                   last_step_part if last_step_name == name else None,
+                   lambda part: save_step_status(name, part))
+
+        save_step_status(name, None)
+
+    while True:
+        try:
+            await run()
+            log.info(f"Done '{name}'")
+
+            break
+        except Exception as err:
+            log.error(f"An error occured during '{name}'",
+                      err=str(err), ty=type(err))
+
+
 async def main():
     state = await from_env()
 
@@ -70,23 +96,7 @@ async def main():
         return log.info("All fixtures has already been loaded")
 
     for name, func in PIPELINE[start_index:-1]:
-        log.info(f"Running '{name}'")
-        try:
-            if last_step:
-                last_step_name, last_step_part = last_step
-            else:
-                last_step_name = last_step_part = None
-
-            await func(state,
-                       last_step_part if last_step_name == name else None,
-                       lambda part: save_step_status(name, part))
-
-            save_step_status(name, None)
-
-            log.info(f"Done '{name}'")
-        except Exception as e:
-            log.error(f"An error occured during '{name}'", e=str(e))
-
+        await run_migration(name, func, last_step, state)
 
 if __name__ == "__main__":
     asyncio.run(main())

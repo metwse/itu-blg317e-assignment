@@ -63,17 +63,26 @@ async def fetch(endpoint: str,
 
     client = httpx.AsyncClient()
     while True:
-        response = await client.get(url,
-                                    params={
-                                        'page': page,
-                                        **default_params
-                                    },
-                                    timeout=30.0,
-                                    follow_redirects=True)
-        response.raise_for_status()
-        [page_info, data] = response.json()
+        for i in range(5):
+            try:
+                response = await client.get(url,
+                                            params={
+                                                'page': page,
+                                                **default_params
+                                            },
+                                            timeout=30.0,
+                                            follow_redirects=True)
+                response.raise_for_status()
+                [page_info, data] = response.json()
+                break
 
-        res.extend(data)
+            except httpx.ReadTimeout:
+                log.error(f"Request timed out. Trying again {i + 1}/5 {url}")
+        else:
+            raise TimeoutError
+
+        if data is not None:
+            res.extend(data)
         page += 1
 
         if page > page_info['pages'] or not all:
@@ -86,11 +95,11 @@ async def fetch_indicators(indicator_mapping: Dict[str, str],
                            economy: str):
     res = {}
 
-    log.info(f"Fetching all indicators for {economy}...")
-    res[economy] = {}
     for wb_indicator, indicator in indicator_mapping.items():
-        res[economy][indicator] = \
-            await fetch(f"country/{economy}/indicator/{wb_indicator}",
-                        all=False, params={'per_page': 50})
+        res[indicator] = \
+            list(map(lambda v: [v['date'], v['value']],
+                     await fetch(
+                         f"country/{economy}/indicator/{wb_indicator}",
+                         all=False, params={'per_page': 50})))
 
     return res
