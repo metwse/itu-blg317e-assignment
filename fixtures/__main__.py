@@ -34,10 +34,12 @@ def save_step_status(step_name, step_part: Optional[str]):
         f.write(step_name if step_part is None else f"{step_name}.{step_part}")
 
 
-async def run_migration(name, func, last_step, state):
+async def run_migration(name, func, state):
     log.info(f"Running '{name}'")
 
     async def run():
+        last_step = get_last_completed_step()
+
         if last_step:
             last_step_name, last_step_part = last_step
         else:
@@ -96,7 +98,7 @@ async def main():
         return log.info("All fixtures has already been loaded")
 
     for name, func in PIPELINE[start_index:-1]:
-        await run_migration(name, func, last_step, state)
+        await run_migration(name, func, state)
 
 if __name__ == "__main__":
     asyncio.run(main())
