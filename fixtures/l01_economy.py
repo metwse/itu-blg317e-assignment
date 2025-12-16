@@ -8,7 +8,7 @@ from src.state import State
 from typing import cast
 
 
-async def load(state: State):
+async def load(state: State, *_):
     economies = await fetch("country", all=True)
 
     for economy in economies:

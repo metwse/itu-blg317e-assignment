@@ -83,15 +83,14 @@ async def fetch(endpoint: str,
 
 
 async def fetch_indicators(indicator_mapping: Dict[str, str],
-                           economies: List[str]):
+                           economy: str):
     res = {}
 
-    for economy in economies:
-        log.info(f"Fetching all indicators for {economy}...")
-        res[economy] = {}
-        for wb_indicator, indicator in indicator_mapping.items():
-            res[economy][indicator] = \
-                await fetch(f"country/{economy}/indicator/{wb_indicator}",
-                            all=False, params={'per_page': 50})
+    log.info(f"Fetching all indicators for {economy}...")
+    res[economy] = {}
+    for wb_indicator, indicator in indicator_mapping.items():
+        res[economy][indicator] = \
+            await fetch(f"country/{economy}/indicator/{wb_indicator}",
+                        all=False, params={'per_page': 50})
 
     return res
