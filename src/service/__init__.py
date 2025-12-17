@@ -1,10 +1,7 @@
-from .provider_service import ProviderService
+from .provider_service import ProviderService, UserService
 from .permission_service import PermissionService
 from .economy_service import EconomyService
-from .indicator_services import HealthIndicatorService, \
-    EconomicIndicatorService, \
-    EnvironmentIndicatorService
+from .indicator_services import IndicatorService
 
 __all__ = ['ProviderService', 'PermissionService', 'EconomyService',
-           'HealthIndicatorService', 'EconomicIndicatorService',
-           'EnvironmentIndicatorService']
+           'IndicatorService', 'UserService']

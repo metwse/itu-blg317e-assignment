@@ -1,10 +1,15 @@
 from .base_repo import BaseRepo
 
-from src.dto import EconomyUpdateDto, PermissionUpdateDto, \
-    ProviderCreateDto, ProviderUpdateDto, EconomicIndicatorUpdateDto, \
-    HealthIndicatorUpdateDto, EnvironmentIndicatorUpdateDto
-from src.entities import Economy, Permission, Provider, \
-    EconomicIndicator, HealthIndicator, EnvironmentIndicator
+from src.dto import (
+    EconomyUpdateDto, EconomyCreateDto,
+    PermissionUpdateDto, PermissionCreateDto,
+    ProviderCreateDto, ProviderUpdateDto,
+    UserCreateDto, UserUpdateDto,
+    IndicatorUpdateDto, IndicatorCreateDto
+)
+from src.entities import (
+    Economy, Permission, Provider, Indicator, User
+)
 
 
 class ProviderRepo(BaseRepo[Provider, ProviderUpdateDto, ProviderCreateDto]):
@@ -13,51 +18,32 @@ class ProviderRepo(BaseRepo[Provider, ProviderUpdateDto, ProviderCreateDto]):
                          (Provider, ProviderUpdateDto, ProviderCreateDto))
 
 
-class EconomyRepo(BaseRepo[Economy, EconomyUpdateDto, Economy]):
+class UserRepo(BaseRepo[User, UserUpdateDto, UserCreateDto]):
+    def __init__(self, pool):
+        super().__init__(pool, 'users', ['id'],
+                         (User, UserUpdateDto, UserCreateDto))
+
+
+class EconomyRepo(BaseRepo[Economy, EconomyUpdateDto, EconomyCreateDto]):
     def __init__(self, pool):
         super().__init__(pool, 'economies', ['code'],
-                         (Economy, EconomyUpdateDto, Economy))
+                         (Economy, EconomyUpdateDto, EconomyCreateDto))
 
 
-class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto, Permission]):
+class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto,
+                              PermissionCreateDto]):
     def __init__(self, pool):
-        super().__init__(pool, 'permissions', ['provider_id', 'economy_code'],
-                         (Permission, PermissionUpdateDto, Permission))
+        super().__init__(pool, 'permissions', ['id'],
+                         (Permission, PermissionUpdateDto,
+                          PermissionCreateDto))
 
 
-class HealthIndicatorRepo(BaseRepo[HealthIndicator,
-                          HealthIndicatorUpdateDto,
-                          HealthIndicator]):
+class IndicatorRepo(BaseRepo[Indicator, IndicatorUpdateDto,
+                             IndicatorCreateDto]):
     def __init__(self, pool):
-        super().__init__(pool, 'health_indicators',
+        super().__init__(pool, 'indicators',
                          ['provider_id', 'economy_code', 'year'],
-                         (HealthIndicator,
-                          HealthIndicatorUpdateDto,
-                          HealthIndicator))
+                         (Indicator, IndicatorUpdateDto, IndicatorCreateDto))
 
 
-class EconomicIndicatorRepo(BaseRepo[EconomicIndicator,
-                            EconomicIndicatorUpdateDto,
-                            EconomicIndicator]):
-    def __init__(self, pool):
-        super().__init__(pool, 'economic_indicators',
-                         ['provider_id', 'economy_code', 'year'],
-                         (EconomicIndicator,
-                          EconomicIndicatorUpdateDto,
-                          EconomicIndicator))
-
-
-class EnvironmentIndicatorRepo(BaseRepo[EnvironmentIndicator,
-                               EnvironmentIndicatorUpdateDto,
-                               EnvironmentIndicator]):
-    def __init__(self, pool):
-        super().__init__(pool, 'environment_indicators',
-                         ['provider_id', 'economy_code', 'year'],
-                         (EnvironmentIndicator,
-                          EnvironmentIndicatorUpdateDto,
-                          EnvironmentIndicator))
-
-
-__all__ = ['EconomyRepo', 'ProviderRepo', 'PermissionRepo',
-           'EconomicIndicatorRepo', 'HealthIndicatorRepo',
-           'EnvironmentIndicatorRepo']
+__all__ = ['EconomyRepo', 'ProviderRepo', 'PermissionRepo', 'IndicatorRepo']

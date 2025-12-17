@@ -12,72 +12,100 @@ Usage in Architecture:
     3. Serializing the final JSON response sent to the client.
 """
 
-from typing import Optional, Literal
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, Field, model_validator
 
 
-Region = Literal[
-    "East Asia & Pacific",
-    "Europe & Central Asia",
-    "Latin America & Caribbean",
-    "Middle East, North Africa, Afghanistan & Pakistan",
-    "North America",
-    "South Asia",
-    "Sub-Saharan Africa"
-]
+# 1. Lookups (Regions & Income Levels)
+# ---------------------------------------------------------
+class Region(BaseModel):
+    id: str = Field(..., max_length=3)
+    name: str
+
+
+class IncomeLevel(BaseModel):
+    id: str = Field(..., max_length=3)
+    name: str
+
+
+# 2. Auth Entities (Provider & User)
+# ---------------------------------------------------------
+class User(BaseModel):
+    id: int
+    email: str
+    password: str
+    name: str
 
 
 class Provider(BaseModel):
     id: int
-    email: str
+    administrative_account: int
+    technical_account: Optional[int] = None
     name: str
-    password_hash: str
+    description: Optional[str] = None
     nologin: bool
-    is_admin: bool
 
 
+# 3. Core Entities (Economy & Permissions)
+# ---------------------------------------------------------
 class Economy(BaseModel):
-    code: str
+    code: str = Field(..., max_length=3)
     name: str
-    region: Optional[Region] = None
+    region: Optional[str] = Field(None, max_length=3)
+    income_level: Optional[str] = Field(None, max_length=3)
+    is_aggregate: bool
+    capital_city: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
 
 class Permission(BaseModel):
+    id: int
     provider_id: int
-    economy_code: str
     year_start: int
     year_end: int
+    footnote: Optional[str] = None
+
+    # Permission Scope (XOR)
+    economy_code: Optional[str] = Field(None, max_length=3)
+    region: Optional[str] = Field(None, max_length=3)
+
+    @model_validator(mode='after')
+    def check_scope_xor(self):
+        """Permission must be for EITHER an economy OR a region, never both or
+        neither.
+        """
+        has_economy = self.economy_code is not None
+        has_region = self.region is not None
+
+        if has_economy == has_region:
+            raise ValueError("Permission must specify either 'economy_code' "
+                             "or 'region', but not both.")
+        return self
 
 
-class HealthIndicator(BaseModel):
+# 4. Indicator Entity
+# ---------------------------------------------------------
+class Indicator(BaseModel):
     provider_id: int
     economy_code: str
     year: int
-    community_health_workers: Optional[float]
-    prevalence_of_undernourishment: Optional[float]
-    prevalence_of_severe_food_insecurity: Optional[float]
-    basic_handwashing_facilities: Optional[float]
-    safely_managed_drinking_water_services: Optional[float]
-    diabetes_prevalence: Optional[float]
 
+    industry: Optional[float] = None
+    gdp_per_capita: Optional[float] = None
+    trade: Optional[float] = None
+    agriculture_forestry_and_fishing: Optional[float] = None
 
-class EconomicIndicator(BaseModel):
-    provider_id: int
-    economy_code: str
-    year: int
-    industry: Optional[float]
-    gdp_per_capita: Optional[float]
-    trade: Optional[float]
-    agriculture_forestry_and_fishing: Optional[float]
+    community_health_workers: Optional[float] = None
+    prevalence_of_undernourishment: Optional[float] = None
+    prevalence_of_severe_food_insecurity: Optional[float] = None
+    basic_handwashing_facilities: Optional[float] = None
+    safely_managed_drinking_water_services: Optional[float] = None
+    diabetes_prevalence: Optional[float] = None
 
-
-class EnvironmentIndicator(BaseModel):
-    provider_id: int
-    economy_code: str
-    year: int
-    energy_use: Optional[float]
-    access_to_electricity: Optional[float]
-    alternative_and_nuclear_energy: Optional[float]
-    permanent_cropland: Optional[float]
-    crop_production_index: Optional[float]
-    gdp_per_unit_of_energy_use: Optional[float]
+    energy_use: Optional[float] = None
+    access_to_electricity: Optional[float] = None
+    alternative_and_nuclear_energy: Optional[float] = None
+    permanent_cropland: Optional[float] = None
+    crop_production_index: Optional[float] = None
+    gdp_per_unit_of_energy_use: Optional[float] = None
