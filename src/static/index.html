@@ -43,7 +43,7 @@
             <button class="nav-link active" id="providers-tab" data-bs-toggle="tab" data-bs-target="#providers" type="button" role="tab" aria-controls="providers" aria-selected="true">Providers</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="countries-tab" data-bs-toggle="tab" data-bs-target="#countries" type="button" role="tab" aria-controls="countries" aria-selected="false">Countries</button>
+            <button class="nav-link" id="economies-tab" data-bs-toggle="tab" data-bs-target="#economies" type="button" role="tab" aria-controls="economies" aria-selected="false">Economies</button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab" aria-controls="permissions" aria-selected="false">Permissions</button>
@@ -127,23 +127,23 @@
         </div>
       </div>
 
-      <div class="tab-pane fade" id="countries" role="tabpanel" aria-labelledby="countries-tab">
+      <div class="tab-pane fade" id="economies" role="tabpanel" aria-labelledby="economies-tab">
         <nav class="nav nav-pills mb-3">
-          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#countries-list">List</button>
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#countries-get">Get</button>
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#countries-add">Add</button>
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#countries-edit">Edit</button>
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#countries-delete">Delete</button>
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#economies-list">List</button>
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#economies-get">Get</button>
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#economies-add">Add</button>
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#economies-edit">Edit</button>
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#economies-delete">Delete</button>
         </nav>
         <div class="tab-content">
-          <div class="tab-pane fade show active" id="countries-list">
+          <div class="tab-pane fade show active" id="economies-list">
             <section class="card">
               <div class="card-body">
                 <button type="button" class="btn btn-primary btn-sm" onclick="api('/economies/','GET')">Load Economies</button>
               </div>
             </section>
           </div>
-          <div class="tab-pane fade" id="countries-get">
+          <div class="tab-pane fade" id="economies-get">
             <section class="card">
               <div class="card-body">
                 <h3 class="h6 mb-3">Get Economy</h3>
@@ -154,7 +154,7 @@
               </div>
             </section>
           </div>
-          <div class="tab-pane fade" id="countries-add">
+          <div class="tab-pane fade" id="economies-add">
             <section class="card">
               <div class="card-body">
                 <h3 class="h6 mb-3">Add Economy</h3>
@@ -176,7 +176,7 @@
               </div>
             </section>
           </div>
-          <div class="tab-pane fade" id="countries-edit">
+          <div class="tab-pane fade" id="economies-edit">
             <section class="card">
               <div class="card-body">
                 <h3 class="h6 mb-3">Edit Economy</h3>
@@ -198,7 +198,7 @@
               </div>
             </section>
           </div>
-          <div class="tab-pane fade" id="countries-delete">
+          <div class="tab-pane fade" id="economies-delete">
             <section class="card">
               <div class="card-body">
                 <h3 class="h6 mb-3">Delete Economy</h3>

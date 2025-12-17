@@ -77,7 +77,7 @@ class BaseRepo(Generic[T, U, C],
             f"""
             SELECT * FROM {self.table_name}
                 WHERE {self.key_where_clauses}
-                ORDER BY ${self.key_columns} DESC
+                ORDER BY {self.key_columns} DESC
             """,
             *keys
         )

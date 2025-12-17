@@ -20,58 +20,94 @@
   <input id="token" placeholder="internal access token"/>
   <script src="js/admin.js"></script>
   <main>
+    <x-table x-table="users">
+      <input name="id" type="number" x-key x-nocreate />
+      <input name="name" placeholder="Full Name" />
+      <input name="email" placeholder="Email" />
+      <input name="password" type="password" placeholder="Password" />
+    </x-table>
+
     <x-table x-table="providers">
       <input name="id" type="number" x-key x-nocreate />
-      <input name="name" />
-      <input name="email" />
-      <input name="password_hash" type="password" />
-      <input name="is_admin" type="checkbox" />
+
+      <input name="administrative_account" type="number" placeholder="Admin User ID" />
+      <input name="technical_account" x-opt type="number" placeholder="Tech User ID" />
+
+      <input name="name" placeholder="Provider Name" />
+      <input name="description" placeholder="Description" x-opt />
+
       <input name="nologin" type="checkbox" />
     </x-table>
+
     <x-table x-table="economies">
-      <input name="code" x-key />
-      <input name="name" />
+      <input name="code" x-key placeholder="Code (e.g. TUR)" maxlength="3" />
+      <input name="name" placeholder="Name" />
+
       <select name="region" x-opt>
         <option value="">Region</option>
-        <option>East Asia &amp; Pacific</option>
-        <option>Europe &amp; Central Asia</option>
-        <option>Latin America &amp; Caribbean</option>
-        <option>Middle East, North Africa, Afghanistan &amp; Pakistan</option>
-        <option>North America</option>
-        <option>South Asia</option>
-        <option>Sub-Saharan Africa</option>
+        <option value="EAS">East Asia & Pacific</option>
+        <option value="ECS">Europe & Central Asia</option>
+        <option value="LCN">Latin America & Caribbean</option>
+        <option value="MEA">Middle East, North Africa...</option>
+        <option value="NAC">North America</option>
+        <option value="SAS">South Asia</option>
+        <option value="SSF">Sub-Saharan Africa</option>
       </select>
+
+      <select name="income_level" x-opt>
+        <option value="">Income Level</option>
+        <option value="HIC">High income</option>
+        <option value="LIC">Low income</option>
+        <option value="LMC">Lower middle income</option>
+        <option value="UMC">Upper middle income</option>
+        <option value="INX">Not classified</option>
+      </select>
+
+      <input name="is_aggregate" type="checkbox" />
+      <input name="capital_city" placeholder="Capital City" x-opt />
+      <input name="lat" type="number" step="any" placeholder="Latitude" x-opt />
+      <input name="lng" type="number" step="any" placeholder="Longitude" x-opt />
     </x-table>
+
     <x-table x-table="permissions">
-      <input name="provider_id" type="number" x-key />
-      <input name="economy_code" x-key />
-      <input name="year_start" type="number" />
-      <input name="year_end" type="number" />
+      <input name="id" type="number" x-key x-nocreate />
+
+      <input name="provider_id" type="number" placeholder="Provider ID" />
+
+      <input name="economy_code" placeholder="Eco Code" maxlength="3" x-opt />
+      <select name="region" x-opt>
+        <option value="">Region</option>
+        <option value="EAS">East Asia & Pacific</option>
+        <option value="ECS">Europe & Central Asia</option>
+        <option value="LCN">Latin America & Caribbean</option>
+        <option value="MEA">Middle East, North Africa...</option>
+        <option value="NAC">North America</option>
+        <option value="SAS">South Asia</option>
+        <option value="SSF">Sub-Saharan Africa</option>
+      </select>
+
+      <input name="year_start" type="number" placeholder="Start Year" />
+      <input name="year_end" type="number" placeholder="End Year" />
+      <input name="footnote" placeholder="Footnote" x-opt />
     </x-table>
-    <x-table x-table="health_indicators">
+
+    <x-table x-table="indicators">
       <input name="provider_id" type="number" x-key />
       <input name="economy_code" x-key />
       <input name="year" type="number" x-key />
+
       <input name="community_health_workers" type="number" />
       <input name="prevalence_of_undernourishment" type="number" />
       <input name="prevalence_of_severe_food_insecurity" type="number" />
       <input name="basic_handwashing_facilities" type="number" />
       <input name="safely_managed_drinking_water_services" type="number" />
       <input name="diabetes_prevalence" type="number" />
-    </x-table>
-    <x-table x-table="economic_indicators">
-      <input name="provider_id" type="number" x-key />
-      <input name="economy_code" x-key />
-      <input name="year" type="number" x-key />
+
       <input name="industry" type="number" />
       <input name="gdp_per_capita" type="number" />
       <input name="trade" type="number" />
       <input name="agriculture_forestry_and_fishing" type="number" />
-    </x-table>
-    <x-table x-table="environment_indicators">
-      <input name="provider_id" type="number" x-key />
-      <input name="economy_code" x-key />
-      <input name="year" type="number" x-key />
+
       <input name="energy_use" type="number" />
       <input name="access_to_electricity" type="number" />
       <input name="alternative_and_nuclear_energy" type="number" />

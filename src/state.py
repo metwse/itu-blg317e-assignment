@@ -5,8 +5,8 @@ import asyncpg
 import os
 
 from src.service import ProviderService, EconomyService, PermissionService
-from src.service.indicator_services import EconomicIndicatorService, \
-    EnvironmentIndicatorService, HealthIndicatorService
+from src.service.indicator_services import IndicatorService
+from src.service.provider_service import UserService
 
 
 @dataclass
@@ -22,11 +22,10 @@ class State:
     """
 
     provider_service: ProviderService
+    user_service: UserService
     economy_service: EconomyService
     permission_service: PermissionService
-    health_indicator_service: HealthIndicatorService
-    economic_indicator_service: EconomicIndicatorService
-    environment_indicator_service: EnvironmentIndicatorService
+    indicator_service: IndicatorService
     internal_access_token: str | None
 
 

@@ -1,19 +1,8 @@
 from .base_service import BaseService
 
-from src.repo import HealthIndicatorRepo, EnvironmentIndicatorRepo, \
-    EconomicIndicatorRepo
+from src.repo import IndicatorRepo
 
 
-class HealthIndicatorService(BaseService):
+class IndicatorService(BaseService):
     def __init__(self, pool):
-        super().__init__(HealthIndicatorRepo(pool))
-
-
-class EconomicIndicatorService(BaseService):
-    def __init__(self, pool):
-        super().__init__(EconomicIndicatorRepo(pool))
-
-
-class EnvironmentIndicatorService(BaseService):
-    def __init__(self, pool):
-        super().__init__(EnvironmentIndicatorRepo(pool))
+        super().__init__(IndicatorRepo(pool))
