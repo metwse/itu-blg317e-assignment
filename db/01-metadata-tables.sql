@@ -2,28 +2,64 @@
 -- -------------------------------------------------------------
 CREATE TABLE providers (
     id bigserial NOT NULL PRIMARY KEY,
-    email text NOT NULL UNIQUE,
+    primary_mail bigint NOT NULL,
     name text NOT NULL,
-    password_hash text NOT NULL,
+    password text NOT NULL,
     nologin boolean NOT NULL,
     is_admin boolean NOT NULL
 );
 
--- 2 "economies" table
+-- 2 "mails" table
+-- -------------------------------------------------------------
+CREATE TABLE mails (
+    id bigserial NOT NULL PRIMARY KEY,
+    email text NOT NULL UNIQUE,
+    provider_id bigint NOT NULL REFERENCES providers (id) ON DELETE CASCADE
+);
+
+ALTER TABLE providers
+    ADD CONSTRAINT fk_providers_primary_mail
+    FOREIGN KEY (primary_mail) REFERENCES mails (id);
+
+-- 3 "economies" table
 -- -------------------------------------------------------------
 CREATE TABLE economies (
     code char(3) NOT NULL PRIMARY KEY,
     name text NOT NULL UNIQUE,
-    region region
+    region char(3) NOT NULL REFERENCES regions (id),
+    income_level char(3) NOT NULL REFERENCES income_levels (id),
+    is_aggregate bool NOT NULL,
+    capital_city text,
+    lat real,
+    lng real
 );
 
--- 3 "permissions" table
+-- 4 "permissions" table
+-- permission can be given to a region XOR an economy
 -- -------------------------------------------------------------
 CREATE TABLE permissions (
+    id bigserial PRIMARY KEY,
     provider_id bigint NOT NULL REFERENCES providers (id) ON DELETE CASCADE,
-    economy_code char(3) NOT NULL REFERENCES economies (code) ON DELETE CASCADE,
+    economy_code char(3) REFERENCES economies (code) ON DELETE CASCADE,
+    region char(3) REFERENCES regions (id),
     year_start integer NOT NULL,
     year_end integer NOT NULL,
+    footnote text,
 
-    PRIMARY KEY (provider_id, economy_code, year_start, year_end)
+    -- 1. either economy OR region, not both, not neither
+    CONSTRAINT check_permission_scope_xor
+    CHECK (
+        (economy_code IS NOT NULL AND region IS NULL) OR
+        (economy_code IS NULL AND region IS NOT NULL)
+    )
 );
+
+-- ensure uniqueness for economy-based permissions
+CREATE UNIQUE INDEX idx_permissions_unique_economy
+    ON permissions (provider_id, economy_code, year_start, year_end)
+    WHERE region IS NULL;
+
+-- ensure uniqueness for region-based permissions
+CREATE UNIQUE INDEX idx_permissions_unique_region
+    ON permissions (provider_id, region, year_start, year_end)
+    WHERE economy_code IS NULL;
