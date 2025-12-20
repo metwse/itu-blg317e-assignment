@@ -535,19 +535,24 @@
 
     function showOutput(content, isError = false) {
       if (isError) {
-        const errType = typeof content === 'object' ? (content.type || content.code || 'ValidationError') : 'ValidationError';
-        const errMsg = typeof content === 'object' ? (content.error || content.message || JSON.stringify(content)) : content;
-        showToast(errType, errMsg);
+        const errType = typeof content === 'object' ? (content.type || content.code || 'Error') : 'Error';
+        const errMsg = typeof content === 'object' ? (content.error || content.message || '') : content;
+        const errDetails = typeof content === 'object' && content.details ? content.details : '';
+        showToast(errType, errMsg, errDetails);
         return;
       }
       $('output').innerHTML = `<pre>${typeof content === 'string' ? content : JSON.stringify(content, null, 2)}</pre>`;
     }
 
-    function showToast(type, msg) {
+    function showToast(type, msg, details = '') {
       const toast = $('toast');
-      toast.innerHTML = `<strong>${type}:</strong> ${msg}`;
+      let html = `<strong>${type}:</strong> ${msg}`;
+      if (details && details !== '{}') {
+        html += `<br><small style="opacity:0.8;font-size:0.7em;white-space:pre-wrap;">${details}</small>`;
+      }
+      toast.innerHTML = html;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 4000);
+      setTimeout(() => toast.classList.remove('show'), 6000);
 	  toast.onclick = () => toast.classList.remove('show');
     }
 
