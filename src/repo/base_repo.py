@@ -230,4 +230,3 @@ class BaseRepo(Generic[T, U, C],
                 CASCADE
             """
         )
-

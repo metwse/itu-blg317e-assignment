@@ -42,7 +42,12 @@ class UserHandler(BaseHandler):
                            f"User with email '{email}' already exists.")
 
     async def delete_user(self, id):  # MANAGEMENT
-        res = await self.service.delete_user(int(id))
+        try:
+            res = await self.service.delete_user(int(id))
+        except Exception:
+            raise AppError(AppErrorType.FK_VIOLATION,
+                           f"Could not delete user with id {id}. There may be "
+                           "a provider referencing this user.")
 
         if not res:
             raise AppError(AppErrorType.NOT_FOUND, f"User with id {id} not "

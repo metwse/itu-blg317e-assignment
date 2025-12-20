@@ -20,6 +20,7 @@ class AppErrorType(Enum):
     INTERNAL_ERROR = 3
     VALIDATION_ERROR = 4
     ALREADY_EXITS = 5
+    FK_VIOLATION = 6
 
     details: Any
 
@@ -33,7 +34,8 @@ class AppErrorType(Enum):
                 return 401
             case AppErrorType.JSON_PARSE_ERROR \
                     | AppErrorType.VALIDATION_ERROR \
-                    | AppErrorType.ALREADY_EXITS:
+                    | AppErrorType.ALREADY_EXITS \
+                    | AppErrorType.FK_VIOLATION:
                 return 400
             case AppErrorType.INTERNAL_ERROR:
                 return 500
