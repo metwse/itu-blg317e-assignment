@@ -50,6 +50,10 @@ CREATE TABLE permissions (
     CHECK (
         (economy_code IS NOT NULL AND region IS NULL) OR
         (economy_code IS NULL AND region IS NOT NULL)
+    ),
+    CONSTRAINT check_permission_year_start_end
+    CHECK (
+        year_start >= year_end
     )
 );
 

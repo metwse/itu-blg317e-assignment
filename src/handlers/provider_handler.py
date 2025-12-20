@@ -1,9 +1,9 @@
-from src.error import AppError, AppErrorType
 from .base_handler import BaseHandler
 from .util import json
 
 from src.service import ProviderService
-from src.dto import ProviderCreateDto, ProviderUpdateDto
+from src.dto import ProviderCreateDto
+from src.error import AppError, AppErrorType
 
 from flask import jsonify
 
@@ -18,7 +18,7 @@ class ProviderHandler(BaseHandler):
         providers = await self.service.get_all_providers()
         return jsonify(providers)
 
-    async def create_provider(self):  # MANAGEMENT
+    async def create_provider(self):
         payload = ProviderCreateDto(**json())
 
         try:
@@ -45,7 +45,7 @@ class ProviderHandler(BaseHandler):
                                "exists.")
             raise e
 
-    async def delete_provider(self, id: int):  # MANAGEMENT
+    async def delete_provider(self, id: int):
         res = await self.service.delete_provider(int(id))
 
         if not res:

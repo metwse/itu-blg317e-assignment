@@ -41,6 +41,16 @@ def management_routes(management_console_token,
                             view_func=provider_handler.update_provider,
                             methods=["PATCH"])
 
+    management.add_url_rule("/permissions",
+                            view_func=permission_handler.list_permissions,
+                            methods=["GET"])
+    management.add_url_rule("/permissions",
+                            view_func=permission_handler.create_permission,
+                            methods=["POST"])
+    management.add_url_rule("/permissions/<id>",
+                            view_func=permission_handler.delete_permission,
+                            methods=["DELETE"])
+
     management.before_request(
         management_console_authorize(management_console_token))
 
