@@ -28,7 +28,6 @@ CREATE TABLE indicators (
     crop_production_index real,
     gdp_per_unit_of_energy_use real,
 
-    -- Constraint
     PRIMARY KEY (provider_id, economy_code, year)
 );
 

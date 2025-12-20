@@ -15,6 +15,7 @@ CREATE TABLE providers (
     technical_account bigint REFERENCES users (id),
     name text NOT NULL,
     description text,
+    website_url text,
     nologin boolean NOT NULL
 );
 
@@ -42,6 +43,7 @@ CREATE TABLE permissions (
     year_start integer NOT NULL,
     year_end integer NOT NULL,
     footnote text,
+    created_at timestamp DEFAULT NOW() NOT NULL
 
     -- 1. either economy OR region, not both, not neither
     CONSTRAINT check_permission_scope_xor

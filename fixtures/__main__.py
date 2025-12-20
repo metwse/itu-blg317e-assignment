@@ -1,9 +1,9 @@
-from typing import Optional, Tuple
-from fixtures import l01_economy, l02_misc, l03_worldbank
+from fixtures import l01_download, l02_misc, l03_economies, l04_worldbank
 
 from src.state import from_env
 from src import log
 
+from typing import Optional, Tuple
 from dotenv import load_dotenv
 import asyncio
 import os
@@ -11,9 +11,10 @@ import os
 STATUS_FILE = ".load_status"
 
 PIPELINE = [
-    ('economies', l01_economy.load),
+    ('download', l01_download.load),
     ('misc', l02_misc.load),
-    ('worldbank', l03_worldbank.load),
+    ('economies', l03_economies.load),
+    ('worldbank', l04_worldbank.load),
     ('end', None)
 ]
 
@@ -82,17 +83,6 @@ async def main():
                 break
             else:
                 log.info(skip_msg)
-    else:
-        clean = input("No previous data found. Do you want to truncate all "
-                      "tables for clean loading? (Y/n): ")
-
-        if clean == 'Y':
-            for field in state.__dataclass_fields__:
-                if field.endswith("service"):
-                    print(f"Truncating {field}...")
-                    await getattr(state, field).truncate_cascade()
-        else:
-            print("Skip truncate")
 
     if start_index == len(PIPELINE) - 1:
         return log.info("All fixtures has already been loaded")

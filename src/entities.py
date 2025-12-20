@@ -12,6 +12,7 @@ Usage in Architecture:
     3. Serializing the final JSON response sent to the client.
 """
 
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field, model_validator
 
@@ -43,6 +44,7 @@ class Provider(BaseModel):
     technical_account: Optional[int] = None
     name: str
     description: Optional[str] = None
+    website_url: Optional[str] = None
     nologin: bool
 
 
@@ -65,6 +67,7 @@ class Permission(BaseModel):
     year_start: int
     year_end: int
     footnote: Optional[str] = None
+    created_at: datetime
 
     # Permission Scope (XOR)
     economy_code: Optional[str] = Field(None, max_length=3)

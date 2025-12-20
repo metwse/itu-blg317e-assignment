@@ -33,6 +33,7 @@ class ProviderUpdateDto(BaseModel):
     technical_account: Optional[int] = None
     name: Optional[str] = None
     description: Optional[str] = None
+    website_url: Optional[str] = None
     nologin: Optional[bool] = None
 
 
@@ -41,6 +42,7 @@ class ProviderCreateDto(BaseModel):
     technical_account: Optional[int] = None
     name: str
     description: Optional[str] = None
+    website_url: Optional[str] = None
     nologin: bool
 
 
