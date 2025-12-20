@@ -31,7 +31,7 @@ class PermissionHandler(BaseHandler):
     async def create_permission(self):
         payload = PermissionCreateDto(**json())
 
-        if payload.year_end > payload.year_start:
+        if payload.year_end < payload.year_start:
             raise AppError(AppErrorType.VALIDATION_ERROR,
                            "Range start cannot be larger than end.")
 

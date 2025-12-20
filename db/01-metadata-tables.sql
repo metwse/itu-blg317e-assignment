@@ -53,7 +53,7 @@ CREATE TABLE permissions (
     ),
     CONSTRAINT check_permission_year_start_end
     CHECK (
-        year_start >= year_end
+        year_end >= year_start
     )
 );
 
