@@ -1,5 +1,6 @@
 from fixtures.l01_download import ECONOMIES_FILE_PATH
 
+from src import log
 from src.dto import EconomyCreateDto
 from src.state import State
 
@@ -39,6 +40,12 @@ async def load(state: State, *_):
             except ValueError:
                 lat_val, lng_val = None, None
 
+            capital_city = item.get('capitalCity')
+
+            # Aggregates and some countries do not have a capital city
+            if len(capital_city) == 0:
+                capital_city = None
+
             await state.economy_service.create(
                 EconomyCreateDto(
                     code=item['id'],
@@ -46,14 +53,14 @@ async def load(state: State, *_):
                     region=final_region,
                     income_level=final_income,
                     is_aggregate=is_aggregate,
-                    capital_city=item.get('capitalCity'),
+                    capital_city=capital_city,
                     lat=lat_val,
                     lng=lng_val
                 ))
             success += 1
 
         except Exception as e:
-            print(f"Skipping {item.get('id', 'unknown')}: {e}")
+            log.error(f"Skipping {item.get('id', 'unknown')}: {e}")
             skipped += 1
 
-    print(f"Load Complete. Inserted: {success}, Skipped/Error: {skipped}")
+    log.info(f"Load Complete. Inserted: {success}, Skipped/Error: {skipped}")

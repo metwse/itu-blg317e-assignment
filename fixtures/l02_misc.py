@@ -1,3 +1,4 @@
+from src import log
 from src.dto import ProviderCreateDto, UserCreateDto
 from src.state import State
 
@@ -14,30 +15,33 @@ async def load(state: State, *_):
     else:
         print("!!! Skip truncate")
 
-    await state.user_service.create(
-        UserCreateDto(
-            email="wb-admin@example.com",
-            password="admin",
-            name="WorldBank Admin"
-        ))
+    try:
+        await state.user_service.create(
+            UserCreateDto(
+                email="wb-admin@example.com",
+                password="admin",
+                name="WorldBank Admin"
+            ))
 
-    await state.user_service.create(
-        UserCreateDto(
-            email="wb-technical@example.com",
-            password="technical",
-            name="WorldBank Technical"
-        ))
+        await state.user_service.create(
+            UserCreateDto(
+                email="wb-technical@example.com",
+                password="technical",
+                name="WorldBank Technical"
+            ))
 
-    await state.provider_service.create(
-        ProviderCreateDto(
-            administrative_account=1,
-            technical_account=2,
-            name="WorldBank",
-            website_url="https://worldbank.org/",
-            description="The World Bank is an international bank that lends "
-                        "money and other help [2] to developing nations for "
-                        "infrastructure. The World Bank has the goal of"
-                        "reducing poverty.\n\n"
-                        "The World Bank is part of the World Bank Group",
-            nologin=False
-        ))
+        await state.provider_service.create(
+            ProviderCreateDto(
+                administrative_account=1,
+                technical_account=2,
+                name="WorldBank",
+                website_url="https://worldbank.org/",
+                description="The World Bank is an international bank that "
+                            "lends money and other help [2] to developing "
+                            "nations for infrastructure. The World Bank has "
+                            "the goal of reducing poverty.\n\n"
+                            "The World Bank is part of the World Bank Group",
+                nologin=False
+            ))
+    except Exception as e:
+        log.error(f"Skipping provider creation: {e}")
