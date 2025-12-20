@@ -41,7 +41,7 @@ async def load(state: State, *_):
                             "nations for infrastructure. The World Bank has "
                             "the goal of reducing poverty.\n\n"
                             "The World Bank is part of the World Bank Group",
-                nologin=False
+                immutable=False
             ))
     except Exception as e:
         log.error(f"Skipping provider creation: {e}")

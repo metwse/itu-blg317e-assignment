@@ -16,7 +16,7 @@ CREATE TABLE providers (
     name text NOT NULL,
     description text,
     website_url text,
-    nologin boolean NOT NULL
+    immutable boolean NOT NULL
 );
 
 -- 3 "economies" table

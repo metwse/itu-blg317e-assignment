@@ -45,7 +45,7 @@ class Provider(BaseModel):
     name: str
     description: Optional[str] = None
     website_url: Optional[str] = None
-    nologin: bool
+    immutable: bool
 
 
 # 3. Core Entities (Economy & Permissions)

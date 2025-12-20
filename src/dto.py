@@ -34,7 +34,7 @@ class ProviderUpdateDto(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     website_url: Optional[str] = None
-    nologin: Optional[bool] = None
+    immutable: Optional[bool] = None
 
 
 class ProviderCreateDto(BaseModel):
@@ -43,7 +43,7 @@ class ProviderCreateDto(BaseModel):
     name: str
     description: Optional[str] = None
     website_url: Optional[str] = None
-    nologin: bool
+    immutable: bool
 
 
 # 3. User DTOs

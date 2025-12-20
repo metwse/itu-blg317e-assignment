@@ -3,6 +3,8 @@ The term project for the ITU Database Management Systems (BLG 317E) course.
 This application provides a web-based interface for visualizing data from the
 World Bank.
 
+See [API overview](API-OVERVIEW.md) for routes.
+
 ## Direct Database Access API
 The direct data management routes are protected and grouped under the
 `/internal` prefix. Routes in this group are not enabled by default, you can
