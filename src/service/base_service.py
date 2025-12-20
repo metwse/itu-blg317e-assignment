@@ -1,7 +1,6 @@
 from src.repo.base_repo import BaseRepo
 
 from typing import Any, Generic, List, Optional, TypeVar
-
 from pydantic import BaseModel
 
 

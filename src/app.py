@@ -7,11 +7,13 @@ from src.error import AppError, \
 from src.routes import internal_routes
 from src.state import State
 
-
-from src.handlers.provider_handler import ProviderHandler, UserHandler
-from src.handlers.economy_handler import EconomyHandler
-from src.handlers.permission_handler import PermissionHandler
-from src.handlers.indicator_handler import IndicatorHandler
+from src.handlers import (
+    ProviderHandler,
+    UserHandler,
+    EconomyHandler,
+    PermissionHandler,
+    IndicatorHandler
+)
 
 from pydantic_core import ValidationError
 from flask import Flask, jsonify, send_from_directory

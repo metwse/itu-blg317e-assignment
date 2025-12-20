@@ -1,7 +1,10 @@
-from src.handlers.provider_handler import ProviderHandler, UserHandler
-from src.handlers.economy_handler import EconomyHandler
-from src.handlers.permission_handler import PermissionHandler
-from src.handlers.indicator_handler import IndicatorHandler
+from src.handlers import (
+    ProviderHandler,
+    UserHandler,
+    EconomyHandler,
+    PermissionHandler,
+    IndicatorHandler
+)
 
 from src.middleware import internal_access_authorize
 

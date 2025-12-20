@@ -4,9 +4,13 @@ from dataclasses import dataclass
 import asyncpg
 import os
 
-from src.service import ProviderService, EconomyService, PermissionService
-from src.service.indicator_services import IndicatorService
-from src.service.provider_service import UserService
+from src.service import (
+    ProviderService,
+    EconomyService,
+    PermissionService,
+    IndicatorService,
+    UserService
+)
 
 
 @dataclass

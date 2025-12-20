@@ -1,6 +1,7 @@
+from .util import json
+
 from src import AppError, AppErrorType
 from src.service.base_service import BaseService
-from src.handlers import json
 
 from typing import Generic, TypeVar
 from pydantic import BaseModel

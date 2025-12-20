@@ -1,13 +1,17 @@
-from src.error import AppError, AppErrorType
+from .base_handler import BaseHandler
 
-from flask import request
+from .economy_handler import EconomyHandler
+from .provider_handler import ProviderHandler
+from .permission_handler import PermissionHandler
+from .indicator_handler import IndicatorHandler
+from .user_handler import UserHandler
 
 
-def json():
-    json = request.get_json()
-
-    if not json:
-        raise AppError(AppErrorType.JSON_PARSE_ERROR,
-                       "could not serialize json")
-
-    return json
+__all__ = [
+    'BaseHandler',
+    'EconomyHandler',
+    'ProviderHandler',
+    'PermissionHandler',
+    'IndicatorHandler',
+    'UserHandler'
+]

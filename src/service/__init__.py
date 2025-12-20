@@ -1,7 +1,17 @@
-from .provider_service import ProviderService, UserService
-from .permission_service import PermissionService
-from .economy_service import EconomyService
-from .indicator_services import IndicatorService
+from .base_service import BaseService
 
-__all__ = ['ProviderService', 'PermissionService', 'EconomyService',
-           'IndicatorService', 'UserService']
+from .economy_service import EconomyService
+from .provider_service import ProviderService
+from .permission_service import PermissionService
+from .indicator_services import IndicatorService
+from .user_service import UserService
+
+
+__all__ = [
+    'BaseService',
+    'ProviderService',
+    'PermissionService',
+    'EconomyService',
+    'IndicatorService',
+    'UserService'
+]

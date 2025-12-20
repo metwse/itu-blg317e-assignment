@@ -1,4 +1,4 @@
-from .base_service import BaseService
+from . import BaseService
 
 from src.repo import IndicatorRepo
 

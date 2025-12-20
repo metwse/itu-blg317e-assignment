@@ -119,7 +119,7 @@ class XTable extends HTMLElement {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Token': document.getElementById('token').value,
+          'X-Super-Admin-Secret': document.getElementById('token').value,
         },
         method: 'GET',
       }
@@ -154,7 +154,7 @@ class XTable extends HTMLElement {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Token': document.getElementById('token').value,
+          'X-Super-Admin-Secret': document.getElementById('token').value,
         },
         method: {
           get: 'GET',
