@@ -1,0 +1,74 @@
+:root {
+  --primary: #1E61FF;
+  --color: #FAFAFA;
+
+  --bg1: #313131;
+  --bg2: #414141;
+
+  --bd1: #191919;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: inherit; font-size: inherit;
+  color: var(--color);
+}
+
+body {
+  font-family: Rubik, arial;
+  background-color: var(--bg1);
+  margin: 0;
+}
+
+code, pre { font-family: monospace; }
+
+input[type="submit"], button {
+  padding: 0.25em 0.5em;
+  border: none;
+  background-color: var(--primary);
+  transition: 0.3s filter;
+
+  &:hover:not(:disabled) { filter: brightness(110%); }
+  &:not(:disabled) { cursor: pointer; }
+
+  &:disabled { background-color: var(--bg2); }
+}
+
+input, select {
+  padding: 0.5em 1em;
+  border: none;
+  background-color: transparent;
+  border-bottom: solid 0.125em var(--primary);
+  outline: none;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  padding: 0; min-height: 1em; width: 1em;
+  background-color: var(--color);
+  transition: 0.3s background-color;
+  cursor: pointer;
+  border: none;
+
+  &:checked { background-color: var(--primary); }
+}
+
+input[type=number] { appearance: textfield; }
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: 0.3s border-color, 0.3s filter;
+  cursor: pointer;
+
+  font-weight: 500;
+
+  &:hover {
+    border-color: var(--primary);
+
+    filter: brightness(110%);
+  }
+
+  &:active { opacity: 0.8; }
+}

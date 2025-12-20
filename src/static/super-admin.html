@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Low-Level Database Manager</title>
-  <link rel="stylesheet" href="css/admin.css" />
+  <title>Super Admin</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/super-admin.css" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,10 +16,11 @@
   <p>
     This page is for directly accessing to underlying database.
     <code>/internal</code> rotues allows high degree of transparency in data
-    manipulation. Those routes are protected with internal access token.
+    manipulation. Those routes are protected with internal access token. This
+    page is useful for debug purposses.
   </p>
   <input id="token" placeholder="internal access token"/>
-  <script src="js/admin.js"></script>
+  <script src="js/super-admin.js"></script>
   <main>
     <x-table x-table="users">
       <input name="id" type="number" x-key x-nocreate />
