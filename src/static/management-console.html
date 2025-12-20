@@ -22,6 +22,9 @@
       color: #f0f0f0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+	.text {
+	  color: rgba(255,255,255,0.8) !important;
+	}
     
     .navbar {
       background: rgba(15, 52, 96, 0.9) !important;
@@ -45,6 +48,7 @@
       background: rgba(15, 52, 96, 0.5);
       border-bottom: 1px solid rgba(233, 69, 96, 0.2);
       font-weight: 600;
+	  color: rgba(255,255,255,0.8)
     }
     
     .nav-tabs {
@@ -224,9 +228,33 @@
       border-radius: 4px;
       color: var(--accent);
     }
+
+    #toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 20px 40px;
+      font-size: 2rem;
+      background: #e94560;
+      color: white;
+      border-radius: 10px;
+      font-weight: 500;
+      z-index: 9999;
+      display: none;
+      max-width: 600px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    #toast.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
+  <div id="toast"></div>
+
   <nav class="navbar navbar-dark mb-4">
     <div class="container">
       <span class="navbar-brand">🏢 Management Console</span>
@@ -264,7 +292,7 @@
             <div class="card">
               <div class="card-header">📋 List Users</div>
               <div class="card-body">
-                <p class="text-muted small">Fetch all registered users in the system.</p>
+                <p class="text small">Fetch all registered users in the system.</p>
                 <button class="btn btn-primary" onclick="api('/users', 'GET')">Load Users</button>
               </div>
             </div>
@@ -324,7 +352,7 @@
             <div class="card">
               <div class="card-header">📋 List Providers</div>
               <div class="card-body">
-                <p class="text-muted small">Fetch all providers with resolved user names.</p>
+                <p class="text small">Fetch all providers with resolved user names.</p>
                 <button class="btn btn-primary" onclick="api('/providers', 'GET')">Load Providers</button>
               </div>
             </div>
@@ -369,6 +397,9 @@
                   <input type="text" id="update-provider-name" class="form-control form-control-sm" placeholder="Name (optional)">
                 </div>
                 <div class="mb-2">
+                  <input type="number" id="update-provider-admin" class="form-control form-control-sm" placeholder="Administrative Account (User ID)">
+                </div>
+                <div class="mb-2">
                   <input type="number" id="update-provider-tech" class="form-control form-control-sm" placeholder="Technical Account (User ID)">
                 </div>
                 <div class="mb-2">
@@ -387,7 +418,7 @@
             <div class="card">
               <div class="card-header">🗑️ Delete Provider</div>
               <div class="card-body">
-                <p class="text-muted small">Warning: This will cascade delete all Permissions and Indicators.</p>
+                <p class="text small">Warning: This will cascade delete all Permissions and Indicators.</p>
                 <div class="mb-3">
                   <input type="number" id="delete-provider-id" class="form-control form-control-sm" placeholder="Provider ID">
                 </div>
@@ -405,7 +436,7 @@
             <div class="card">
               <div class="card-header">📋 List Permissions</div>
               <div class="card-body">
-                <p class="text-muted small">Fetch permissions for a specific provider.</p>
+                <p class="text small">Fetch permissions for a specific provider.</p>
                 <div class="mb-3">
                   <input type="number" id="list-perm-provider" class="form-control form-control-sm" placeholder="Provider ID *">
                 </div>
@@ -418,7 +449,6 @@
             <div class="card">
               <div class="card-header">➕ Grant Permission</div>
               <div class="card-body">
-                <p class="text-muted small">Specify either Economy Code OR Region (not both).</p>
                 <div class="mb-2">
                   <input type="number" id="grant-provider-id" class="form-control form-control-sm" placeholder="Provider ID *">
                 </div>
@@ -429,11 +459,22 @@
                   <input type="number" id="grant-year-end" class="form-control form-control-sm" placeholder="Year End *">
                 </div>
                 <div class="mb-2">
+                  <label class="text small d-block mb-1">Scope Type *</label>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="scope-type" id="scope-economy" value="economy" checked onchange="toggleScopeInput()">
+                    <label class="form-check-label" for="scope-economy">Economy</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="scope-type" id="scope-region" value="region" onchange="toggleScopeInput()">
+                    <label class="form-check-label" for="scope-region">Region</label>
+                  </div>
+                </div>
+                <div class="mb-2" id="economy-input">
                   <input type="text" id="grant-economy-code" class="form-control form-control-sm" placeholder="Economy Code (e.g., TUR)" maxlength="3">
                 </div>
-                <div class="mb-2">
+                <div class="mb-2" id="region-input" style="display: none;">
                   <select id="grant-region" class="form-select form-select-sm">
-                    <option value="">-- Select Region (optional) --</option>
+                    <option value="">-- Select Region --</option>
                     <option value="EAS">East Asia & Pacific</option>
                     <option value="ECS">Europe & Central Asia</option>
                     <option value="LCN">Latin America & Caribbean</option>
@@ -455,7 +496,7 @@
             <div class="card">
               <div class="card-header">🗑️ Revoke Permission</div>
               <div class="card-body">
-                <p class="text-muted small">Remove a specific authorization rule by its ID.</p>
+                <p class="text small">Remove a specific authorization rule by its ID.</p>
                 <div class="mb-3">
                   <input type="number" id="revoke-perm-id" class="form-control form-control-sm" placeholder="Permission ID">
                 </div>
@@ -490,8 +531,21 @@
     }
 
     function showOutput(content, isError = false) {
-      const style = isError ? 'border-color: var(--accent);' : '';
-      $('output').innerHTML = `<pre style="${style}">${typeof content === 'string' ? content : JSON.stringify(content, null, 2)}</pre>`;
+      if (isError) {
+        const errType = typeof content === 'object' ? (content.type || content.code || 'ValidationError') : 'ValidationError';
+        const errMsg = typeof content === 'object' ? (content.error || content.message || JSON.stringify(content)) : content;
+        showToast(errType, errMsg);
+        return;
+      }
+      $('output').innerHTML = `<pre>${typeof content === 'string' ? content : JSON.stringify(content, null, 2)}</pre>`;
+    }
+
+    function showToast(type, msg) {
+      const toast = $('toast');
+      toast.innerHTML = `<strong>${type}:</strong> ${msg}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+	  toast.onclick = () => toast.classList.remove('show');
     }
 
     function showLoading() {
@@ -569,7 +623,7 @@
 
     function formatCell(key, value) {
       if (value === null || value === undefined) {
-        return '<span class="text-muted">null</span>';
+        return '<span class="text">null</span>';
       }
       if (typeof value === 'object') {
         if (value.type && value.value) {
@@ -647,11 +701,13 @@
       }
       const body = {};
       const name = $('update-provider-name').value;
+      const admin = $('update-provider-admin').value;
       const tech = $('update-provider-tech').value;
       const desc = $('update-provider-desc').value;
       const immutable = $('update-provider-immutable').checked;
       
       if (name) body.name = name;
+      if (admin) body.administrative_account = parseInt(admin);
       if (tech) body.technical_account = parseInt(tech);
       if (desc) body.description = desc;
       body.immutable = immutable;
@@ -681,15 +737,16 @@
     }
 
     function grantPermission() {
+      const scopeType = document.querySelector('input[name="scope-type"]:checked').value;
       const economyCode = $('grant-economy-code').value.trim().toUpperCase();
       const region = $('grant-region').value;
       
-      if (economyCode && region) {
-        showOutput({ error: 'Specify either Economy Code OR Region, not both' }, true);
+      if (scopeType === 'economy' && !economyCode) {
+        showOutput({ error: 'Economy Code is required' }, true);
         return;
       }
-      if (!economyCode && !region) {
-        showOutput({ error: 'Specify either Economy Code OR Region' }, true);
+      if (scopeType === 'region' && !region) {
+        showOutput({ error: 'Region is required' }, true);
         return;
       }
       
@@ -697,8 +754,8 @@
         provider_id: parseInt($('grant-provider-id').value),
         year_start: parseInt($('grant-year-start').value),
         year_end: parseInt($('grant-year-end').value),
-        economy_code: economyCode || null,
-        region: region || null,
+        economy_code: scopeType === 'economy' ? economyCode : null,
+        region: scopeType === 'region' ? region : null,
         footnote: $('grant-footnote').value || null
       };
       
@@ -708,6 +765,12 @@
       }
       
       api('/permissions', 'POST', body);
+    }
+
+    function toggleScopeInput() {
+      const scopeType = document.querySelector('input[name="scope-type"]:checked').value;
+      $('economy-input').style.display = scopeType === 'economy' ? 'block' : 'none';
+      $('region-input').style.display = scopeType === 'region' ? 'block' : 'none';
     }
 
     function revokePermission() {
