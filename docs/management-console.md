@@ -138,7 +138,8 @@ Fetches the active permissions for a specific provider.
   {
     "id": 101,
     "provider_id": 10,
-    "scope": { "type": "economy", "value": "TUR" },
+    "economy_code": "TUR",
+    "region": null,
     "year_start": 2020,
     "year_end": 2025,
     "footnote": "Annual GDP updates"
@@ -146,7 +147,8 @@ Fetches the active permissions for a specific provider.
   {
     "id": 102,
     "provider_id": 10,
-    "scope": { "type": "region", "value": "ECS" },
+    "economy_code": null,
+    "region": "ECS",
     "year_start": 2022,
     "year_end": 2022
   }

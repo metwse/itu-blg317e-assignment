@@ -12,7 +12,7 @@ CREATE TABLE users (
 CREATE TABLE providers (
     id bigserial NOT NULL PRIMARY KEY,
     administrative_account bigint NOT NULL REFERENCES users (id),
-    technical_account bigint REFERENCES users (id),
+    technical_account bigint REFERENCES users (id) ON DELETE SET NULL,
     name text NOT NULL,
     description text,
     website_url text,

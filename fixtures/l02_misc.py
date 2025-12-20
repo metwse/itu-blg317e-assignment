@@ -37,7 +37,7 @@ async def load(state: State, *_):
                 name="WorldBank",
                 website_url="https://worldbank.org/",
                 description="The World Bank is an international bank that "
-                            "lends money and other help [2] to developing "
+                            "lends money and other help to developing "
                             "nations for infrastructure. The World Bank has "
                             "the goal of reducing poverty.\n\n"
                             "The World Bank is part of the World Bank Group",

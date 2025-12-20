@@ -4,5 +4,7 @@ from src.service import PermissionService
 
 
 class PermissionHandler(BaseHandler):
+    service: PermissionService
+
     def __init__(self, service: PermissionService):
         super().__init__(service)

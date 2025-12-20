@@ -4,5 +4,7 @@ from src.repo import IndicatorRepo
 
 
 class IndicatorService(BaseService):
+    repo: IndicatorRepo
+
     def __init__(self, pool):
         super().__init__(IndicatorRepo(pool))

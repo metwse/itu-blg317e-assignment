@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel
 from typing import Any, Generic, List, Optional, Tuple, Type, TypeVar
 
@@ -16,6 +17,11 @@ class BaseTransaction(Generic[E]):
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(query, *args)
             return [self.model(**row) for row in rows]
+
+    async def fetch_raw(self, query: str, *args: Any) -> List[dict]:
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(query, *args)
+            return [dict(row) for row in rows]
 
     async def fetchrow(self, query: str, *args: Any) -> Optional[E]:
         async with self.pool.acquire() as conn:
@@ -224,3 +230,4 @@ class BaseRepo(Generic[T, U, C],
                 CASCADE
             """
         )
+

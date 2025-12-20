@@ -7,6 +7,7 @@ from pydantic import BaseModel
 T = TypeVar('T', bound=BaseModel)
 U = TypeVar('U', bound=BaseModel)
 C = TypeVar('C', bound=BaseModel)
+R = TypeVar('R', bound=BaseRepo)
 
 
 class BaseService(Generic[T, U, C]):
@@ -48,3 +49,7 @@ class BaseService(Generic[T, U, C]):
 
     async def truncate_cascade(self) -> str:
         return await self.repo.truncate_cascade()
+
+    def __getattr__(self, name):
+        """Fallthrough to repo layer."""
+        return getattr(self.repo, name)

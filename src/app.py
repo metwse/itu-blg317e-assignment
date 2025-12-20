@@ -4,7 +4,7 @@ from src import log
 from src.error import AppError, \
     error_handler, validation_error_handler, \
     not_found_error_handler, unspecified_error_handler
-from src.routes import internal_routes
+from src.routes import internal_routes, management_routes
 from src.state import State
 
 from src.handlers import (
@@ -58,5 +58,10 @@ def create_app(state: State):
                                                indicator_handler))
     else:
         log.info("no internal access token provided, skipped internal routes")
+
+    app.register_blueprint(management_routes(state.management_console_token,
+                                             provider_handler,
+                                             user_handler,
+                                             permission_handler))
 
     return app

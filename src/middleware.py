@@ -9,3 +9,12 @@ def internal_access_authorize(internal_access_token: str):
             raise AppError(AppErrorType.UNAUTHORIZED)
 
     return authorize
+
+
+def management_console_authorize(management_secret: str):
+    def authorize():
+        if request.headers.get('x-management-secret') != \
+           management_secret:
+            raise AppError(AppErrorType.UNAUTHORIZED)
+
+    return authorize

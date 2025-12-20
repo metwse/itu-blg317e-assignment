@@ -30,10 +30,15 @@ class State:
     economy_service: EconomyService
     permission_service: PermissionService
     indicator_service: IndicatorService
+    management_console_token: str
+    jwt_secret: str
     internal_access_token: str | None
 
 
-def bootstrap_state(pool, internal_access_token: str | None = None) -> State:
+def bootstrap_state(pool,
+                    management_console_token,
+                    jwt_secret,
+                    internal_access_token: str | None = None) -> State:
     """Bootstraps the application state by instantiating all services.
 
     Args:
@@ -51,6 +56,8 @@ def bootstrap_state(pool, internal_access_token: str | None = None) -> State:
             data[key] = ServiceClass(pool)
 
     data['internal_access_token'] = internal_access_token
+    data['management_console_token'] = management_console_token
+    data['jwt_secret'] = jwt_secret
 
     return State(**data)
 
@@ -70,12 +77,25 @@ async def from_env() -> State:
 
     DATABASE_URL = os.environ.get('DATABASE_URL')
     INTERNAL_ACCESS_TOKEN = os.environ.get('INTERNAL_ACCESS_TOKEN')
+    MANAGEMENT_CONSOLE_TOKEN = os.environ.get('MANAGEMENT_CONSOLE_TOKEN')
+    JWT_SECRET = os.environ.get('JWT_SECRET')
 
     if DATABASE_URL is None:
         raise ValueError("DATABASE_URL environment variable must be set in "
                          "order to run the backend.")
 
+    if MANAGEMENT_CONSOLE_TOKEN is None:
+        raise ValueError("MANAGEMENT_CONSOLE_TOKEN environment variable must "
+                         "be set in order to control management console "
+                         "access.")
+
+    if JWT_SECRET is None:
+        raise ValueError("A JWT_SECRET is required to sign web tokens.")
+
     # Create the connection pool
     pool = await asyncpg.create_pool(DATABASE_URL)
 
-    return bootstrap_state(pool, internal_access_token=INTERNAL_ACCESS_TOKEN)
+    return bootstrap_state(pool,
+                           MANAGEMENT_CONSOLE_TOKEN,
+                           JWT_SECRET,
+                           internal_access_token=INTERNAL_ACCESS_TOKEN)
