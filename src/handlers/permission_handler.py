@@ -14,7 +14,7 @@ class PermissionHandler(BaseHandler):
     def __init__(self, service: PermissionService):
         super().__init__(service)
 
-    async def list_permissions(self):
+    async def list_permissions(self):  # MANAGEMENT
         try:
             provider_id = request.args.get("provider_id")
             if not provider_id:
@@ -28,7 +28,7 @@ class PermissionHandler(BaseHandler):
         perms = await self.service.get_permissions_by_provider(pid)
         return jsonify(perms)
 
-    async def create_permission(self):
+    async def create_permission(self):  # MANAGEMENT
         payload = PermissionCreateDto(**json())
 
         if payload.year_end < payload.year_start:
@@ -58,7 +58,7 @@ class PermissionHandler(BaseHandler):
                                "the provider.")
             raise e
 
-    async def delete_permission(self, id: int):
+    async def delete_permission(self, id: int):  # MANAGEMENT
         res = await self.service.delete_permission(int(id))
 
         if not res:

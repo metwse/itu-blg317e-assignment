@@ -44,7 +44,6 @@ class PortalHandler:
     # -------------------------------------------------------------------------
     # Authentication Endpoints
     # -------------------------------------------------------------------------
-
     async def login(self):
         """POST /auth/login - Authenticate user and return JWT token."""
         payload = json()
@@ -112,7 +111,6 @@ class PortalHandler:
     # -------------------------------------------------------------------------
     # Helper Methods
     # -------------------------------------------------------------------------
-
     async def _validate_provider_context(self):
         """Validate that user has access to the provider in X-Provider-Context.
 
@@ -147,7 +145,6 @@ class PortalHandler:
     # -------------------------------------------------------------------------
     # Permission Endpoints
     # -------------------------------------------------------------------------
-
     async def list_my_permissions(self):
         """GET /permissions - List permissions for the current provider
         context.
@@ -163,7 +160,6 @@ class PortalHandler:
     # -------------------------------------------------------------------------
     # Indicator Endpoints
     # -------------------------------------------------------------------------
-
     async def get_indicator(self):
         """GET /indicators - Get existing indicator data for economy/year."""
         await self._validate_provider_context()
