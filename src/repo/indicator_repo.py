@@ -11,7 +11,7 @@ class IndicatorRepo(BaseRepo):
                          (Indicator, IndicatorUpdateDto, IndicatorCreateDto))
 
     async def get_indicator(self, provider_id: int, economy_code: str,
-                            year: int):
+                            year: int):  # PORTAL
         """Fetch existing indicator data for a specific economy/year.
 
         Args:
@@ -31,7 +31,7 @@ class IndicatorRepo(BaseRepo):
         )
 
     async def upsert_indicator(self, provider_id: int, economy_code: str,
-                               year: int, data: dict):
+                               year: int, data: dict):  # PORTAL
         """Insert or update indicator data using ON CONFLICT DO UPDATE.
 
         Only updates non-null fields provided in the data dict (partial

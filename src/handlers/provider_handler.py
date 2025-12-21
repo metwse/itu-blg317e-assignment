@@ -14,11 +14,11 @@ class ProviderHandler(BaseHandler):
     def __init__(self, service: ProviderService):
         super().__init__(service)
 
-    async def get_all_providers(self):
+    async def get_all_providers(self):  # MANAGEMENT
         providers = await self.service.get_all_providers()
         return jsonify(providers)
 
-    async def create_provider(self):
+    async def create_provider(self):  # MANAGEMENT
         payload = ProviderCreateDto(**json())
 
         try:
@@ -45,7 +45,7 @@ class ProviderHandler(BaseHandler):
                                "exists.")
             raise e
 
-    async def delete_provider(self, id: int):
+    async def delete_provider(self, id: int):  # MANAGEMENT
         res = await self.service.delete_provider(int(id))
 
         if not res:
@@ -54,5 +54,5 @@ class ProviderHandler(BaseHandler):
 
         return jsonify(res)
 
-    async def update_provider(self, id):
+    async def update_provider(self, id):  # MANAGEMENT
         return await self.update(int(id))

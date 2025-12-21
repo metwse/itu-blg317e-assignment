@@ -11,25 +11,7 @@ class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto,
                          (Permission, PermissionUpdateDto,
                           PermissionCreateDto))
 
-    async def get_permissions_by_provider(self, provider_id):  # MANAGEMENT
-        return await self.fetch_raw(
-            """
-            SELECT * FROM permissions
-            WHERE provider_id = $1
-            ORDER BY year_start DESC, id DESC
-            """,
-            provider_id
-        )
-
-    async def get_permissions_for_portal(self, provider_id: int):
-        """Fetch permissions for portal display with simplified scope info.
-
-        Args:
-            provider_id: The provider's ID.
-
-        Returns:
-            List of permissions with scope, type, and year range.
-        """
+    async def get_permissions_for_portal(self, provider_id: int):  # PORTAL
         return await self.fetch_raw(
             """
             SELECT
@@ -49,8 +31,10 @@ class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto,
         )
 
     async def check_permission_for_economy(self, provider_id: int,
-                                           economy_code: str, year: int):
-        """Check if a provider has permission to write data for an economy/year.
+                                           economy_code: str,
+                                           year: int):  # PORTAL
+        """Check if a provider has permission to write data for an economy/
+        year.
 
         Checks both direct economy permissions and region-based permissions.
 
@@ -77,6 +61,16 @@ class PermissionRepo(BaseRepo[Permission, PermissionUpdateDto,
             LIMIT 1
             """,
             provider_id, economy_code, year
+        )
+
+    async def get_permissions_by_provider(self, provider_id):  # MANAGEMENT
+        return await self.fetch_raw(
+            """
+            SELECT * FROM permissions
+            WHERE provider_id = $1
+            ORDER BY year_start DESC, id DESC
+            """,
+            provider_id
         )
 
     async def create_permission(self, provider_id, year_start, year_end,

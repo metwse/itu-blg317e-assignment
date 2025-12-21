@@ -5,6 +5,7 @@ from .provider_service import ProviderService
 from .permission_service import PermissionService
 from .indicator_services import IndicatorService
 from .user_service import UserService
+from .public_service import PublicService
 
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     'PermissionService',
     'EconomyService',
     'IndicatorService',
-    'UserService'
+    'UserService',
+    'PublicService'
 ]

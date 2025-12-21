@@ -13,8 +13,10 @@ from src.handlers import (
     EconomyHandler,
     PermissionHandler,
     IndicatorHandler,
-    PortalHandler
+    PortalHandler,
+    PublicHandler
 )
+from src.service import PublicService
 
 from pydantic_core import ValidationError
 from flask import Flask, jsonify, send_from_directory
@@ -58,6 +60,10 @@ def create_app(state: State):
         state.jwt_secret
     )
 
+    # Public handler
+    public_service = PublicService(state.pool)
+    public_handler = PublicHandler(public_service)
+
     if state.internal_access_token is not None:
         log.info("registered internal access routes")
         app.register_blueprint(internal_routes(state.internal_access_token,
@@ -78,6 +84,6 @@ def create_app(state: State):
                                          portal_handler))
 
     # Public routes (no auth required)
-    app.register_blueprint(public_routes(state.pool))
+    app.register_blueprint(public_routes(public_handler))
 
     return app
