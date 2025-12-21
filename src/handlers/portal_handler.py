@@ -142,6 +142,23 @@ class PortalHandler:
 
         return access
 
+    async def _validate_admin_context(self):
+        """Validate that user is an admin for the provider context.
+
+        Returns:
+            The provider info dict if valid admin.
+
+        Raises:
+            AppError: If user is not an admin.
+        """
+        access = await self._validate_provider_context()
+
+        if access.get('role') != 'admin':
+            raise AppError(AppErrorType.FORBIDDEN,
+                           "Only administrators can perform this action.")
+
+        return access
+
     # -------------------------------------------------------------------------
     # Permission Endpoints
     # -------------------------------------------------------------------------
@@ -249,3 +266,78 @@ class PortalHandler:
                                f"Invalid economy_code: '{economy_code}' "
                                "does not exist.")
             raise e
+
+    # -------------------------------------------------------------------------
+    # Provider Management Endpoints (Admin Only)
+    # -------------------------------------------------------------------------
+    async def get_provider_details(self):
+        """GET /provider - Get provider details (admin only)."""
+        await self._validate_admin_context()
+
+        details = await self.provider_service.get_provider_details_for_portal(
+            g.provider_id
+        )
+
+        if not details:
+            raise AppError(AppErrorType.NOT_FOUND, "Provider not found.")
+
+        return jsonify(details)
+
+    async def update_provider(self):
+        """PATCH /provider - Update provider details (admin only)."""
+        await self._validate_admin_context()
+
+        payload = json()
+
+        technical_account_input = payload.get('technical_account')
+        description_input = payload.get('description')
+        website_url_input = payload.get('website_url')
+
+        # Process technical account
+        technical_account = None
+        clear_technical_account = False
+
+        if technical_account_input is not None:
+            if technical_account_input == '':
+                # Clear technical account
+                clear_technical_account = True
+            else:
+                try:
+                    technical_account = int(technical_account_input)
+                except (ValueError, TypeError):
+                    raise AppError(AppErrorType.VALIDATION_ERROR,
+                                   "'technical_account' must be an integer.")
+
+                # Verify user exists
+                user = await self.user_service.get_user_by_id(technical_account)
+                if not user:
+                    raise AppError(AppErrorType.VALIDATION_ERROR,
+                                   f"User with ID {technical_account} "
+                                   "does not exist.")
+
+        # Process description - empty string means clear
+        description = None
+        clear_description = False
+        if description_input is not None:
+            if description_input == '':
+                clear_description = True
+            else:
+                description = description_input
+
+        # Process website_url - empty string means clear
+        website_url = None
+        clear_website_url = False
+        if website_url_input is not None:
+            if website_url_input == '':
+                clear_website_url = True
+            else:
+                website_url = website_url_input
+
+        result = await self.provider_service.update_provider_from_portal(
+            g.provider_id,
+            technical_account, clear_technical_account,
+            description, clear_description,
+            website_url, clear_website_url
+        )
+
+        return jsonify(result)

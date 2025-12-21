@@ -108,3 +108,89 @@ class ProviderRepo(BaseRepo[Provider, ProviderUpdateDto, ProviderCreateDto]):
             """,
             id
         )
+
+    async def get_provider_details_for_portal(self, provider_id: int):
+        """Get provider details including technical account info for portal.
+
+        Args:
+            provider_id: The provider's ID.
+
+        Returns:
+            Provider details with technical account user info.
+        """
+        return await self.fetchrow_raw(
+            """
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.website_url,
+                p.technical_account,
+                u.name AS technical_account_name,
+                u.email AS technical_account_email
+            FROM providers p
+            LEFT JOIN users u ON p.technical_account = u.id
+            WHERE p.id = $1
+            """,
+            provider_id
+        )
+
+    async def update_provider_from_portal(self, provider_id: int,
+                                          technical_account,
+                                          clear_technical_account: bool,
+                                          description: str | None,
+                                          clear_description: bool,
+                                          website_url: str | None,
+                                          clear_website_url: bool):
+        """Update provider details from portal (admin only).
+
+        Args:
+            provider_id: The provider's ID.
+            technical_account: New technical account user ID.
+            clear_technical_account: If True, set technical_account to NULL.
+            description: New description (or None to keep existing).
+            clear_description: If True, set description to NULL.
+            website_url: New website URL (or None to keep existing).
+            clear_website_url: If True, set website_url to NULL.
+
+        Returns:
+            Updated provider record.
+        """
+        # Build dynamic update based on what's provided
+        set_parts = []
+        params = [provider_id]
+        param_idx = 2
+
+        if clear_technical_account:
+            set_parts.append("technical_account = NULL")
+        elif technical_account is not None:
+            set_parts.append(f"technical_account = ${param_idx}")
+            params.append(technical_account)
+            param_idx += 1
+
+        if clear_description:
+            set_parts.append("description = NULL")
+        elif description is not None:
+            set_parts.append(f"description = ${param_idx}")
+            params.append(description)
+            param_idx += 1
+
+        if clear_website_url:
+            set_parts.append("website_url = NULL")
+        elif website_url is not None:
+            set_parts.append(f"website_url = ${param_idx}")
+            params.append(website_url)
+            param_idx += 1
+
+        if not set_parts:
+            # Nothing to update, just return current
+            return await self.get_provider_by_id(provider_id)
+
+        query = f"""
+            UPDATE providers
+            SET {', '.join(set_parts)}
+            WHERE id = $1
+            RETURNING id, name, description, website_url, technical_account
+        """
+
+        return await self.fetchrow_raw(query, *params)

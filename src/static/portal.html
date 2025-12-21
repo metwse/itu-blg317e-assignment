@@ -383,6 +383,9 @@
         <li class="nav-item">
           <button class="nav-link" data-bs-toggle="tab" data-bs-target="#entry-tab" type="button">📝 Data Entry</button>
         </li>
+        <li class="nav-item" id="settings-tab-nav" style="display: none;">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#settings-tab" type="button">⚙️ Provider Settings</button>
+        </li>
       </ul>
 
       <div id="output" class="mb-4"></div>
@@ -526,6 +529,59 @@
           </div>
         </div>
       </div>
+
+        <!-- Provider Settings Tab (Admin Only) -->
+        <div class="tab-pane fade" id="settings-tab">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">⚙️ Provider Details</div>
+                <div class="card-body">
+                  <p class="text small">Update your provider's public information.</p>
+                  <div class="mb-3">
+                    <label class="form-label">Provider Name</label>
+                    <input type="text" id="settings-name" class="form-control" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea id="settings-description" class="form-control" rows="3" placeholder="Describe your organization..."></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Website URL</label>
+                    <input type="url" id="settings-website" class="form-control" placeholder="https://example.org">
+                  </div>
+                  <button class="btn btn-primary w-100" onclick="updateProviderDetails()">
+                    💾 Save Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">👤 Technical Account</div>
+                <div class="card-body">
+                  <p class="text small">Assign a technical account to handle data entry operations.</p>
+                  <div class="mb-3">
+                    <label class="form-label">Current Technical Account</label>
+                    <div id="current-tech-account" class="form-control-plaintext text">
+                      <em>None assigned</em>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">New Technical Account (User ID)</label>
+                    <input type="number" id="settings-tech-account" class="form-control" placeholder="Enter user ID">
+                    <div class="form-text text small">Leave empty to keep current, enter 0 to clear.</div>
+                  </div>
+                  <button class="btn btn-warning w-100" onclick="updateTechnicalAccount()">
+                    🔄 Update Technical Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </section>
 
@@ -537,6 +593,7 @@
     let authToken = null;
     let currentUser = null;
     let currentProviderId = null;
+    let currentProviderRole = null;
 
     // Indicator field IDs
     const INDICATOR_FIELDS = [
@@ -695,6 +752,23 @@
     function onProviderChange() {
       const select = $('provider-context');
       currentProviderId = select.value || null;
+      
+      // Find the role for selected provider
+      if (currentProviderId && currentUser) {
+        const provider = currentUser.managed_providers.find(p => p.id == currentProviderId);
+        currentProviderRole = provider ? provider.role : null;
+      } else {
+        currentProviderRole = null;
+      }
+      
+      // Show/hide settings tab based on role
+      const settingsTabNav = $('settings-tab-nav');
+      if (currentProviderRole === 'admin') {
+        settingsTabNav.style.display = 'block';
+        loadProviderSettings();
+      } else {
+        settingsTabNav.style.display = 'none';
+      }
       
       if (currentProviderId) {
         loadPermissions();
@@ -876,6 +950,134 @@
         const action = res.status === 201 ? 'created' : 'updated';
         showToast(`Data ${action} successfully for ${economyCode}/${year}!`, false);
         showOutput(data);
+
+      } catch (e) {
+        showToast('Error: ' + e.message, true);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Provider Settings (Admin Only)
+    // -------------------------------------------------------------------------
+    async function loadProviderSettings() {
+      if (!currentProviderId || currentProviderRole !== 'admin') {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/provider`, {
+          headers: getHeaders()
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.details || data.error || 'Failed to load provider settings', true);
+          return;
+        }
+
+        // Populate settings form
+        $('settings-name').value = data.name || '';
+        $('settings-description').value = data.description || '';
+        $('settings-website').value = data.website_url || '';
+        $('settings-tech-account').value = '';
+
+        // Display current technical account
+        if (data.technical_account) {
+          $('current-tech-account').innerHTML = `
+            <strong>${data.technical_account_name || 'Unknown'}</strong><br>
+            <small>${data.technical_account_email || ''}</small><br>
+            <small class="text-muted">User ID: ${data.technical_account}</small>
+          `;
+        } else {
+          $('current-tech-account').innerHTML = '<em>None assigned</em>';
+        }
+
+      } catch (e) {
+        showToast('Error loading settings: ' + e.message, true);
+      }
+    }
+
+    async function updateProviderDetails() {
+      if (!currentProviderId || currentProviderRole !== 'admin') {
+        showToast('You must be an admin to update provider details', true);
+        return;
+      }
+
+      const description = $('settings-description').value.trim();
+      const website_url = $('settings-website').value.trim();
+
+      // Always send fields - empty string means clear the field
+      const payload = {
+        description: description,
+        website_url: website_url
+      };
+
+      try {
+        const res = await fetch(`${BASE_URL}/provider`, {
+          method: 'PATCH',
+          headers: getHeaders(),
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.details || data.error || 'Failed to update provider', true);
+          return;
+        }
+
+        showToast('Provider details updated successfully!', false);
+        loadProviderSettings(); // Refresh
+
+      } catch (e) {
+        showToast('Error: ' + e.message, true);
+      }
+    }
+
+    async function updateTechnicalAccount() {
+      if (!currentProviderId || currentProviderRole !== 'admin') {
+        showToast('You must be an admin to update technical account', true);
+        return;
+      }
+
+      const techAccountStr = $('settings-tech-account').value.trim();
+      
+      if (!techAccountStr) {
+        showToast('Please enter a user ID (or 0 to clear)', true);
+        return;
+      }
+
+      const techAccountId = parseInt(techAccountStr, 10);
+      if (isNaN(techAccountId)) {
+        showToast('Please enter a valid user ID', true);
+        return;
+      }
+
+      // Send empty string if 0 (to clear), otherwise send the ID
+      const payload = {
+        technical_account: techAccountId === 0 ? '' : techAccountId
+      };
+
+      try {
+        const res = await fetch(`${BASE_URL}/provider`, {
+          method: 'PATCH',
+          headers: getHeaders(),
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.details || data.error || 'Failed to update technical account', true);
+          return;
+        }
+
+        const msg = techAccountId === 0 
+          ? 'Technical account cleared!' 
+          : 'Technical account updated successfully!';
+        showToast(msg, false);
+        loadProviderSettings(); // Refresh
 
       } catch (e) {
         showToast('Error: ' + e.message, true);

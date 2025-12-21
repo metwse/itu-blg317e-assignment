@@ -42,6 +42,15 @@ def portal_routes(jwt_secret: str,
                         view_func=portal_handler.upsert_indicator,
                         methods=["POST"])
 
+    # Provider management routes (admin only)
+    portal.add_url_rule("/provider",
+                        view_func=portal_handler.get_provider_details,
+                        methods=["GET"])
+
+    portal.add_url_rule("/provider",
+                        view_func=portal_handler.update_provider,
+                        methods=["PATCH"])
+
     # Apply JWT authorization middleware
     # Exclude /auth/login from JWT validation
     portal.before_request(
