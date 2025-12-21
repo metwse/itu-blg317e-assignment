@@ -7,7 +7,7 @@ from src.repo.public_repo import PublicRepo
 
 class PublicService:
     """Service layer for public API.
-    
+
     This service provides read-only access to joined indicator data.
     It acts as a thin wrapper around PublicRepo, following the SoC principle.
     """

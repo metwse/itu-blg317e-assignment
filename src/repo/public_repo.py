@@ -6,7 +6,7 @@ import asyncpg
 
 class PublicRepo:
     """Repository for public read-only queries with table joins.
-    
+
     This repo handles all database access for the public API layer,
     providing pre-joined views of economies, indicators, and related data.
     """
@@ -18,7 +18,7 @@ class PublicRepo:
         """List all economies with region and income level names."""
         async with self.pool.acquire() as conn:
             rows = await conn.fetch("""
-                SELECT 
+                SELECT
                     e.code,
                     e.name,
                     e.is_aggregate,
@@ -53,7 +53,7 @@ class PublicRepo:
         """List all providers with admin/tech user names."""
         async with self.pool.acquire() as conn:
             rows = await conn.fetch("""
-                SELECT 
+                SELECT
                     p.id,
                     p.name,
                     p.description,
@@ -121,7 +121,7 @@ class PublicRepo:
 
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(f"""
-                SELECT 
+                SELECT
                     i.provider_id,
                     p.name AS provider_name,
                     i.economy_code,
@@ -162,7 +162,7 @@ class PublicRepo:
         """List economic indicators only."""
         async with self.pool.acquire() as conn:
             rows = await conn.fetch("""
-                SELECT 
+                SELECT
                     e.code AS economy_code,
                     e.name AS economy_name,
                     r.name AS region_name,
@@ -176,7 +176,7 @@ class PublicRepo:
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
-                WHERE i.gdp_per_capita IS NOT NULL 
+                WHERE i.gdp_per_capita IS NOT NULL
                    OR i.industry IS NOT NULL
                    OR i.trade IS NOT NULL
                 ORDER BY i.year DESC, e.name
@@ -190,7 +190,7 @@ class PublicRepo:
         """List health indicators only."""
         async with self.pool.acquire() as conn:
             rows = await conn.fetch("""
-                SELECT 
+                SELECT
                     e.code AS economy_code,
                     e.name AS economy_name,
                     r.name AS region_name,
@@ -220,7 +220,7 @@ class PublicRepo:
         """List environment indicators only."""
         async with self.pool.acquire() as conn:
             rows = await conn.fetch("""
-                SELECT 
+                SELECT
                     e.code AS economy_code,
                     e.name AS economy_name,
                     r.name AS region_name,

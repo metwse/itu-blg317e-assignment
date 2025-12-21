@@ -7,7 +7,7 @@ from src.service.public_service import PublicService
 
 class PublicHandler:
     """Handler for public API endpoints.
-    
+
     This handler provides HTTP interface for public data access,
     delegating all business logic to the service layer.
     """
