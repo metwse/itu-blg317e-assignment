@@ -28,6 +28,9 @@
 	.form-check{
 		color:rgba(255,255,255,0.8);
 	}
+    .form-label {
+      color: rgba(255,255,255,0.9);
+    }
     
     .navbar {
       background: rgba(15, 52, 96, 0.9) !important;
@@ -736,9 +739,10 @@
 
     // Permission functions
     function listPermissions() {
-      const providerId = $('list-perm-provider').value;
-      if (!providerId) {
-        showOutput({ error: 'Provider ID is required' }, true);
+      const providerIdStr = $('list-perm-provider').value.trim();
+      const providerId = parseInt(providerIdStr, 10);
+      if (!providerIdStr || isNaN(providerId)) {
+        showOutput({ error: 'Valid Provider ID is required' }, true);
         return;
       }
       api(`/permissions?provider_id=${providerId}`, 'GET');
@@ -748,6 +752,34 @@
       const scopeType = document.querySelector('input[name="scope-type"]:checked').value;
       const economyCode = $('grant-economy-code').value.trim().toUpperCase();
       const region = $('grant-region').value;
+      
+      const providerIdStr = $('grant-provider-id').value.trim();
+      const yearStartStr = $('grant-year-start').value.trim();
+      const yearEndStr = $('grant-year-end').value.trim();
+      
+      const providerId = parseInt(providerIdStr, 10);
+      const yearStart = parseInt(yearStartStr, 10);
+      const yearEnd = parseInt(yearEndStr, 10);
+      
+      if (!providerIdStr || isNaN(providerId)) {
+        showOutput({ error: 'Valid Provider ID is required' }, true);
+        return;
+      }
+      
+      if (!yearStartStr || isNaN(yearStart)) {
+        showOutput({ error: 'Valid Year Start is required' }, true);
+        return;
+      }
+      
+      if (!yearEndStr || isNaN(yearEnd)) {
+        showOutput({ error: 'Valid Year End is required' }, true);
+        return;
+      }
+      
+      if (yearStart > yearEnd) {
+        showOutput({ error: 'Year Start cannot be greater than Year End' }, true);
+        return;
+      }
       
       if (scopeType === 'economy' && !economyCode) {
         showOutput({ error: 'Economy Code is required' }, true);
@@ -759,18 +791,13 @@
       }
       
       const body = {
-        provider_id: parseInt($('grant-provider-id').value),
-        year_start: parseInt($('grant-year-start').value),
-        year_end: parseInt($('grant-year-end').value),
+        provider_id: providerId,
+        year_start: yearStart,
+        year_end: yearEnd,
         economy_code: scopeType === 'economy' ? economyCode : null,
         region: scopeType === 'region' ? region : null,
-        footnote: $('grant-footnote').value || null
+        footnote: $('grant-footnote').value.trim() || null
       };
-      
-      if (!body.provider_id || !body.year_start || !body.year_end) {
-        showOutput({ error: 'Provider ID, Year Start, and Year End are required' }, true);
-        return;
-      }
       
       api('/permissions', 'POST', body);
     }
@@ -782,9 +809,10 @@
     }
 
     function revokePermission() {
-      const id = $('revoke-perm-id').value;
-      if (!id) {
-        showOutput({ error: 'Permission ID is required' }, true);
+      const idStr = $('revoke-perm-id').value.trim();
+      const id = parseInt(idStr, 10);
+      if (!idStr || isNaN(id)) {
+        showOutput({ error: 'Valid Permission ID is required' }, true);
         return;
       }
       if (confirm('Are you sure you want to revoke this permission?')) {

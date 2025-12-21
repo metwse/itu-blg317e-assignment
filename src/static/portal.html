@@ -288,8 +288,12 @@
 
     .indicator-field label {
       font-size: 0.85rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.85);
       margin-bottom: 0.25rem;
+    }
+
+    .form-label {
+      color: rgba(255,255,255,0.9);
     }
 
     .permission-card {
@@ -303,10 +307,11 @@
     .permission-card .scope {
       font-size: 1.1rem;
       font-weight: 600;
+      color: #f0f0f0;
     }
 
     .permission-card .years {
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.85);
       font-size: 0.9rem;
     }
 
@@ -759,9 +764,10 @@
       }
 
       const economyCode = $('entry-economy').value.trim().toUpperCase();
-      const year = $('entry-year').value;
+      const yearStr = $('entry-year').value.trim();
+      const year = parseInt(yearStr, 10);
 
-      if (!economyCode || !year) {
+      if (!economyCode || !yearStr || isNaN(year)) {
         showToast('Please enter economy code and year', true);
         return;
       }
@@ -784,6 +790,9 @@
           showToast(data.details || data.error || 'Failed to load data', true);
           return;
         }
+
+        // Clear form first (keep economy/year), then populate with loaded data
+        clearForm(false);
 
         // Populate form fields
         INDICATOR_FIELDS.forEach(field => {
@@ -821,15 +830,16 @@
       }
 
       const economyCode = $('entry-economy').value.trim().toUpperCase();
-      const year = parseInt($('entry-year').value);
+      const yearStr = $('entry-year').value.trim();
+      const year = parseInt(yearStr, 10);
 
       if (!economyCode) {
         showToast('Economy code is required', true);
         return;
       }
 
-      if (!year || isNaN(year)) {
-        showToast('Valid year is required', true);
+      if (!yearStr || isNaN(year) || year < 1960 || year > 2100) {
+        showToast('Valid year is required (1960-2100)', true);
         return;
       }
 
