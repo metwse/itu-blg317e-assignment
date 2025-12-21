@@ -325,4 +325,3 @@ class PublicRepo:
                 'min_year': None, 'max_year': None
             }
             return stats
-            return stats
