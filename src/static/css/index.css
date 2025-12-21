@@ -20,3 +20,281 @@ header {
     flex-direction: column;
   }
 }
+
+/* Main content */
+main {
+  padding: 1.5em;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Stats Section */
+.stats-section {
+  margin-bottom: 2em;
+}
+
+.stats-section h2 {
+  margin: 0 0 1em;
+  font-size: 1.25em;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1em;
+}
+
+.stat-card {
+  background-color: var(--bg2);
+  padding: 1.25em;
+  border-radius: 0.5em;
+  text-align: center;
+  border-left: 4px solid var(--primary);
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.75em;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.875em;
+  opacity: 0.8;
+  margin-top: 0.25em;
+}
+
+/* View Selection Buttons */
+.view-selection {
+  margin-bottom: 2em;
+}
+
+.view-selection h2 {
+  margin: 0 0 0.25em;
+  font-size: 1.25em;
+}
+
+.subtitle {
+  margin: 0 0 1em;
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+.btn-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75em;
+}
+
+.view-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
+  background-color: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 0.5em;
+  cursor: pointer;
+  transition: 0.3s all;
+}
+
+.view-btn:hover {
+  background-color: #4a4a4a;
+  transform: translateY(-2px);
+}
+
+.view-btn.active {
+  border-color: var(--primary);
+  background-color: rgba(30, 97, 255, 0.1);
+}
+
+.btn-icon {
+  font-size: 1.5em;
+  margin-bottom: 0.25em;
+}
+
+.btn-text {
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.btn-desc {
+  font-size: 0.75em;
+  opacity: 0.7;
+  margin-top: 0.25em;
+}
+
+/* Filters Section */
+.filters-section {
+  background-color: var(--bg2);
+  padding: 1.25em;
+  border-radius: 0.5em;
+  margin-bottom: 1.5em;
+}
+
+.filters-section h3 {
+  margin: 0 0 1em;
+  font-size: 1em;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1em;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+}
+
+.filter-group label {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  background-color: var(--bg1);
+}
+
+.filter-actions {
+  justify-content: flex-end;
+}
+
+.filter-actions button {
+  width: 100%;
+  padding: 0.5em 1em;
+}
+
+/* Data Table Section */
+.data-section {
+  background-color: var(--bg2);
+  border-radius: 0.5em;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 1.25em;
+  background-color: rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 1em;
+}
+
+.pagination-info {
+  font-size: 0.875em;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.pagination-info button {
+  font-size: 0.85em;
+  padding: 0.4em 0.8em;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875em;
+}
+
+thead {
+  background-color: var(--bg1);
+  position: sticky;
+  top: 0;
+}
+
+th {
+  padding: 0.75em 1em;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--primary);
+}
+
+td {
+  padding: 0.65em 1em;
+  border-bottom: 1px solid var(--bd1);
+}
+
+tr:hover {
+  background-color: rgba(255,255,255,0.03);
+}
+
+td code {
+  background-color: var(--bg1);
+  padding: 0.15em 0.4em;
+  border-radius: 0.25em;
+  font-size: 0.9em;
+}
+
+td .null {
+  opacity: 0.4;
+}
+
+td.loading,
+td.empty,
+td.error {
+  text-align: center;
+  padding: 2em;
+  opacity: 0.7;
+}
+
+td.error {
+  color: #ff6b6b;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2em;
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+
+footer p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  main {
+    padding: 1em;
+  }
+
+  .btn-group {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  table {
+    font-size: 0.8em;
+  }
+
+  th, td {
+    padding: 0.5em 0.65em;
+  }
+}

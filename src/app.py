@@ -4,7 +4,7 @@ from src import log
 from src.error import AppError, \
     error_handler, validation_error_handler, \
     not_found_error_handler, unspecified_error_handler
-from src.routes import internal_routes, management_routes, portal_routes
+from src.routes import internal_routes, management_routes, portal_routes, public_routes
 from src.state import State
 
 from src.handlers import (
@@ -76,5 +76,8 @@ def create_app(state: State):
 
     app.register_blueprint(portal_routes(state.jwt_secret,
                                          portal_handler))
+
+    # Public routes (no auth required)
+    app.register_blueprint(public_routes(state.pool))
 
     return app

@@ -25,6 +25,7 @@ class State:
     Also, fixtures are loaded using this state registry.
     """
 
+    pool: asyncpg.pool.Pool
     provider_service: ProviderService
     user_service: UserService
     economy_service: EconomyService
@@ -46,7 +47,7 @@ def bootstrap_state(pool,
         internal_access_token: The secret token for administrative access.
     """
 
-    data = {}
+    data = {'pool': pool}
 
     # Dynamic service instantiation loop
     for key, ServiceClass in State.__annotations__.items():

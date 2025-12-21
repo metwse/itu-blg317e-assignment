@@ -20,5 +20,434 @@
         <a href="/super-admin.html">Super Admin</a>
       </div>
     </header>
+
+    <main>
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <h2>Database Statistics</h2>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-economies">-</span>
+            <span class="stat-label">Economies</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-providers">-</span>
+            <span class="stat-label">Providers</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-indicators">-</span>
+            <span class="stat-label">Indicator Records</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-years">-</span>
+            <span class="stat-label">Year Range</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- View Selection Buttons -->
+      <section class="view-selection">
+        <h2>Browse Data</h2>
+        <p class="subtitle">Select a view to explore indicator data with table joins</p>
+        <div class="btn-group">
+          <button class="view-btn active" data-view="economies" onclick="loadView('economies')">
+            <span class="btn-icon">🌍</span>
+            <span class="btn-text">Economies</span>
+            <span class="btn-desc">with Region & Income Level</span>
+          </button>
+          <button class="view-btn" data-view="economic" onclick="loadView('economic')">
+            <span class="btn-icon">💰</span>
+            <span class="btn-text">Economic Indicators</span>
+            <span class="btn-desc">GDP, Industry, Trade</span>
+          </button>
+          <button class="view-btn" data-view="health" onclick="loadView('health')">
+            <span class="btn-icon">🏥</span>
+            <span class="btn-text">Health Indicators</span>
+            <span class="btn-desc">Health workers, Nutrition</span>
+          </button>
+          <button class="view-btn" data-view="environment" onclick="loadView('environment')">
+            <span class="btn-icon">🌱</span>
+            <span class="btn-text">Environment Indicators</span>
+            <span class="btn-desc">Energy, Cropland</span>
+          </button>
+          <button class="view-btn" data-view="providers" onclick="loadView('providers')">
+            <span class="btn-icon">🏢</span>
+            <span class="btn-text">Providers</span>
+            <span class="btn-desc">Data Sources</span>
+          </button>
+          <button class="view-btn" data-view="all" onclick="loadView('all')">
+            <span class="btn-icon">📊</span>
+            <span class="btn-text">All Indicators</span>
+            <span class="btn-desc">Full Dataset View</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Filters Section -->
+      <section class="filters-section" id="filters-section" style="display: none;">
+        <h3>Filters</h3>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="filter-region">Region</label>
+            <select id="filter-region" onchange="applyFilters()">
+              <option value="">All Regions</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-economy">Economy</label>
+            <select id="filter-economy" onchange="applyFilters()">
+              <option value="">All Economies</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-year-start">Year From</label>
+            <input type="number" id="filter-year-start" placeholder="e.g. 2000" onchange="applyFilters()" />
+          </div>
+          <div class="filter-group">
+            <label for="filter-year-end">Year To</label>
+            <input type="number" id="filter-year-end" placeholder="e.g. 2023" onchange="applyFilters()" />
+          </div>
+          <div class="filter-group">
+            <label for="filter-provider">Provider</label>
+            <select id="filter-provider" onchange="applyFilters()">
+              <option value="">All Providers</option>
+            </select>
+          </div>
+          <div class="filter-group filter-actions">
+            <button onclick="clearFilters()">Clear Filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Table Section -->
+      <section class="data-section">
+        <div class="table-header">
+          <h3 id="table-title">Economies with Region & Income Level</h3>
+          <div class="pagination-info">
+            Showing <span id="showing-count">0</span> records
+            <button id="load-more-btn" onclick="loadMore()" style="display: none;">Load More</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table id="data-table">
+            <thead id="table-head">
+            </thead>
+            <tbody id="table-body">
+              <tr><td colspan="10" class="loading">Loading data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>WorldBank Indicator Database &copy; 2024</p>
+    </footer>
+
+    <script>
+      // State
+      let currentView = 'economies';
+      let currentOffset = 0;
+      const pageSize = 100;
+      let regions = [];
+      let economies = [];
+      let providers = [];
+
+      // API calls
+      async function fetchJSON(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      }
+
+      // Initialize
+      async function init() {
+        await loadStats();
+        await loadFilterOptions();
+        await loadView('economies');
+      }
+
+      async function loadStats() {
+        try {
+          const stats = await fetchJSON('/api/public/stats');
+          document.getElementById('stat-economies').textContent = stats.economies?.toLocaleString() || '0';
+          document.getElementById('stat-providers').textContent = stats.providers?.toLocaleString() || '0';
+          document.getElementById('stat-indicators').textContent = stats.indicators?.toLocaleString() || '0';
+          if (stats.year_range?.min_year && stats.year_range?.max_year) {
+            document.getElementById('stat-years').textContent = 
+              `${stats.year_range.min_year} - ${stats.year_range.max_year}`;
+          } else {
+            document.getElementById('stat-years').textContent = 'N/A';
+          }
+        } catch (e) {
+          console.error('Failed to load stats:', e);
+        }
+      }
+
+      async function loadFilterOptions() {
+        try {
+          // Load regions
+          regions = await fetchJSON('/api/public/regions');
+          const regionSelect = document.getElementById('filter-region');
+          regions.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.id;
+            opt.textContent = r.name;
+            regionSelect.appendChild(opt);
+          });
+
+          // Load economies
+          economies = await fetchJSON('/api/public/economies');
+          const economySelect = document.getElementById('filter-economy');
+          economies.forEach(e => {
+            const opt = document.createElement('option');
+            opt.value = e.code;
+            opt.textContent = `${e.name} (${e.code})`;
+            economySelect.appendChild(opt);
+          });
+
+          // Load providers
+          providers = await fetchJSON('/api/public/providers');
+          const providerSelect = document.getElementById('filter-provider');
+          providers.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = p.name;
+            providerSelect.appendChild(opt);
+          });
+        } catch (e) {
+          console.error('Failed to load filter options:', e);
+        }
+      }
+
+      async function loadView(view) {
+        currentView = view;
+        currentOffset = 0;
+
+        // Update button states
+        document.querySelectorAll('.view-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.view === view);
+        });
+
+        // Show/hide filters
+        const showFilters = ['economic', 'health', 'environment', 'all'].includes(view);
+        document.getElementById('filters-section').style.display = showFilters ? 'block' : 'none';
+
+        // Update table title
+        const titles = {
+          'economies': 'Economies with Region & Income Level (JOIN regions, income_levels)',
+          'economic': 'Economic Indicators (JOIN economies, providers, regions)',
+          'health': 'Health Indicators (JOIN economies, providers, regions)',
+          'environment': 'Environment Indicators (JOIN economies, providers, regions)',
+          'providers': 'Providers with Admin & Technical Users (JOIN users)',
+          'all': 'All Indicators (JOIN economies, providers, regions, income_levels)'
+        };
+        document.getElementById('table-title').textContent = titles[view];
+
+        // Setup headers and load data
+        setupTableHeaders(view);
+        await loadData();
+      }
+
+      function setupTableHeaders(view) {
+        const thead = document.getElementById('table-head');
+        const headers = {
+          'economies': ['Code', 'Name', 'Capital City', 'Region', 'Income Level', 'Is Aggregate', 'Lat', 'Lng'],
+          'economic': ['Economy', 'Region', 'Year', 'GDP per Capita', 'Industry (%)', 'Trade (%)', 'Agriculture (%)', 'Provider'],
+          'health': ['Economy', 'Region', 'Year', 'Health Workers', 'Diabetes (%)', 'Undernourishment (%)', 'Food Insecurity (%)', 'Handwashing (%)', 'Safe Water (%)', 'Provider'],
+          'environment': ['Economy', 'Region', 'Year', 'Electricity (%)', 'Energy Use', 'Alt Energy (%)', 'Cropland (%)', 'Crop Index', 'GDP/Energy', 'Provider'],
+          'providers': ['ID', 'Name', 'Description', 'Website', 'Admin', 'Technical'],
+          'all': ['Provider', 'Economy', 'Region', 'Income Level', 'Year', 'GDP/Cap', 'Industry', 'Health Workers', 'Electricity', 'Energy Use']
+        };
+
+        thead.innerHTML = '<tr>' + headers[view].map(h => `<th>${h}</th>`).join('') + '</tr>';
+      }
+
+      async function loadData(append = false) {
+        const tbody = document.getElementById('table-body');
+        if (!append) {
+          tbody.innerHTML = '<tr><td colspan="10" class="loading">Loading data...</td></tr>';
+        }
+
+        try {
+          let url;
+          let params = new URLSearchParams();
+          
+          if (currentView === 'economies') {
+            url = '/api/public/economies';
+          } else if (currentView === 'providers') {
+            url = '/api/public/providers';
+          } else if (currentView === 'economic') {
+            url = '/api/public/indicators/economic';
+          } else if (currentView === 'health') {
+            url = '/api/public/indicators/health';
+          } else if (currentView === 'environment') {
+            url = '/api/public/indicators/environment';
+          } else {
+            url = '/api/public/indicators';
+          }
+
+          // Add filters for indicator views
+          if (['economic', 'health', 'environment', 'all'].includes(currentView)) {
+            const region = document.getElementById('filter-region').value;
+            const economy = document.getElementById('filter-economy').value;
+            const yearStart = document.getElementById('filter-year-start').value;
+            const yearEnd = document.getElementById('filter-year-end').value;
+            const provider = document.getElementById('filter-provider').value;
+
+            if (region) params.append('region', region);
+            if (economy) params.append('economy_code', economy);
+            if (yearStart) params.append('year_start', yearStart);
+            if (yearEnd) params.append('year_end', yearEnd);
+            if (provider) params.append('provider_id', provider);
+            params.append('limit', pageSize);
+            params.append('offset', currentOffset);
+          }
+
+          const fullUrl = params.toString() ? `${url}?${params}` : url;
+          const data = await fetchJSON(fullUrl);
+
+          if (!append) {
+            tbody.innerHTML = '';
+          }
+
+          if (data.length === 0 && !append) {
+            tbody.innerHTML = '<tr><td colspan="10" class="empty">No data found</td></tr>';
+            document.getElementById('showing-count').textContent = '0';
+            document.getElementById('load-more-btn').style.display = 'none';
+            return;
+          }
+
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = formatRow(currentView, row);
+            tbody.appendChild(tr);
+          });
+
+          // Update count
+          const totalRows = tbody.querySelectorAll('tr').length;
+          document.getElementById('showing-count').textContent = totalRows.toLocaleString();
+
+          // Show/hide load more
+          const showLoadMore = ['economic', 'health', 'environment', 'all'].includes(currentView) && data.length === pageSize;
+          document.getElementById('load-more-btn').style.display = showLoadMore ? 'inline-block' : 'none';
+
+        } catch (e) {
+          console.error('Failed to load data:', e);
+          tbody.innerHTML = `<tr><td colspan="10" class="error">Error loading data: ${e.message}</td></tr>`;
+        }
+      }
+
+      function formatRow(view, row) {
+        const fmt = (val, decimals = 2) => {
+          if (val === null || val === undefined) return '<span class="null">-</span>';
+          if (typeof val === 'number') return val.toLocaleString(undefined, { maximumFractionDigits: decimals });
+          return escapeHtml(String(val));
+        };
+
+        switch(view) {
+          case 'economies':
+            return `
+              <td><code>${fmt(row.code)}</code></td>
+              <td>${fmt(row.name)}</td>
+              <td>${fmt(row.capital_city)}</td>
+              <td>${fmt(row.region_name)}</td>
+              <td>${fmt(row.income_level_name)}</td>
+              <td>${row.is_aggregate ? '✓' : ''}</td>
+              <td>${fmt(row.lat, 4)}</td>
+              <td>${fmt(row.lng, 4)}</td>
+            `;
+          case 'economic':
+            return `
+              <td>${fmt(row.economy_name)} <code>${row.economy_code}</code></td>
+              <td>${fmt(row.region_name)}</td>
+              <td>${fmt(row.year, 0)}</td>
+              <td>${fmt(row.gdp_per_capita)}</td>
+              <td>${fmt(row.industry)}</td>
+              <td>${fmt(row.trade)}</td>
+              <td>${fmt(row.agriculture_forestry_and_fishing)}</td>
+              <td>${fmt(row.provider_name)}</td>
+            `;
+          case 'health':
+            return `
+              <td>${fmt(row.economy_name)} <code>${row.economy_code}</code></td>
+              <td>${fmt(row.region_name)}</td>
+              <td>${fmt(row.year, 0)}</td>
+              <td>${fmt(row.community_health_workers)}</td>
+              <td>${fmt(row.diabetes_prevalence)}</td>
+              <td>${fmt(row.prevalence_of_undernourishment)}</td>
+              <td>${fmt(row.prevalence_of_severe_food_insecurity)}</td>
+              <td>${fmt(row.basic_handwashing_facilities)}</td>
+              <td>${fmt(row.safely_managed_drinking_water_services)}</td>
+              <td>${fmt(row.provider_name)}</td>
+            `;
+          case 'environment':
+            return `
+              <td>${fmt(row.economy_name)} <code>${row.economy_code}</code></td>
+              <td>${fmt(row.region_name)}</td>
+              <td>${fmt(row.year, 0)}</td>
+              <td>${fmt(row.access_to_electricity)}</td>
+              <td>${fmt(row.energy_use)}</td>
+              <td>${fmt(row.alternative_and_nuclear_energy)}</td>
+              <td>${fmt(row.permanent_cropland)}</td>
+              <td>${fmt(row.crop_production_index)}</td>
+              <td>${fmt(row.gdp_per_unit_of_energy_use)}</td>
+              <td>${fmt(row.provider_name)}</td>
+            `;
+          case 'providers':
+            return `
+              <td>${fmt(row.id)}</td>
+              <td>${fmt(row.name)}</td>
+              <td>${fmt(row.description)}</td>
+              <td>${row.website_url ? `<a href="${escapeHtml(row.website_url)}" target="_blank">Link</a>` : '-'}</td>
+              <td>${fmt(row.admin_name)}</td>
+              <td>${fmt(row.tech_name)}</td>
+            `;
+          case 'all':
+            return `
+              <td>${fmt(row.provider_name)}</td>
+              <td>${fmt(row.economy_name)} <code>${row.economy_code}</code></td>
+              <td>${fmt(row.region_name)}</td>
+              <td>${fmt(row.income_level)}</td>
+              <td>${fmt(row.year, 0)}</td>
+              <td>${fmt(row.gdp_per_capita)}</td>
+              <td>${fmt(row.industry)}</td>
+              <td>${fmt(row.community_health_workers)}</td>
+              <td>${fmt(row.access_to_electricity)}</td>
+              <td>${fmt(row.energy_use)}</td>
+            `;
+          default:
+            return '';
+        }
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      async function applyFilters() {
+        currentOffset = 0;
+        await loadData();
+      }
+
+      function clearFilters() {
+        document.getElementById('filter-region').value = '';
+        document.getElementById('filter-economy').value = '';
+        document.getElementById('filter-year-start').value = '';
+        document.getElementById('filter-year-end').value = '';
+        document.getElementById('filter-provider').value = '';
+        applyFilters();
+      }
+
+      async function loadMore() {
+        currentOffset += pageSize;
+        await loadData(true);
+      }
+
+      // Start
+      init();
+    </script>
 </body>
 </html>
