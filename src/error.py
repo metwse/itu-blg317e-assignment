@@ -21,6 +21,7 @@ class AppErrorType(Enum):
     VALIDATION_ERROR = 4
     ALREADY_EXITS = 5
     FK_VIOLATION = 6
+    FORBIDDEN = 7
 
     details: Any
 
@@ -32,6 +33,8 @@ class AppErrorType(Enum):
                 return 404
             case AppErrorType.UNAUTHORIZED:
                 return 401
+            case AppErrorType.FORBIDDEN:
+                return 403
             case AppErrorType.JSON_PARSE_ERROR \
                     | AppErrorType.VALIDATION_ERROR \
                     | AppErrorType.ALREADY_EXITS \

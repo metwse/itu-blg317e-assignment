@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Entry Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1E61FF;
+      --bg1: #1a1a2e;
+      --bg2: #16213e;
+      --bg3: #0f3460;
+      --accent: #e94560;
+      --success: #00d9a5;
+      --warning: #ffc107;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      min-height: 100vh;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .text {
+      color: rgba(255,255,255,0.8) !important;
+    }
+
+    .form-check {
+      color: rgba(255,255,255,0.8);
+    }
+    
+    .navbar {
+      background: rgba(15, 52, 96, 0.9) !important;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(233, 69, 96, 0.3);
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--accent) !important;
+    }
+    
+    .card {
+      background: rgba(22, 33, 62, 0.8);
+      border: 1px solid rgba(233, 69, 96, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .card-header {
+      background: rgba(15, 52, 96, 0.5);
+      border-bottom: 1px solid rgba(233, 69, 96, 0.2);
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+    
+    .nav-tabs {
+      border-bottom: 2px solid var(--bg3);
+    }
+    
+    .nav-tabs .nav-link {
+      color: #a0a0a0;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-tabs .nav-link:hover {
+      color: #f0f0f0;
+      border-color: transparent;
+    }
+    
+    .nav-tabs .nav-link.active {
+      background: transparent;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+    
+    .form-control, .form-select {
+      background: rgba(26, 26, 46, 0.8);
+      border: 1px solid rgba(233, 69, 96, 0.3);
+      color: #f0f0f0;
+      border-radius: 8px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      background: rgba(26, 26, 46, 0.9);
+      border-color: var(--accent);
+      color: #f0f0f0;
+      box-shadow: 0 0 0 0.2rem rgba(233, 69, 96, 0.25);
+    }
+    
+    .form-control::placeholder {
+      color: #6c757d;
+    }
+
+    .form-control:disabled, .form-select:disabled {
+      background: rgba(26, 26, 46, 0.4);
+      color: #888;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: #3d7aff;
+      transform: translateY(-1px);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      border: none;
+      border-radius: 8px;
+    }
+    
+    .btn-danger {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+    }
+    
+    .btn-warning {
+      background: var(--warning);
+      border: none;
+      border-radius: 8px;
+      color: #1a1a2e;
+    }
+
+    .btn-outline-light {
+      border-radius: 8px;
+    }
+    
+    .table {
+      color: #f0f0f0;
+    }
+    
+    .table-dark {
+      --bs-table-bg: rgba(22, 33, 62, 0.6);
+      --bs-table-striped-bg: rgba(15, 52, 96, 0.4);
+      --bs-table-hover-bg: rgba(233, 69, 96, 0.1);
+      border-color: rgba(233, 69, 96, 0.2);
+    }
+    
+    .table-dark th {
+      background: rgba(15, 52, 96, 0.8);
+      border-color: rgba(233, 69, 96, 0.3);
+    }
+    
+    .table-dark td {
+      border-color: rgba(233, 69, 96, 0.15);
+    }
+    
+    .badge-scope {
+      padding: 0.4em 0.8em;
+      border-radius: 6px;
+      font-size: 0.85em;
+    }
+    
+    .badge-economy {
+      background: var(--primary);
+    }
+    
+    .badge-region {
+      background: var(--success);
+    }
+
+    .badge-role {
+      padding: 0.3em 0.6em;
+      border-radius: 4px;
+      font-size: 0.75em;
+    }
+
+    .badge-admin {
+      background: var(--accent);
+    }
+
+    .badge-technical {
+      background: var(--primary);
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .info-box {
+      background: rgba(30, 97, 255, 0.1);
+      border: 1px solid rgba(30, 97, 255, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .info-box code {
+      background: rgba(233, 69, 96, 0.2);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    #toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 20px 40px;
+      font-size: 1.2rem;
+      background: #e94560;
+      color: white;
+      border-radius: 10px;
+      font-weight: 500;
+      z-index: 9999;
+      display: none;
+      max-width: 600px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    #toast.show {
+      display: block;
+    }
+
+    #toast.success {
+      background: var(--success);
+    }
+
+    /* Login Section */
+    #login-section {
+      max-width: 400px;
+      margin: 100px auto;
+    }
+
+    /* Main App Section */
+    #app-section {
+      display: none;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .provider-select {
+      min-width: 200px;
+    }
+
+    /* Indicator Form */
+    .indicator-group {
+      background: rgba(15, 52, 96, 0.3);
+      border: 1px solid rgba(233, 69, 96, 0.15);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .indicator-group-title {
+      color: var(--accent);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(233, 69, 96, 0.2);
+    }
+
+    .indicator-field label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 0.25rem;
+    }
+
+    .permission-card {
+      background: rgba(15, 52, 96, 0.4);
+      border: 1px solid rgba(233, 69, 96, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .permission-card .scope {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .permission-card .years {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+    }
+
+    #output {
+      min-height: 50px;
+    }
+
+    #output pre {
+      background: rgba(15, 52, 96, 0.5);
+      border: 1px solid rgba(233, 69, 96, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      color: #f0f0f0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="toast"></div>
+
+  <!-- Login Section -->
+  <section id="login-section">
+    <div class="card">
+      <div class="card-header text-center">
+        🔐 Data Entry Portal Login
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label text">Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="Enter your email">
+        </div>
+        <div class="mb-3">
+          <label class="form-label text">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="Enter your password">
+        </div>
+        <button class="btn btn-primary w-100" onclick="login()">
+          Sign In
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main App Section -->
+  <section id="app-section">
+    <nav class="navbar navbar-dark mb-4">
+      <div class="container">
+        <span class="navbar-brand">📊 Data Entry Portal</span>
+        <div class="user-info">
+          <select id="provider-context" class="form-select form-select-sm provider-select" onchange="onProviderChange()">
+            <option value="">-- Select Provider --</option>
+          </select>
+          <span class="user-name" id="user-name-display"></span>
+          <button class="btn btn-outline-light btn-sm" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container pb-5">
+      <div class="info-box">
+        <strong>Data Entry Portal</strong> - Submit economic, health, and environmental indicator data.
+        Select a Provider context above, then enter data for economies you have permission to manage.
+      </div>
+
+      <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#permissions-tab" type="button">🔐 My Permissions</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#entry-tab" type="button">📝 Data Entry</button>
+        </li>
+      </ul>
+
+      <div id="output" class="mb-4"></div>
+
+      <div class="tab-content">
+        <!-- Permissions Tab -->
+        <div class="tab-pane fade show active" id="permissions-tab">
+          <div class="card">
+            <div class="card-header">📋 Your Permissions for Selected Provider</div>
+            <div class="card-body">
+              <p class="text small">These are the economies/regions and year ranges you can submit data for.</p>
+              <div id="permissions-list">
+                <p class="text">Select a provider to view permissions.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Entry Tab -->
+        <div class="tab-pane fade" id="entry-tab">
+          <div class="row g-4">
+            <!-- Lookup / Target Selection -->
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">🎯 Target Selection</div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label text">Economy Code</label>
+                    <input type="text" id="entry-economy" class="form-control" placeholder="e.g., TUR" maxlength="3">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text">Year</label>
+                    <input type="number" id="entry-year" class="form-control" placeholder="e.g., 2024" min="1960" max="2100">
+                  </div>
+                  <button class="btn btn-primary w-100 mb-2" onclick="loadExistingData()">
+                    📥 Load Existing Data
+                  </button>
+                  <button class="btn btn-outline-light w-100" onclick="clearForm()">
+                    🗑️ Clear Form
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Indicator Fields -->
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">📊 Indicator Data</div>
+                <div class="card-body">
+                  <!-- Economic Indicators -->
+                  <div class="indicator-group">
+                    <div class="indicator-group-title">💰 Economic Indicators</div>
+                    <div class="row g-2">
+                      <div class="col-md-6 indicator-field">
+                        <label>GDP per Capita</label>
+                        <input type="number" step="0.01" id="ind-gdp_per_capita" class="form-control form-control-sm" placeholder="USD">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Industry (% of GDP)</label>
+                        <input type="number" step="0.01" id="ind-industry" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Trade (% of GDP)</label>
+                        <input type="number" step="0.01" id="ind-trade" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Agriculture, Forestry & Fishing</label>
+                        <input type="number" step="0.01" id="ind-agriculture_forestry_and_fishing" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Health Indicators -->
+                  <div class="indicator-group">
+                    <div class="indicator-group-title">🏥 Health Indicators</div>
+                    <div class="row g-2">
+                      <div class="col-md-6 indicator-field">
+                        <label>Community Health Workers (per 1000)</label>
+                        <input type="number" step="0.01" id="ind-community_health_workers" class="form-control form-control-sm">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Diabetes Prevalence (%)</label>
+                        <input type="number" step="0.01" id="ind-diabetes_prevalence" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Undernourishment Prevalence (%)</label>
+                        <input type="number" step="0.01" id="ind-prevalence_of_undernourishment" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Severe Food Insecurity (%)</label>
+                        <input type="number" step="0.01" id="ind-prevalence_of_severe_food_insecurity" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Basic Handwashing Facilities (%)</label>
+                        <input type="number" step="0.01" id="ind-basic_handwashing_facilities" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Safe Drinking Water (%)</label>
+                        <input type="number" step="0.01" id="ind-safely_managed_drinking_water_services" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Environment Indicators -->
+                  <div class="indicator-group">
+                    <div class="indicator-group-title">🌍 Environment Indicators</div>
+                    <div class="row g-2">
+                      <div class="col-md-6 indicator-field">
+                        <label>Access to Electricity (%)</label>
+                        <input type="number" step="0.01" id="ind-access_to_electricity" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Energy Use (kg oil eq. per capita)</label>
+                        <input type="number" step="0.01" id="ind-energy_use" class="form-control form-control-sm">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Alternative & Nuclear Energy (%)</label>
+                        <input type="number" step="0.01" id="ind-alternative_and_nuclear_energy" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>GDP per Unit of Energy Use</label>
+                        <input type="number" step="0.01" id="ind-gdp_per_unit_of_energy_use" class="form-control form-control-sm">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Permanent Cropland (%)</label>
+                        <input type="number" step="0.01" id="ind-permanent_cropland" class="form-control form-control-sm" placeholder="%">
+                      </div>
+                      <div class="col-md-6 indicator-field">
+                        <label>Crop Production Index</label>
+                        <input type="number" step="0.01" id="ind-crop_production_index" class="form-control form-control-sm">
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-success btn-lg w-100" onclick="submitIndicator()">
+                    💾 Save Indicator Data
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const BASE_URL = '/api/portal';
+
+    let authToken = null;
+    let currentUser = null;
+    let currentProviderId = null;
+
+    // Indicator field IDs
+    const INDICATOR_FIELDS = [
+      'gdp_per_capita', 'industry', 'trade', 'agriculture_forestry_and_fishing',
+      'community_health_workers', 'diabetes_prevalence', 'prevalence_of_undernourishment',
+      'prevalence_of_severe_food_insecurity', 'basic_handwashing_facilities',
+      'safely_managed_drinking_water_services', 'access_to_electricity', 'energy_use',
+      'alternative_and_nuclear_energy', 'gdp_per_unit_of_energy_use',
+      'permanent_cropland', 'crop_production_index'
+    ];
+
+    // -------------------------------------------------------------------------
+    // Initialization
+    // -------------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check for saved token
+      const savedToken = localStorage.getItem('portal-token');
+      if (savedToken) {
+        authToken = savedToken;
+        initializeApp();
+      }
+
+      // Enter key support for login
+      $('login-password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+      });
+    });
+
+    // -------------------------------------------------------------------------
+    // Authentication
+    // -------------------------------------------------------------------------
+    async function login() {
+      const email = $('login-email').value.trim();
+      const password = $('login-password').value;
+
+      if (!email || !password) {
+        showToast('Please enter email and password', true);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.details || data.error || 'Login failed', true);
+          return;
+        }
+
+        authToken = data.token;
+        localStorage.setItem('portal-token', authToken);
+        initializeApp();
+
+      } catch (e) {
+        showToast('Connection error: ' + e.message, true);
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      currentUser = null;
+      currentProviderId = null;
+      localStorage.removeItem('portal-token');
+      $('login-section').style.display = 'block';
+      $('app-section').style.display = 'none';
+      $('login-email').value = '';
+      $('login-password').value = '';
+    }
+
+    async function initializeApp() {
+      try {
+        const res = await fetch(`${BASE_URL}/auth/me`, {
+          headers: getHeaders()
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            logout();
+            showToast('Session expired. Please login again.', true);
+            return;
+          }
+          showToast(data.details || data.error || 'Failed to load user', true);
+          return;
+        }
+
+        currentUser = data;
+        $('user-name-display').textContent = data.name;
+
+        // Populate provider dropdown
+        const select = $('provider-context');
+        select.innerHTML = '<option value="">-- Select Provider --</option>';
+        
+        data.managed_providers.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `${p.name} (${p.role})`;
+          select.appendChild(opt);
+        });
+
+        // Show app section
+        $('login-section').style.display = 'none';
+        $('app-section').style.display = 'block';
+
+        // Auto-select first provider if only one
+        if (data.managed_providers.length === 1) {
+          select.value = data.managed_providers[0].id;
+          onProviderChange();
+        }
+
+      } catch (e) {
+        showToast('Connection error: ' + e.message, true);
+        logout();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Headers & API Helpers
+    // -------------------------------------------------------------------------
+    function getHeaders() {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      };
+      if (currentProviderId) {
+        headers['X-Provider-Context'] = currentProviderId;
+      }
+      return headers;
+    }
+
+    function showToast(message, isError = false) {
+      const toast = $('toast');
+      toast.textContent = message;
+      toast.className = isError ? 'show' : 'show success';
+      setTimeout(() => toast.classList.remove('show', 'success'), 4000);
+      toast.onclick = () => toast.classList.remove('show', 'success');
+    }
+
+    function showOutput(content) {
+      $('output').innerHTML = `<pre>${typeof content === 'string' ? content : JSON.stringify(content, null, 2)}</pre>`;
+    }
+
+    function clearOutput() {
+      $('output').innerHTML = '';
+    }
+
+    // -------------------------------------------------------------------------
+    // Provider Context
+    // -------------------------------------------------------------------------
+    function onProviderChange() {
+      const select = $('provider-context');
+      currentProviderId = select.value || null;
+      
+      if (currentProviderId) {
+        loadPermissions();
+      } else {
+        $('permissions-list').innerHTML = '<p class="text">Select a provider to view permissions.</p>';
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Permissions
+    // -------------------------------------------------------------------------
+    async function loadPermissions() {
+      if (!currentProviderId) {
+        showToast('Please select a provider first', true);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/permissions`, {
+          headers: getHeaders()
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          $('permissions-list').innerHTML = `<p class="text text-danger">${data.details || data.error}</p>`;
+          return;
+        }
+
+        if (data.length === 0) {
+          $('permissions-list').innerHTML = '<p class="text">No permissions found for this provider.</p>';
+          return;
+        }
+
+        let html = '';
+        data.forEach(p => {
+          const badgeClass = p.type === 'economy' ? 'badge-economy' : 'badge-region';
+          html += `
+            <div class="permission-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="badge badge-scope ${badgeClass}">${p.type.toUpperCase()}</span>
+                  <span class="scope ms-2">${p.scope}</span>
+                </div>
+                <div class="years">
+                  📅 ${p.year_start} - ${p.year_end}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        $('permissions-list').innerHTML = html;
+
+      } catch (e) {
+        $('permissions-list').innerHTML = `<p class="text text-danger">Error: ${e.message}</p>`;
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Indicator Data Entry
+    // -------------------------------------------------------------------------
+    async function loadExistingData() {
+      if (!currentProviderId) {
+        showToast('Please select a provider first', true);
+        return;
+      }
+
+      const economyCode = $('entry-economy').value.trim().toUpperCase();
+      const year = $('entry-year').value;
+
+      if (!economyCode || !year) {
+        showToast('Please enter economy code and year', true);
+        return;
+      }
+
+      clearOutput();
+
+      try {
+        const res = await fetch(`${BASE_URL}/indicators?economy_code=${economyCode}&year=${year}`, {
+          headers: getHeaders()
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            showToast('No existing data found. You can enter new data.', false);
+            clearForm(false); // Keep economy/year
+            return;
+          }
+          showToast(data.details || data.error || 'Failed to load data', true);
+          return;
+        }
+
+        // Populate form fields
+        INDICATOR_FIELDS.forEach(field => {
+          const input = $(`ind-${field}`);
+          if (input && data[field] !== null && data[field] !== undefined) {
+            input.value = data[field];
+          }
+        });
+
+        showToast('Data loaded successfully!', false);
+
+      } catch (e) {
+        showToast('Error: ' + e.message, true);
+      }
+    }
+
+    function clearForm(clearTarget = true) {
+      if (clearTarget) {
+        $('entry-economy').value = '';
+        $('entry-year').value = '';
+      }
+      
+      INDICATOR_FIELDS.forEach(field => {
+        const input = $(`ind-${field}`);
+        if (input) input.value = '';
+      });
+      
+      clearOutput();
+    }
+
+    async function submitIndicator() {
+      if (!currentProviderId) {
+        showToast('Please select a provider first', true);
+        return;
+      }
+
+      const economyCode = $('entry-economy').value.trim().toUpperCase();
+      const year = parseInt($('entry-year').value);
+
+      if (!economyCode) {
+        showToast('Economy code is required', true);
+        return;
+      }
+
+      if (!year || isNaN(year)) {
+        showToast('Valid year is required', true);
+        return;
+      }
+
+      // Build payload with only non-empty fields
+      const payload = {
+        economy_code: economyCode,
+        year: year
+      };
+
+      INDICATOR_FIELDS.forEach(field => {
+        const input = $(`ind-${field}`);
+        if (input && input.value !== '') {
+          const val = parseFloat(input.value);
+          if (!isNaN(val)) {
+            payload[field] = val;
+          }
+        }
+      });
+
+      try {
+        const res = await fetch(`${BASE_URL}/indicators`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.details || data.error || 'Failed to save data', true);
+          return;
+        }
+
+        const action = res.status === 201 ? 'created' : 'updated';
+        showToast(`Data ${action} successfully for ${economyCode}/${year}!`, false);
+        showOutput(data);
+
+      } catch (e) {
+        showToast('Error: ' + e.message, true);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -5,6 +5,7 @@ from .provider_handler import ProviderHandler
 from .permission_handler import PermissionHandler
 from .indicator_handler import IndicatorHandler
 from .user_handler import UserHandler
+from .portal_handler import PortalHandler
 
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     'ProviderHandler',
     'PermissionHandler',
     'IndicatorHandler',
-    'UserHandler'
+    'UserHandler',
+    'PortalHandler'
 ]

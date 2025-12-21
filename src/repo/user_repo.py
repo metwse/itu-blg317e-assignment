@@ -14,6 +14,40 @@ class UserRepo(BaseRepo[User, UserUpdateDto, UserCreateDto]):
             "SELECT id, email, name FROM users ORDER BY id DESC"
         )
 
+    async def get_user_by_email(self, email: str):
+        """Fetch a user by email for authentication.
+
+        Args:
+            email: The user's email address.
+
+        Returns:
+            The user record with id, email, password, name if found.
+        """
+        return await self.fetchrow_raw(
+            """
+            SELECT id, email, password, name FROM users
+            WHERE email = $1
+            """,
+            email
+        )
+
+    async def get_user_by_id(self, user_id: int):
+        """Fetch a user by ID.
+
+        Args:
+            user_id: The user's ID.
+
+        Returns:
+            The user record with id, email, name if found.
+        """
+        return await self.fetchrow_raw(
+            """
+            SELECT id, email, name FROM users
+            WHERE id = $1
+            """,
+            user_id
+        )
+
     async def create_user(self, email, password, name):
         return await self.fetchrow_raw(
             """
