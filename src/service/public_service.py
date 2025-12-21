@@ -3,7 +3,7 @@
 from typing import List
 
 from src.repo.public_repo import PublicRepo
-from src.handlers.util import IndicatorFilters
+from src.dto import IndicatorFilters
 
 
 class PublicService:

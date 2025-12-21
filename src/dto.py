@@ -22,6 +22,7 @@ Usage in Architecture:
 
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from dataclasses import dataclass
 
 
 # 1. Provider DTOs
@@ -153,3 +154,16 @@ class IndicatorCreateDto(IndicatorUpdateDto):
     provider_id: int
     economy_code: str = Field(..., max_length=3)
     year: int
+
+
+@dataclass
+class IndicatorFilters:
+    """Common filters for indicator queries."""
+    economy_code: Optional[str] = None
+    region: Optional[str] = None
+    year: Optional[int] = None
+    year_start: Optional[int] = None
+    year_end: Optional[int] = None
+    provider_id: Optional[int] = None
+    limit: int = 100
+    offset: int = 0

@@ -1,14 +1,14 @@
 """Public repository for read-only data access with JOINs."""
 
+from src.dto import IndicatorFilters
+
 from typing import List, Tuple
 import asyncpg
-
-from src.handlers.util import IndicatorFilters
 
 
 def build_indicator_filter_clause(
     filters: IndicatorFilters,
-    extra_conditions: List[str] = None
+    extra_conditions: List[str] = []
 ) -> Tuple[str, List, int]:
     """Build WHERE clause and params from IndicatorFilters.
 

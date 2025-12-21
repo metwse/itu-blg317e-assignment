@@ -1,8 +1,7 @@
+from src.dto import IndicatorFilters
 from src.error import AppError, AppErrorType
 
 from flask import request
-from dataclasses import dataclass
-from typing import Optional
 
 
 def json():
@@ -13,19 +12,6 @@ def json():
                        "could not serialize json")
 
     return json
-
-
-@dataclass
-class IndicatorFilters:
-    """Common filters for indicator queries."""
-    economy_code: Optional[str] = None
-    region: Optional[str] = None
-    year: Optional[int] = None
-    year_start: Optional[int] = None
-    year_end: Optional[int] = None
-    provider_id: Optional[int] = None
-    limit: int = 100
-    offset: int = 0
 
 
 def parse_indicator_filters() -> IndicatorFilters:
