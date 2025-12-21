@@ -136,7 +136,7 @@ class PublicRepo:
                     i.economy_code,
                     e.name AS economy_name,
                     r.name AS region_name,
-                    il.name AS income_level,
+                    il.name AS income_level_name,
                     i.year,
                     i.gdp_per_capita,
                     i.industry,

@@ -22,29 +22,6 @@
     </header>
 
     <main>
-      <!-- Stats Section -->
-      <section class="stats-section">
-        <h2>Database Statistics</h2>
-        <div class="stats-grid" id="stats-grid">
-          <div class="stat-card">
-            <span class="stat-value" id="stat-economies">-</span>
-            <span class="stat-label">Economies</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" id="stat-providers">-</span>
-            <span class="stat-label">Providers</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" id="stat-indicators">-</span>
-            <span class="stat-label">Indicator Records</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" id="stat-years">-</span>
-            <span class="stat-label">Year Range</span>
-          </div>
-        </div>
-      </section>
-
       <!-- View Selection Buttons -->
       <section class="view-selection">
         <h2>Browse Data</h2>
@@ -138,10 +115,32 @@
           </table>
         </div>
       </section>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <h2>Database Statistics</h2>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-economies">-</span>
+            <span class="stat-label">Economies</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-providers">-</span>
+            <span class="stat-label">Providers</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-indicators">-</span>
+            <span class="stat-label">Indicator Records</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-years">-</span>
+            <span class="stat-label">Year Range</span>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer>
-      <p>WorldBank Indicator Database &copy; 2024</p>
     </footer>
 
     <script>
@@ -257,7 +256,7 @@
           'health': ['Economy', 'Region', 'Year', 'Health Workers', 'Diabetes (%)', 'Undernourishment (%)', 'Food Insecurity (%)', 'Handwashing (%)', 'Safe Water (%)', 'Provider'],
           'environment': ['Economy', 'Region', 'Year', 'Electricity (%)', 'Energy Use', 'Alt Energy (%)', 'Cropland (%)', 'Crop Index', 'GDP/Energy', 'Provider'],
           'providers': ['ID', 'Name', 'Description', 'Website', 'Admin', 'Technical'],
-          'all': ['Provider', 'Economy', 'Region', 'Income Level', 'Year', 'GDP/Cap', 'Industry', 'Health Workers', 'Electricity', 'Energy Use']
+          'all': ['Economy', 'Region', 'Income Level', 'Year', 'Provider', 'GDP/Cap', 'Industry (%)', 'Trade (%)', 'Agriculture (%)', 'Health Workers', 'Diabetes (%)', 'Undernourishment (%)', 'Food Insecurity (%)', 'Handwashing (%)', 'Safe Water (%)', 'Electricity (%)', 'Energy Use', 'Alt Energy (%)', 'Cropland (%)', 'Crop Index', 'GDP/Energy']
         };
 
         thead.innerHTML = '<tr>' + headers[view].map(h => `<th>${h}</th>`).join('') + '</tr>';
@@ -405,16 +404,27 @@
             `;
           case 'all':
             return `
-              <td>${fmt(row.provider_name)}</td>
               <td>${fmt(row.economy_name)} <code>${row.economy_code}</code></td>
               <td>${fmt(row.region_name)}</td>
-              <td>${fmt(row.income_level)}</td>
+              <td>${fmt(row.income_level_name)}</td>
               <td>${fmt(row.year, 0)}</td>
+              <td>${fmt(row.provider_name)}</td>
               <td>${fmt(row.gdp_per_capita)}</td>
               <td>${fmt(row.industry)}</td>
+              <td>${fmt(row.trade)}</td>
+              <td>${fmt(row.agriculture_forestry_and_fishing)}</td>
               <td>${fmt(row.community_health_workers)}</td>
+              <td>${fmt(row.diabetes_prevalence)}</td>
+              <td>${fmt(row.prevalence_of_undernourishment)}</td>
+              <td>${fmt(row.prevalence_of_severe_food_insecurity)}</td>
+              <td>${fmt(row.basic_handwashing_facilities)}</td>
+              <td>${fmt(row.safely_managed_drinking_water_services)}</td>
               <td>${fmt(row.access_to_electricity)}</td>
               <td>${fmt(row.energy_use)}</td>
+              <td>${fmt(row.alternative_and_nuclear_energy)}</td>
+              <td>${fmt(row.permanent_cropland)}</td>
+              <td>${fmt(row.crop_production_index)}</td>
+              <td>${fmt(row.gdp_per_unit_of_energy_use)}</td>
             `;
           default:
             return '';
