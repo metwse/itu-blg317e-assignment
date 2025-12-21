@@ -124,7 +124,12 @@ class PublicRepo:
             return [dict(row) for row in rows]
 
     async def list_indicators(self, filters: IndicatorFilters) -> List[dict]:
-        """List all indicators with economy and provider info."""
+        """List all indicators with economy and provider info.
+
+        This query builds a combined set by FULL OUTER JOINing the three
+        category tables and exposing the combined columns under alias `i`, so
+        the existing filter builder continues to work.
+        """
         where_clause, params, param_idx = build_indicator_filter_clause(filters)
         params.extend([filters.limit, filters.offset])
 
@@ -154,7 +159,36 @@ class PublicRepo:
                     i.permanent_cropland,
                     i.crop_production_index,
                     i.gdp_per_unit_of_energy_use
-                FROM indicators i
+                FROM (
+                    SELECT
+                        COALESCE(ei.provider_id, hi.provider_id, env.provider_id) AS provider_id,
+                        COALESCE(ei.economy_code, hi.economy_code, env.economy_code) AS economy_code,
+                        COALESCE(ei.year, hi.year, env.year) AS year,
+
+                        ei.gdp_per_capita,
+                        ei.industry,
+                        ei.trade,
+                        ei.agriculture_forestry_and_fishing,
+
+                        hi.community_health_workers,
+                        hi.diabetes_prevalence,
+                        hi.prevalence_of_undernourishment,
+                        hi.prevalence_of_severe_food_insecurity,
+                        hi.basic_handwashing_facilities,
+                        hi.safely_managed_drinking_water_services,
+
+                        env.access_to_electricity,
+                        env.energy_use,
+                        env.alternative_and_nuclear_energy,
+                        env.permanent_cropland,
+                        env.crop_production_index,
+                        env.gdp_per_unit_of_energy_use
+                    FROM economic_indicators ei
+                    FULL OUTER JOIN health_indicators hi
+                        USING (provider_id, economy_code, year)
+                    FULL OUTER JOIN environment_indicators env
+                        USING (provider_id, economy_code, year)
+                ) i
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
@@ -189,7 +223,7 @@ class PublicRepo:
                     i.trade,
                     i.agriculture_forestry_and_fishing,
                     p.name AS provider_name
-                FROM indicators i
+                FROM economic_indicators i
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
@@ -226,7 +260,7 @@ class PublicRepo:
                     i.basic_handwashing_facilities,
                     i.safely_managed_drinking_water_services,
                     p.name AS provider_name
-                FROM indicators i
+                FROM health_indicators i
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
@@ -263,7 +297,7 @@ class PublicRepo:
                     i.crop_production_index,
                     i.gdp_per_unit_of_energy_use,
                     p.name AS provider_name
-                FROM indicators i
+                FROM environment_indicators i
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
