@@ -5,6 +5,7 @@ from .provider_repo import ProviderRepo
 from .permission_repo import PermissionRepo
 from .indicator_repo import IndicatorRepo
 from .user_repo import UserRepo
+from .public_repo import PublicRepo
 
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     'ProviderRepo',
     'PermissionRepo',
     'IndicatorRepo',
-    'UserRepo'
+    'UserRepo',
+    'PublicRepo'
 ]
