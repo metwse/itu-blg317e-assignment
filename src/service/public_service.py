@@ -1,8 +1,9 @@
 """Public service layer for read-only data access."""
 
-from typing import List, Optional
+from typing import List
 
 from src.repo.public_repo import PublicRepo
+from src.handlers.util import IndicatorFilters
 
 
 class PublicService:
@@ -31,46 +32,27 @@ class PublicService:
         """List all providers with user names."""
         return await self.repo.list_providers()
 
-    async def list_indicators(
-        self,
-        economy_code: Optional[str] = None,
-        region: Optional[str] = None,
-        year: Optional[int] = None,
-        year_start: Optional[int] = None,
-        year_end: Optional[int] = None,
-        provider_id: Optional[int] = None,
-        limit: int = 100,
-        offset: int = 0
-    ) -> List[dict]:
-        """List indicators with filters."""
-        return await self.repo.list_indicators(
-            economy_code=economy_code,
-            region=region,
-            year=year,
-            year_start=year_start,
-            year_end=year_end,
-            provider_id=provider_id,
-            limit=limit,
-            offset=offset
-        )
+    async def list_indicators(self, filters: IndicatorFilters) -> List[dict]:
+        """List all indicators with filters."""
+        return await self.repo.list_indicators(filters)
 
     async def list_economic_indicators(
-        self, limit: int = 100, offset: int = 0
+        self, filters: IndicatorFilters
     ) -> List[dict]:
-        """List economic indicators."""
-        return await self.repo.list_economic_indicators(limit, offset)
+        """List economic indicators with filters."""
+        return await self.repo.list_economic_indicators(filters)
 
     async def list_health_indicators(
-        self, limit: int = 100, offset: int = 0
+        self, filters: IndicatorFilters
     ) -> List[dict]:
-        """List health indicators."""
-        return await self.repo.list_health_indicators(limit, offset)
+        """List health indicators with filters."""
+        return await self.repo.list_health_indicators(filters)
 
     async def list_environment_indicators(
-        self, limit: int = 100, offset: int = 0
+        self, filters: IndicatorFilters
     ) -> List[dict]:
-        """List environment indicators."""
-        return await self.repo.list_environment_indicators(limit, offset)
+        """List environment indicators with filters."""
+        return await self.repo.list_environment_indicators(filters)
 
     async def get_stats(self) -> dict:
         """Get database statistics."""

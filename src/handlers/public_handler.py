@@ -1,8 +1,9 @@
 """Public handler for read-only data access."""
 
-from flask import jsonify, request
+from flask import jsonify
 
 from src.service.public_service import PublicService
+from .util import parse_indicator_filters
 
 
 class PublicHandler:
@@ -36,47 +37,27 @@ class PublicHandler:
         return jsonify(data)
 
     async def list_indicators(self):
-        """List indicators with filters from query params."""
-        economy_code = request.args.get('economy_code')
-        region = request.args.get('region')
-        year = request.args.get('year')
-        year_start = request.args.get('year_start')
-        year_end = request.args.get('year_end')
-        provider_id = request.args.get('provider_id')
-        limit = int(request.args.get('limit', 100))
-        offset = int(request.args.get('offset', 0))
-
-        data = await self.service.list_indicators(
-            economy_code=economy_code,
-            region=region,
-            year=int(year) if year else None,
-            year_start=int(year_start) if year_start else None,
-            year_end=int(year_end) if year_end else None,
-            provider_id=int(provider_id) if provider_id else None,
-            limit=limit,
-            offset=offset
-        )
+        """List all indicators with filters from query params."""
+        filters = parse_indicator_filters()
+        data = await self.service.list_indicators(filters)
         return jsonify(data)
 
     async def list_economic_indicators(self):
-        """List economic indicators."""
-        limit = int(request.args.get('limit', 100))
-        offset = int(request.args.get('offset', 0))
-        data = await self.service.list_economic_indicators(limit, offset)
+        """List economic indicators with filters."""
+        filters = parse_indicator_filters()
+        data = await self.service.list_economic_indicators(filters)
         return jsonify(data)
 
     async def list_health_indicators(self):
-        """List health indicators."""
-        limit = int(request.args.get('limit', 100))
-        offset = int(request.args.get('offset', 0))
-        data = await self.service.list_health_indicators(limit, offset)
+        """List health indicators with filters."""
+        filters = parse_indicator_filters()
+        data = await self.service.list_health_indicators(filters)
         return jsonify(data)
 
     async def list_environment_indicators(self):
-        """List environment indicators."""
-        limit = int(request.args.get('limit', 100))
-        offset = int(request.args.get('offset', 0))
-        data = await self.service.list_environment_indicators(limit, offset)
+        """List environment indicators with filters."""
+        filters = parse_indicator_filters()
+        data = await self.service.list_environment_indicators(filters)
         return jsonify(data)
 
     async def get_stats(self):

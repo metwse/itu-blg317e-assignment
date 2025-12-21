@@ -1,7 +1,62 @@
 """Public repository for read-only data access with JOINs."""
 
-from typing import List, Optional
+from typing import List, Tuple
 import asyncpg
+
+from src.handlers.util import IndicatorFilters
+
+
+def build_indicator_filter_clause(
+    filters: IndicatorFilters,
+    extra_conditions: List[str] = None
+) -> Tuple[str, List, int]:
+    """Build WHERE clause and params from IndicatorFilters.
+
+    Args:
+        filters: The filter parameters.
+        extra_conditions: Additional WHERE conditions (e.g., category filters).
+
+    Returns:
+        Tuple of (where_clause, params_list, next_param_index).
+    """
+    conditions = list(extra_conditions) if extra_conditions else []
+    params = []
+    param_idx = 1
+
+    if filters.economy_code:
+        conditions.append(f"i.economy_code = ${param_idx}")
+        params.append(filters.economy_code.upper())
+        param_idx += 1
+
+    if filters.region:
+        conditions.append(f"e.region = ${param_idx}")
+        params.append(filters.region.upper())
+        param_idx += 1
+
+    if filters.year is not None:
+        conditions.append(f"i.year = ${param_idx}")
+        params.append(filters.year)
+        param_idx += 1
+    else:
+        if filters.year_start is not None:
+            conditions.append(f"i.year >= ${param_idx}")
+            params.append(filters.year_start)
+            param_idx += 1
+        if filters.year_end is not None:
+            conditions.append(f"i.year <= ${param_idx}")
+            params.append(filters.year_end)
+            param_idx += 1
+
+    if filters.provider_id is not None:
+        conditions.append(f"i.provider_id = ${param_idx}")
+        params.append(filters.provider_id)
+        param_idx += 1
+
+    where_clause = ""
+    if conditions:
+        where_clause = "WHERE " + " AND ".join(conditions)
+
+    return where_clause, params, param_idx
 
 
 class PublicRepo:
@@ -68,56 +123,10 @@ class PublicRepo:
             """)
             return [dict(row) for row in rows]
 
-    async def list_indicators(
-        self,
-        economy_code: Optional[str] = None,
-        region: Optional[str] = None,
-        year: Optional[int] = None,
-        year_start: Optional[int] = None,
-        year_end: Optional[int] = None,
-        provider_id: Optional[int] = None,
-        limit: int = 100,
-        offset: int = 0
-    ) -> List[dict]:
-        """List indicators with economy and provider info."""
-        conditions = []
-        params = []
-        param_idx = 1
-
-        if economy_code:
-            conditions.append(f"i.economy_code = ${param_idx}")
-            params.append(economy_code.upper())
-            param_idx += 1
-
-        if region:
-            conditions.append(f"e.region = ${param_idx}")
-            params.append(region.upper())
-            param_idx += 1
-
-        if year is not None:
-            conditions.append(f"i.year = ${param_idx}")
-            params.append(year)
-            param_idx += 1
-        else:
-            if year_start is not None:
-                conditions.append(f"i.year >= ${param_idx}")
-                params.append(year_start)
-                param_idx += 1
-            if year_end is not None:
-                conditions.append(f"i.year <= ${param_idx}")
-                params.append(year_end)
-                param_idx += 1
-
-        if provider_id is not None:
-            conditions.append(f"i.provider_id = ${param_idx}")
-            params.append(provider_id)
-            param_idx += 1
-
-        where_clause = ""
-        if conditions:
-            where_clause = "WHERE " + " AND ".join(conditions)
-
-        params.extend([limit, offset])
+    async def list_indicators(self, filters: IndicatorFilters) -> List[dict]:
+        """List all indicators with economy and provider info."""
+        where_clause, params, param_idx = build_indicator_filter_clause(filters)
+        params.extend([filters.limit, filters.offset])
 
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(f"""
@@ -157,11 +166,19 @@ class PublicRepo:
             return [dict(row) for row in rows]
 
     async def list_economic_indicators(
-        self, limit: int = 100, offset: int = 0
+        self, filters: IndicatorFilters
     ) -> List[dict]:
-        """List economic indicators only."""
+        """List economic indicators only with filters."""
+        extra = [
+            "(i.gdp_per_capita IS NOT NULL OR i.industry IS NOT NULL "
+            "OR i.trade IS NOT NULL)"
+        ]
+        where_clause, params, param_idx = build_indicator_filter_clause(
+            filters, extra)
+        params.extend([filters.limit, filters.offset])
+
         async with self.pool.acquire() as conn:
-            rows = await conn.fetch("""
+            rows = await conn.fetch(f"""
                 SELECT
                     e.code AS economy_code,
                     e.name AS economy_name,
@@ -176,20 +193,27 @@ class PublicRepo:
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
-                WHERE i.gdp_per_capita IS NOT NULL
-                   OR i.industry IS NOT NULL
-                   OR i.trade IS NOT NULL
+                {where_clause}
                 ORDER BY i.year DESC, e.name
-                LIMIT $1 OFFSET $2
-            """, limit, offset)
+                LIMIT ${param_idx} OFFSET ${param_idx + 1}
+            """, *params)
             return [dict(row) for row in rows]
 
     async def list_health_indicators(
-        self, limit: int = 100, offset: int = 0
+        self, filters: IndicatorFilters
     ) -> List[dict]:
-        """List health indicators only."""
+        """List health indicators only with filters."""
+        extra = [
+            "(i.community_health_workers IS NOT NULL "
+            "OR i.diabetes_prevalence IS NOT NULL "
+            "OR i.prevalence_of_undernourishment IS NOT NULL)"
+        ]
+        where_clause, params, param_idx = build_indicator_filter_clause(
+            filters, extra)
+        params.extend([filters.limit, filters.offset])
+
         async with self.pool.acquire() as conn:
-            rows = await conn.fetch("""
+            rows = await conn.fetch(f"""
                 SELECT
                     e.code AS economy_code,
                     e.name AS economy_name,
@@ -206,20 +230,27 @@ class PublicRepo:
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
-                WHERE i.community_health_workers IS NOT NULL
-                   OR i.diabetes_prevalence IS NOT NULL
-                   OR i.prevalence_of_undernourishment IS NOT NULL
+                {where_clause}
                 ORDER BY i.year DESC, e.name
-                LIMIT $1 OFFSET $2
-            """, limit, offset)
+                LIMIT ${param_idx} OFFSET ${param_idx + 1}
+            """, *params)
             return [dict(row) for row in rows]
 
     async def list_environment_indicators(
-        self, limit: int = 100, offset: int = 0
+        self, filters: IndicatorFilters
     ) -> List[dict]:
-        """List environment indicators only."""
+        """List environment indicators only with filters."""
+        extra = [
+            "(i.access_to_electricity IS NOT NULL "
+            "OR i.energy_use IS NOT NULL "
+            "OR i.alternative_and_nuclear_energy IS NOT NULL)"
+        ]
+        where_clause, params, param_idx = build_indicator_filter_clause(
+            filters, extra)
+        params.extend([filters.limit, filters.offset])
+
         async with self.pool.acquire() as conn:
-            rows = await conn.fetch("""
+            rows = await conn.fetch(f"""
                 SELECT
                     e.code AS economy_code,
                     e.name AS economy_name,
@@ -236,12 +267,10 @@ class PublicRepo:
                 JOIN economies e ON i.economy_code = e.code
                 JOIN providers p ON i.provider_id = p.id
                 LEFT JOIN regions r ON e.region = r.id
-                WHERE i.access_to_electricity IS NOT NULL
-                   OR i.energy_use IS NOT NULL
-                   OR i.alternative_and_nuclear_energy IS NOT NULL
+                {where_clause}
                 ORDER BY i.year DESC, e.name
-                LIMIT $1 OFFSET $2
-            """, limit, offset)
+                LIMIT ${param_idx} OFFSET ${param_idx + 1}
+            """, *params)
             return [dict(row) for row in rows]
 
     async def get_stats(self) -> dict:
@@ -261,4 +290,5 @@ class PublicRepo:
             stats['year_range'] = dict(year_row) if year_row else {
                 'min_year': None, 'max_year': None
             }
+            return stats
             return stats
