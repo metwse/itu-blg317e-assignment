@@ -74,8 +74,6 @@ def create_app(state: State):
                                              user_handler,
                                              permission_handler))
 
-    # Register portal routes for data entry
-    log.info("registered portal routes")
     app.register_blueprint(portal_routes(state.jwt_secret,
                                          portal_handler))
 

@@ -149,7 +149,9 @@ class PortalHandler:
     # -------------------------------------------------------------------------
 
     async def list_my_permissions(self):
-        """GET /permissions - List permissions for the current provider context."""
+        """GET /permissions - List permissions for the current provider
+        context.
+        """
         await self._validate_provider_context()
 
         permissions = await self.permission_service.get_permissions_for_portal(
@@ -191,7 +193,8 @@ class PortalHandler:
 
         if not indicator:
             raise AppError(AppErrorType.NOT_FOUND,
-                           f"No indicator data found for {economy_code}/{year}.")
+                           f"No indicator data found for {economy_code}/"
+                           f"{year}.")
 
         return jsonify(indicator)
 
@@ -221,9 +224,10 @@ class PortalHandler:
         economy_code = economy_code.strip().upper()
 
         # Check if provider has permission for this economy/year
-        permission = await self.permission_service.check_permission_for_economy(
-            g.provider_id, economy_code, year
-        )
+        permission = \
+            await self.permission_service.check_permission_for_economy(
+                g.provider_id, economy_code, year
+            )
 
         if not permission:
             raise AppError(AppErrorType.FORBIDDEN,
@@ -235,9 +239,10 @@ class PortalHandler:
                           if k not in ('economy_code', 'year', 'provider_id')}
 
         try:
-            result, was_created = await self.indicator_service.upsert_indicator(
-                g.provider_id, economy_code, year, indicator_data
-            )
+            result, was_created = \
+                await self.indicator_service.upsert_indicator(
+                    g.provider_id, economy_code, year, indicator_data
+                )
 
             status_code = 201 if was_created else 200
             return jsonify(result), status_code

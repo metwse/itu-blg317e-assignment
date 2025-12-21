@@ -4,7 +4,7 @@ from src.dto import IndicatorCreateDto, IndicatorUpdateDto
 from src.entities import Indicator
 
 
-class IndicatorRepo(BaseRepo[Indicator, IndicatorUpdateDto, IndicatorCreateDto]):
+class IndicatorRepo(BaseRepo):
     def __init__(self, pool):
         super().__init__(pool, 'indicators',
                          ['provider_id', 'economy_code', 'year'],
@@ -34,7 +34,8 @@ class IndicatorRepo(BaseRepo[Indicator, IndicatorUpdateDto, IndicatorCreateDto])
                                year: int, data: dict):
         """Insert or update indicator data using ON CONFLICT DO UPDATE.
 
-        Only updates non-null fields provided in the data dict (partial update).
+        Only updates non-null fields provided in the data dict (partial
+        update).
 
         Args:
             provider_id: The provider's ID.
@@ -49,11 +50,16 @@ class IndicatorRepo(BaseRepo[Indicator, IndicatorUpdateDto, IndicatorCreateDto])
         indicator_fields = [
             'industry', 'gdp_per_capita', 'trade',
             'agriculture_forestry_and_fishing',
-            'community_health_workers', 'prevalence_of_undernourishment',
-            'prevalence_of_severe_food_insecurity', 'basic_handwashing_facilities',
-            'safely_managed_drinking_water_services', 'diabetes_prevalence',
-            'energy_use', 'access_to_electricity', 'alternative_and_nuclear_energy',
-            'permanent_cropland', 'crop_production_index', 'gdp_per_unit_of_energy_use'
+            'community_health_workers',
+            'prevalence_of_undernourishment',
+            'prevalence_of_severe_food_insecurity',
+            'basic_handwashing_facilities',
+            'safely_managed_drinking_water_services',
+            'diabetes_prevalence',
+            'energy_use', 'access_to_electricity',
+            'alternative_and_nuclear_energy',
+            'permanent_cropland', 'crop_production_index',
+            'gdp_per_unit_of_energy_use'
         ]
 
         # Build SET clause for UPDATE: only include non-null fields from data

@@ -22,7 +22,7 @@ def management_console_authorize(management_secret: str):
     return authorize
 
 
-def portal_jwt_authorize(jwt_secret: str, exclude_paths: list[str] = None):
+def portal_jwt_authorize(jwt_secret: str, exclude_paths: list[str] = []):
     """JWT authorization middleware for the Portal API.
 
     Validates the Bearer token from the Authorization header and extracts
@@ -35,8 +35,6 @@ def portal_jwt_authorize(jwt_secret: str, exclude_paths: list[str] = None):
         exclude_paths: List of endpoint paths that don't require auth
                        (e.g., ['/auth/login']).
     """
-    if exclude_paths is None:
-        exclude_paths = []
 
     def authorize():
         # Skip auth for excluded paths (like /auth/login)
