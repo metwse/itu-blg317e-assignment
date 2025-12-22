@@ -6,3 +6,4 @@ structlog==25.5
 uvicorn==0.38
 asgiref==3.10
 pyjwt==2.10
+requests==2.32
