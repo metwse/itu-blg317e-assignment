@@ -87,18 +87,24 @@ graph chen_er_diagram {
 
     user_id [label=<<u>id</u>>];
     user_email [label="email"];
+    user_name [label="name"];
+    user_password [label="password"];
     user -- user_id;
     user -- user_email;
+    user -- user_name;
+    user -- user_password;
 
     perm_id [label=<<u>id</u>>];
     perm_start [label="year_start"];
     perm_end [label="year_end"];
     perm_note [label="footnote"];
+    perm_cat [label="created_at"];
 
     permission -- perm_id;
     permission -- perm_start;
     permission -- perm_end;
     permission -- perm_note;
+    permission -- perm_cat;
 
     region_code [label=<<u>region_code</u>>];
     economy_code [label=<<u>economy_code</u>>];
