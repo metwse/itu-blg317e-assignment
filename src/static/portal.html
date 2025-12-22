@@ -445,15 +445,15 @@
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Industry (% of GDP)</label>
-                        <input type="number" step="0.01" id="ind-industry" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-industry" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Trade (% of GDP)</label>
-                        <input type="number" step="0.01" id="ind-trade" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-trade" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
-                        <label>Agriculture, Forestry & Fishing</label>
-                        <input type="number" step="0.01" id="ind-agriculture_forestry_and_fishing" class="form-control form-control-sm" placeholder="%">
+                        <label>Agriculture, Forestry & Fishing (%)</label>
+                        <input type="number" step="0.01" min="0" max="100" id="ind-agriculture_forestry_and_fishing" class="form-control form-control-sm" placeholder="%">
                       </div>
                     </div>
                   </div>
@@ -468,23 +468,23 @@
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Diabetes Prevalence (%)</label>
-                        <input type="number" step="0.01" id="ind-diabetes_prevalence" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-diabetes_prevalence" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Undernourishment Prevalence (%)</label>
-                        <input type="number" step="0.01" id="ind-prevalence_of_undernourishment" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-prevalence_of_undernourishment" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Severe Food Insecurity (%)</label>
-                        <input type="number" step="0.01" id="ind-prevalence_of_severe_food_insecurity" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-prevalence_of_severe_food_insecurity" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Basic Handwashing Facilities (%)</label>
-                        <input type="number" step="0.01" id="ind-basic_handwashing_facilities" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-basic_handwashing_facilities" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Safe Drinking Water (%)</label>
-                        <input type="number" step="0.01" id="ind-safely_managed_drinking_water_services" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-safely_managed_drinking_water_services" class="form-control form-control-sm" placeholder="%">
                       </div>
                     </div>
                   </div>
@@ -495,7 +495,7 @@
                     <div class="row g-2">
                       <div class="col-md-6 indicator-field">
                         <label>Access to Electricity (%)</label>
-                        <input type="number" step="0.01" id="ind-access_to_electricity" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-access_to_electricity" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Energy Use (kg oil eq. per capita)</label>
@@ -503,7 +503,7 @@
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Alternative & Nuclear Energy (%)</label>
-                        <input type="number" step="0.01" id="ind-alternative_and_nuclear_energy" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-alternative_and_nuclear_energy" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>GDP per Unit of Energy Use</label>
@@ -511,7 +511,7 @@
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Permanent Cropland (%)</label>
-                        <input type="number" step="0.01" id="ind-permanent_cropland" class="form-control form-control-sm" placeholder="%">
+                        <input type="number" step="0.01" min="0" max="100" id="ind-permanent_cropland" class="form-control form-control-sm" placeholder="%">
                       </div>
                       <div class="col-md-6 indicator-field">
                         <label>Crop Production Index</label>
@@ -1083,6 +1083,19 @@
         showToast('Error: ' + e.message, true);
       }
     }
+
+    // Enforce min/max on percentage inputs
+    document.querySelectorAll('input[type="number"][max]').forEach(input => {
+      input.addEventListener('input', function() {
+        const max = parseFloat(this.max);
+        const min = parseFloat(this.min) || 0;
+        let val = parseFloat(this.value);
+        if (!isNaN(val)) {
+          if (val > max) this.value = max;
+          if (val < min) this.value = min;
+        }
+      });
+    });
   </script>
 </body>
 </html>
