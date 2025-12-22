@@ -97,7 +97,8 @@ class IndicatorRepo(BaseRepo):
         async def _upsert_group(table_name, fields):
             nonlocal created_any, performed_any
             cols = ['provider_id', 'economy_code', 'year'] + fields
-            values = [provider_id, economy_code, year] + [data.get(f) for f in fields]
+            values = [provider_id, economy_code, year] + \
+                [data.get(f) for f in fields]
 
             # If all provided values for the group are None/absent, skip
             if all(v is None for v in values[3:]):
@@ -126,12 +127,14 @@ class IndicatorRepo(BaseRepo):
         await _upsert_group('health_indicators', health_fields)
         await _upsert_group('environment_indicators', environment_fields)
 
-        # Preserve previous behaviour: if client provided no indicator fields at
-        # all, create a minimal row in `economic_indicators` so a record exists.
+        # Preserve previous behaviour: if client provided no indicator fields
+        # at all, create a minimal row in `economic_indicators` so a record
+        # exists.
         if not performed_any:
             res = await self.fetchrow_raw(
                 """
-                INSERT INTO economic_indicators (provider_id, economy_code, year)
+                INSERT INTO economic_indicators (provider_id, economy_code,
+                                                 year)
                 VALUES ($1, $2, $3)
                 ON CONFLICT (provider_id, economy_code, year) DO NOTHING
                 RETURNING (xmax = 0) AS was_created

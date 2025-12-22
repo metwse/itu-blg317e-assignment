@@ -203,12 +203,8 @@ class PublicRepo:
         self, filters: IndicatorFilters
     ) -> List[dict]:
         """List economic indicators only with filters."""
-        extra = [
-            "(i.gdp_per_capita IS NOT NULL OR i.industry IS NOT NULL "
-            "OR i.trade IS NOT NULL)"
-        ]
         where_clause, params, param_idx = build_indicator_filter_clause(
-            filters, extra)
+            filters)
         params.extend([filters.limit, filters.offset])
 
         async with self.pool.acquire() as conn:
@@ -237,13 +233,8 @@ class PublicRepo:
         self, filters: IndicatorFilters
     ) -> List[dict]:
         """List health indicators only with filters."""
-        extra = [
-            "(i.community_health_workers IS NOT NULL "
-            "OR i.diabetes_prevalence IS NOT NULL "
-            "OR i.prevalence_of_undernourishment IS NOT NULL)"
-        ]
         where_clause, params, param_idx = build_indicator_filter_clause(
-            filters, extra)
+            filters)
         params.extend([filters.limit, filters.offset])
 
         async with self.pool.acquire() as conn:
@@ -274,13 +265,8 @@ class PublicRepo:
         self, filters: IndicatorFilters
     ) -> List[dict]:
         """List environment indicators only with filters."""
-        extra = [
-            "(i.access_to_electricity IS NOT NULL "
-            "OR i.energy_use IS NOT NULL "
-            "OR i.alternative_and_nuclear_energy IS NOT NULL)"
-        ]
         where_clause, params, param_idx = build_indicator_filter_clause(
-            filters, extra)
+            filters)
         params.extend([filters.limit, filters.offset])
 
         async with self.pool.acquire() as conn:
