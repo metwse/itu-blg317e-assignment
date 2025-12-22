@@ -1,0 +1,142 @@
+graph chen_er_diagram {
+    layout=neato;
+    overlap=false;
+
+    node [fontsize=10 fontname="Arial"];
+    edge [fontsize=9 fontname="Arial" color="#555555"];
+
+    // Entities
+    node [shape=box, style="filled", fillcolor="#E6E6FA", height=0.5];
+    provider;
+    economy;
+    indicator [peripheries=2];
+    user;
+    permission [peripheries=2];
+    economic_indicator;
+    health_indicator;
+    environment_indicator;
+    economy_permission;
+    region_permission;
+
+    // Relations
+    node [shape=diamond, style="filled", fillcolor="#EEEEEE", height=0.6];
+
+    reports [label="reports", peripheries=2];
+    technical [label="technical"];
+
+    administrates [label="administrates"];
+    applies_to [label="applies to", peripheries=2];
+
+    related_to [label="related to", peripheries=2]
+
+    has_right [label="has right", peripheries=2];
+
+    // Attributes
+    node [shape=ellipse, style="filled", fillcolor="#FFF8DC", width=1, height=0.4];
+
+    eco_code [label=<<u>code</u>>];
+    eco_name [label="name"];
+    eco_agg [label="is_agg"];
+    eco_cap [label="capital_city"];
+    eco_lat [label="lat"];
+    eco_lng [label="lng"];
+    eco_reg [label="region"];
+
+    economy -- eco_code;
+    economy -- eco_name;
+    economy -- eco_agg;
+    economy -- eco_cap;
+    economy -- eco_lat;
+    economy -- eco_lng;
+    economy -- eco_reg;
+
+    pro_id [label=<<u>id</u>>];
+    pro_name [label="name"];
+    pro_site [label="website"];
+    pro_desc [label="description"];
+    pro_imm [label="immutable"];
+
+    provider -- pro_id;
+    provider -- pro_name;
+    provider -- pro_site;
+    provider -- pro_desc;
+    provider -- pro_imm;
+
+    ind_year [label=<<u>year</u>>];
+
+    economic_indicator -- industry;
+    economic_indicator -- gdp_per_capita;
+    economic_indicator -- trade;
+    economic_indicator -- agriculture_forestry_and_fishing;
+
+    health_indicator -- community_health_workers;
+    health_indicator -- prevalence_of_undernourishment;
+    health_indicator -- prevalence_of_severe_food_insecurity;
+    health_indicator -- basic_handwashing_facilities;
+    health_indicator -- safely_managed_drinking_water_services;
+    health_indicator -- diabetes_prevalence;
+
+    environment_indicator -- energy_use;
+    environment_indicator -- access_to_electricity;
+    environment_indicator -- alternative_and_nuclear_energy;
+    environment_indicator -- permanent_cropland;
+    environment_indicator -- crop_production_index;
+    environment_indicator -- gdp_per_unit_of_energy_use;
+
+    indicator -- ind_year;
+
+    user_id [label=<<u>id</u>>];
+    user_email [label="email"];
+    user -- user_id;
+    user -- user_email;
+
+    perm_id [label=<<u>id</u>>];
+    perm_start [label="year_start"];
+    perm_end [label="year_end"];
+    perm_note [label="footnote"];
+
+    permission -- perm_id;
+    permission -- perm_start;
+    permission -- perm_end;
+    permission -- perm_note;
+
+    region_code [label=<<u>region_code</u>>];
+    economy_code [label=<<u>economy_code</u>>];
+
+
+    region_permission -- region_code;
+    economy_permission -- economy_code;
+
+    // Triangles
+    node [shape=triangle,style="filled", fillcolor="#B0E0E6", height=0.4]
+
+    is_permission [label="isA"]
+    is_indicator [label="isA"]
+
+    // Edges
+    provider -- administrates [dir=forward,style=bold];
+    provider -- technical [dir=forward];
+    provider -- reports;
+    provider -- has_right;
+
+    user -- administrates;
+    user -- technical;
+
+    permission -- applies_to [dir=forward,style=bold];
+    permission -- has_right [dir=forward,style=bold];
+    permission -- is_permission:n;
+
+    economy -- applies_to;
+    economy -- related_to;
+
+    indicator -- reports [dir=forward,style=bold];
+    indicator -- related_to [dir=forward,style=bold];
+    indicator -- is_indicator:n;
+
+    economic_indicator -- is_indicator;
+    health_indicator -- is_indicator;
+    environment_indicator -- is_indicator;
+
+    economy_permission -- is_permission;
+    region_permission -- is_permission;
+}
